@@ -1,15 +1,126 @@
 @import "tailwindcss";
 
+/* 
+  @plugin "flowbite/plugin"; 
+  @plugin "flowbite-react/plugin/tailwindcss"; 
+  (Uncomment the above lines after installing flowbite and flowbite-react)
+*/
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
 }
 
-@theme inline {
+/* ==============================================================
+   CENTRALIZED DESIGN SYSTEM (TAILWIND V4)
+   ==============================================================
+   Control your entire website's colors and design from this block.
+   This replaces the old tailwind.config.js in Tailwind CSS v4.
+*/
+@theme {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-montserrat);
+  --font-serif: var(--font-cinzel);
+
+  /* ================= PRIMARY BRAND (EMERALD) ================= */
+  --color-primary-50: #ecfdf5;
+  --color-primary-100: #d1fae5;
+  --color-primary-200: #a7f3d0;
+  --color-primary-300: #6ee7b7;
+  --color-primary-400: #34d399;
+  --color-primary-500: #10b981;
+  --color-primary-600: #059669;
+  --color-primary-700: #047857;
+  --color-primary-800: #065f46;
+  --color-primary-900: #064e3b;
+
+  /* ================= TABLE ================= */
+  --color-table-bg: #FFFFFF;
+  --color-table-border: #d1fae5;
+  --color-table-header: #ecfdf5;
+  --color-table-header-text: #10b981;
+  --color-table-row: #FFFFFF;
+  --color-table-row-hover: #f0fdf4;
+  --color-table-text: #1F2937;
+  --color-table-muted: #6B7280;
+  --color-table-search: #FFFFFF;
+  --color-table-pagination: #FFFFFF;
+
+  /* ================= CARD ================= */
+  --color-card-bg: #FFFFFF;
+  --color-card-border: #d1fae5;
+
+  /* ================= INPUT ================= */
+  --color-input-bg: #FFFFFF;
+  --color-input-border: #D1D5DB;
+  --color-input-text: #1F2937;
+  --color-input-placeholder: #9CA3AF;
+  --color-input-focus: #10b981;
+
+  /* ================= TEXT ================= */
+  --color-text-DEFAULT: #1F2937;
+  --color-text-light: #6B7280;
+  --color-text-muted: #9CA3AF;
+  --color-text-dark: #F9FAFB;
+  --color-text-dark-light: #CBD5E1;
+
+  /* ================= STATUS ================= */
+  --color-success: #10B981;
+  --color-success-hover: #047857;
+  --color-success-dark: #34D399;
+
+  --color-warning: #F59E0B;
+  --color-warning-hover: #B45309;
+  --color-warning-dark: #FBBF24;
+
+  --color-danger: #DC2626;
+  --color-danger-hover: #B91C1C;
+  --color-danger-dark: #EF4444;
+
+  --color-info: #0EA5E9;
+  --color-info-hover: #0369A1;
+  --color-info-dark: #38BDF8;
+
+  /* ================= BUTTON ================= */
+  --color-button-primary: #10b981;
+  --color-button-primary-hover: #059669;
+  --color-button-primary-dark: #1E293B;
+
+  --color-button-secondary: #E5E7EB;
+  --color-button-secondary-hover: #D1D5DB;
+  --color-button-secondary-dark: #1F2937;
+
+  --color-button-light: #F9FAFB;
+  --color-button-light-dark: #0B1220;
+
+  --color-button-danger: #DC2626;
+  --color-button-danger-hover: #B91C1C;
+  --color-button-danger-dark: #EF4444;
+
+  /* ================= SIDEBAR (FLAT STYLE) ================= */
+  --color-sidebar-bg: #10b981;
+  --color-sidebar-text: #FFFFFF;
+  --color-sidebar-hover: #059669;
+  --color-sidebar-active: #047857;
+  --color-sidebar-border: #059669;
+
+  --color-sidebar-bg-dark: #0F172A;
+  --color-sidebar-text-dark: #E2E8F0;
+  --color-sidebar-hover-dark: #1E293B;
+  --color-sidebar-active-dark: #334155;
+  --color-sidebar-border-dark: #1E293B;
+
+  /* ================= NAVBAR ================= */
+  --color-navbar-bg: #FFFFFF;
+  --color-navbar-text: #1F2937;
+  --color-navbar-border: #E5E7EB;
+  --color-navbar-hover: #F3F4F6;
+
+  --color-navbar-bg-dark: #0B1220;
+  --color-navbar-text-dark: #E5E7EB;
+  --color-navbar-border-dark: #1F2937;
+  --color-navbar-hover-dark: #111827;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +133,5 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans), sans-serif;
 }

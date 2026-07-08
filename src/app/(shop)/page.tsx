@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { HeroSlider } from "@/components/home/HeroSlider";
 
 export default function HomePage() {
   // Mock data for premium look
@@ -43,40 +44,7 @@ export default function HomePage() {
   return (
     <div className="flex flex-col min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50">
       {/* Hero Banner */}
-      <section className="relative bg-neutral-900 text-white py-32 px-6 sm:px-12 lg:px-24 overflow-hidden">
-        <div className="absolute inset-0 opacity-40">
-          <Image
-            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1600&q=80"
-            alt="Hero background"
-            fill
-            priority
-            className="object-cover"
-          />
-        </div>
-        <div className="relative max-w-4xl z-10 flex flex-col items-start gap-6">
-          <span className="text-xs font-semibold uppercase tracking-widest text-amber-400">Exclusive Collection 2026</span>
-          <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none max-w-2xl">
-            Redefine Your Modern Lifestyle.
-          </h1>
-          <p className="text-lg sm:text-xl text-neutral-300 max-w-lg leading-relaxed">
-            Discover curated, premium products crafted for quality, comfort, and ultimate utility. Experience seamless shopping.
-          </p>
-          <div className="flex gap-4 mt-2">
-            <Link
-              href="/products"
-              className="px-8 py-3 bg-white text-black font-semibold rounded-full hover:bg-neutral-200 transition-colors shadow-lg"
-            >
-              Shop Collection
-            </Link>
-            <Link
-              href="/about"
-              className="px-8 py-3 bg-transparent border border-white text-white font-semibold rounded-full hover:bg-white/10 transition-colors"
-            >
-              Learn More
-            </Link>
-          </div>
-        </div>
-      </section>
+      <HeroSlider />
 
       {/* Featured Categories */}
       <section className="py-20 px-6 sm:px-12 lg:px-24 max-w-7xl mx-auto w-full">
