@@ -1,5 +1,6 @@
-import { Navbar } from "@/components/layouts/Navbar";
-import { Footer } from "@/components/layouts/Footer";
+import { Footer } from "@/components/layout/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+
 
 export default function AuthLayout({
   children,
@@ -8,9 +9,9 @@ export default function AuthLayout({
 }) {
   return (
     <>
-      <Navbar />
-      <main className="flex-1 flex flex-col pt-20">{children}</main>
-      <Footer />
+      {/* <Navbar /> */}
+      <main className="flex-1 flex flex-col  ">{children}</main>
+      {/* <Footer /> */}
     </>
   );
 }

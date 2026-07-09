@@ -1,8 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { HeroSlider } from "@/components/home/HeroSlider";
-import { Navbar } from "@/components/layouts/Navbar";
-import { Footer } from "@/components/layouts/Footer";
 
 export default function HomePage() {
   const categories = [
@@ -66,11 +64,8 @@ export default function HomePage() {
   ];
 
   return (
-    <>
-      <Navbar />
-      <main className="flex-1 flex flex-col pt-20">
-        <div className="flex flex-col min-h-screen bg-white text-black">
-          {/* Hero Banner */}
+    <div className="flex flex-col min-h-screen bg-white text-black">
+      {/* Hero Banner */}
           <HeroSlider />
 
           {/* LIVE LIMITLESS (Categories) */}
@@ -82,6 +77,7 @@ export default function HomePage() {
                   src="https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=800&q=80"
                   alt="Men's Collection"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
@@ -91,6 +87,7 @@ export default function HomePage() {
                   src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80"
                   alt="Women's Collection"
                   fill
+                  sizes="(max-width: 768px) 100vw, 50vw"
                   className="object-cover hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </div>
@@ -123,12 +120,13 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {newArrivals.map((product) => (
-                <Link href={`/products/${product.id}`} key={product.id} className="group flex flex-col">
+                <Link href={`/shop/${product.id}`} key={product.id} className="group flex flex-col">
                   <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
                       className="object-cover"
                     />
                     {/* Hover Overlay */}
@@ -150,13 +148,15 @@ export default function HomePage() {
 
           {/* PROMO BANNER */}
           <section className="relative w-full h-[700px] my-12">
-            <Link href="/products">
-            <Image
-              src="/promo.jpg"
-              alt="Promo Banner"
-              fill
-              className="object-cover"
-            /></Link>
+            <Link href="/shop" className="relative block w-full h-full">
+              <Image
+                src="/promo.jpg"
+                alt="Promo Banner"
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            </Link>
           </section>
 
           {/* BEST SELLING */}
@@ -167,12 +167,13 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {bestSelling.map((product) => (
-                <Link href={`/products/${product.id}`} key={product.id} className="group flex flex-col">
+                <Link href={`/shop/${product.id}`} key={product.id} className="group flex flex-col">
                   <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
                     <Image
                       src={product.image}
                       alt={product.name}
                       fill
+                      sizes="(max-width: 768px) 50vw, 25vw"
                       className="object-cover"
                     />
                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -214,8 +215,5 @@ export default function HomePage() {
             </div>
           </section>
         </div>
-      </main>
-      <Footer />
-    </>
   );
 }

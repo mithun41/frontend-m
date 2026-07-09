@@ -128,7 +128,7 @@ const DashboardNavbar = () => {
             className="group flex w-full items-center justify-between px-4 py-3 text-sm font-medium text-navbar-text dark:text-navbar-text-dark hover:bg-primary-50 dark:hover:bg-primary-900/20 transition-all"
           >
             <div className="flex items-center gap-3">
-              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-amber-100 text-amber-600 dark:bg-amber-900/30 dark:text-amber-400">
+              <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-primary-100 text-primary-600 dark:bg-primary-900/30 dark:text-primary-400">
                 <Key className="h-4 w-4" />
               </div>
               <span>Change Password</span>

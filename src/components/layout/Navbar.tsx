@@ -13,8 +13,8 @@ export function Navbar() {
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
-    { name: 'Categories', href: '/categories' },
     { name: 'About', href: '/about' },
+    { name: 'Contact', href: '/contact' },
   ];
 
   // Handle scroll effect
@@ -34,7 +34,7 @@ export function Navbar() {
           : 'bg-white py-5 shadow-sm'
       }`}
     >
-      <div className="max-w-11/12 mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center transition-all duration-300">
           
           {/* Left: Logo */}
@@ -76,10 +76,10 @@ export function Navbar() {
           <div className="flex items-center gap-4">
             {/* Desktop Cart & Login */}
             <div className="hidden sm:flex items-center gap-5">
-              <button className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
+              <Link href="/cart" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
                 <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
                 
-              </button>
+              </Link>
               
               <div className="h-5 w-px bg-gray-300"></div>
               
@@ -133,10 +133,10 @@ export function Navbar() {
           
           {/* Mobile Cart & Login */}
           <div className="pt-4 mt-4 border-t border-gray-100 sm:hidden flex flex-col gap-2">
-            <button className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all">
+            <Link href="/cart" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all">
               <ShoppingCart className="h-5 w-5" />
               Cart
-            </button>
+            </Link>
             <Link 
               href="/login" 
               onClick={() => setIsOpen(false)} 

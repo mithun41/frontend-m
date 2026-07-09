@@ -33,12 +33,12 @@ export default function CartPage() {
                 className="flex items-center gap-6 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-5 shadow-sm"
               >
                 <div className="relative aspect-square w-24 rounded-2xl overflow-hidden bg-neutral-100 shrink-0">
-                  <Image src={item.image} alt={item.name} fill className="object-cover" />
+                  <Image src={item.image} alt={item.name} fill sizes="96px" className="object-cover" />
                 </div>
                 <div className="flex-grow flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
                     <h3 className="font-semibold text-neutral-800 dark:text-neutral-200 hover:underline">
-                      <Link href={`/products/${item.id}`}>{item.name}</Link>
+                      <Link href={`/shop/${item.id}`}>{item.name}</Link>
                     </h3>
                     <p className="text-sm font-bold mt-1 text-neutral-950 dark:text-white">
                       {item.price}

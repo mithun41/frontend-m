@@ -29,7 +29,7 @@ export default function RootLayout({
       lang="en"
       className={`${montserrat.variable} ${cinzel.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans">
+      <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
         {children}
       </body>
     </html>

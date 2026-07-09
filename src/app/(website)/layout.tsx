@@ -1,7 +1,7 @@
-import { Navbar } from "@/components/layouts/Navbar";
-import { Footer } from "@/components/layouts/Footer";
+import { Navbar } from "@/components/layout/Navbar";
+import { Footer } from "@/components/layout/Footer";
 
-export default function ShopLayout({
+export default function WebsiteLayout({
   children,
 }: {
   children: React.ReactNode;

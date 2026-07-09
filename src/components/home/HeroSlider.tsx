@@ -69,7 +69,7 @@ export function HeroSlider() {
           
           <div className="relative z-20 h-full flex items-center justify-start px-6 sm:px-12 lg:px-24">
             <div className="max-w-4xl flex flex-col items-start gap-6 transition-all duration-700 delay-300 transform translate-y-0">
-              <span className="text-xs font-semibold uppercase tracking-widest text-amber-400 bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
+              <span className="text-xs font-semibold uppercase tracking-widest text-primary-400 bg-black/30 px-3 py-1 rounded-full backdrop-blur-sm">
                 {slide.tag}
               </span>
               <h1 className="text-4xl sm:text-6xl font-black tracking-tight leading-none text-white max-w-2xl drop-shadow-lg">
@@ -118,7 +118,7 @@ export function HeroSlider() {
             key={index}
             onClick={() => setCurrent(index)}
             className={`w-3 h-3 rounded-full transition-all duration-300 ${
-              index === current ? "bg-amber-400 w-8" : "bg-white/50 hover:bg-white"
+              index === current ? "bg-primary-400 w-8" : "bg-white/50 hover:bg-white"
             }`}
           />
         ))}
