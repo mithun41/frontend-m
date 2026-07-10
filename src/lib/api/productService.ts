@@ -37,6 +37,11 @@ export const productService = {
     return response.data;
   },
 
+  getProductDetails: async (id: string | number): Promise<Product> => {
+    const response = await axiosClient.get(`/products/${id}/`);
+    return response.data;
+  },
+
   create: async (data: FormData): Promise<Product> => {
     // Note: using multipart/form-data for image uploads
     const response = await axiosClient.post("/products/", data, {

@@ -1,33 +1,38 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
+import { Suspense } from "react";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
+import { productService, Product } from "@/lib/api/productService";
+import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
   const categoryFilter = resolvedParams.category as string | undefined;
   const minPrice = parseInt(resolvedParams.minPrice as string) || 0;
-  const maxPrice = parseInt(resolvedParams.maxPrice as string) || 10000;
+  const maxPrice = parseInt(resolvedParams.maxPrice as string) || 100000;
+  const page = parseInt(resolvedParams.page as string) || 1;
 
-  const allProducts = [
-    { id: "prod_1", name: "Premium Smart Watch", price: "4,590 BDT", priceValue: 4590, category: "Accessories", subcategory: "Watches", rating: 4.8, image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80" },
-    { id: "prod_2", name: "Noise Cancelling Headphones", price: "8,990 BDT", priceValue: 8990, category: "Electronics", subcategory: "Headphones", rating: 4.9, image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=500&q=80" },
-    { id: "prod_3", name: "Ergonomic Office Chair", price: "9,500 BDT", priceValue: 9500, category: "Furniture", subcategory: "Chairs", rating: 4.7, image: "https://images.unsplash.com/photo-1505797149-43b0069ec26b?w=500&q=80" },
-    { id: "prod_4", name: "Gym Duffle Bag", price: "2,200 BDT", priceValue: 2200, category: "Accessories", subcategory: "Bags", rating: 4.5, image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80" },
-    { id: "prod_5", name: "Fast Wireless Charger", price: "1,850 BDT", priceValue: 1850, category: "Electronics", subcategory: "Chargers", rating: 4.6, image: "https://images.unsplash.com/photo-1622445262465-2481c4574875?w=500&q=80" },
-    { id: "prod_6", name: "Standing Desk", price: "10,000 BDT", priceValue: 10000, category: "Furniture", subcategory: "Desks", rating: 4.4, image: "https://images.unsplash.com/photo-1593062096033-9a26b09da705?w=500&q=80" },
-    { id: "prod_7", name: "Leather Messenger Bag", price: "3,500 BDT", priceValue: 3500, category: "Accessories", subcategory: "Bags", rating: 4.8, image: "https://images.unsplash.com/photo-1547949007-5350b6910606?w=500&q=80" },
-    { id: "prod_8", name: "Sports Earbuds", price: "3,100 BDT", priceValue: 3100, category: "Electronics", subcategory: "Headphones", rating: 4.7, image: "https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=500&q=80" },
-  ];
+  let allProducts: Product[] = [];
+  try {
+    const response = await productService.getProducts(page);
+    allProducts = response.results || [];
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
 
   let products = allProducts;
+  console.log(products)
 
   if (categoryFilter) {
-    products = products.filter(p => p.category === categoryFilter || p.subcategory === categoryFilter);
+    products = products.filter(p => p.category?.name === categoryFilter);
   }
 
   // Filter by dynamic price range from the slider
-  products = products.filter(p => p.priceValue >= minPrice && p.priceValue <= maxPrice);
+  products = products.filter(p => {
+    const price = parseFloat(p.price || p.selling_price || "0");
+    return price >= minPrice && price <= maxPrice;
+  });
 
   return (
     <div className="bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 py-12 px-6 sm:px-12 lg:px-24">
@@ -40,7 +45,9 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         </div>
 
         <div className="flex flex-col lg:flex-row gap-10 items-start">
-          <FilterSidebar />
+          <Suspense fallback={<div className="w-full lg:w-64 shrink-0 flex flex-col gap-8 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 h-fit shadow-sm"><div className="animate-pulse bg-gray-200 h-64 rounded-xl"></div></div>}>
+            <FilterSidebar />
+          </Suspense>
 
           {/* Product Grid */}
           <div className="flex-grow w-full">
@@ -55,33 +62,32 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
                   <Link href={`/shop/${product.id}`} key={product.id} className="group flex flex-col bg-white dark:bg-neutral-900 rounded-3xl border border-neutral-100 dark:border-neutral-800 hover:border-primary-200 transition-all duration-300 hover:shadow-xl hover:-translate-y-1 overflow-hidden">
-                    <div className="relative aspect-[4/5] w-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
+                    <div className="relative aspect-square w-full bg-neutral-100 dark:bg-neutral-800 overflow-hidden">
                       <Image
-                        src={product.image}
+                        src={product.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"}
                         alt={product.name}
                         fill
+                        unoptimized
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                        className="object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                       {/* Hover Overlay with Add to Cart Icon (Top Right Corner) */}
                       <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
-                        <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-neutral-900 shadow-xl hover:bg-primary-500 hover:text-white transition-colors cursor-pointer">
-                          <ShoppingCart className="w-4 h-4" />
-                        </div>
+                        <AddToCartIcon productId={product.id} />
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5 p-4 flex-grow">
                       <span className="text-[10px] uppercase tracking-widest text-neutral-400 font-bold">
-                        {product.category} • {product.subcategory}
+                        {product.category?.name || "Uncategorized"}
                       </span>
                       <h3 className="font-bold text-neutral-800 dark:text-neutral-200 group-hover:text-primary-600 transition-colors line-clamp-1">
                         {product.name}
                       </h3>
                       <div className="flex justify-between items-center mt-1">
-                        <span className="font-extrabold text-lg text-black dark:text-white">{product.price}</span>
+                        <span className="font-extrabold text-lg text-black dark:text-white">{product.price || product.selling_price} BDT</span>
                         <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
-                          ★ {product.rating}
+                          ★ {product.average_rating || 0}
                         </span>
                       </div>
                       

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { categoryService, Category } from "@/lib/api/categoryService";
 import Swal from "sweetalert2";
-import { X } from "lucide-react";
+import { X, Image as ImageIcon } from "lucide-react";
+import Image from "next/image";
 
 interface CategoryModalProps {
   open: boolean;
@@ -21,6 +22,8 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     slug: "",
     parent: null,
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [errors, setErrors] = useState<Record<string, string[]>>({});
 
   // Reset form when modal opens or category to edit changes
@@ -28,9 +31,12 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     if (open) {
       if (categoryToEdit) {
         setFormData({ name: categoryToEdit.name, slug: categoryToEdit.slug, parent: categoryToEdit.parent || null });
+        setImagePreview(categoryToEdit.image || null);
       } else {
         setFormData({ name: "", slug: "", parent: null });
+        setImagePreview(null);
       }
+      setImageFile(null);
       setErrors({});
     }
   }, [open, categoryToEdit]);
@@ -52,7 +58,7 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data: { name: string; slug: string; parent: number | null }) => 
+    mutationFn: (data: FormData) => 
       categoryService.update(categoryToEdit!.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["categories"] });
@@ -99,12 +105,34 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     }
   };
 
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+      if (errors.image) {
+        setErrors(prev => ({ ...prev, image: [] }));
+      }
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    const submitData = new FormData();
+    submitData.append("name", formData.name);
+    submitData.append("slug", formData.slug);
+    if (formData.parent) {
+      submitData.append("parent", formData.parent.toString());
+    }
+    if (imageFile) {
+      submitData.append("image", imageFile);
+    }
+
     if (categoryToEdit) {
-      updateMutation.mutate(formData);
+      updateMutation.mutate(submitData);
     } else {
-      createMutation.mutate(formData);
+      createMutation.mutate(submitData);
     }
   };
 
@@ -119,8 +147,8 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !isPending && setOpen(false)}></div>
       
-      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+      <div className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800 animate-in fade-in zoom-in-95 duration-200 max-h-[90vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">
             {categoryToEdit ? "Edit Category" : "Add New Category"}
           </h2>
@@ -132,13 +160,42 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto">
           <form onSubmit={handleSubmit} className="space-y-5">
             {errors.general && (
               <div className="p-3 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl text-sm">
                 {errors.general[0]}
               </div>
             )}
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category Image</label>
+              <div className="flex items-center gap-4">
+                <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden flex flex-col items-center justify-center relative shrink-0">
+                  {imagePreview ? (
+                    <Image 
+                      src={imagePreview.startsWith('blob:') || imagePreview.startsWith('/') ? imagePreview : `http://127.0.0.1:8000${imagePreview}`}
+                      alt="Preview" 
+                      fill
+                      unoptimized
+                      className="object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="w-8 h-8 text-gray-400" />
+                  )}
+                </div>
+                <div className="flex-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageChange}
+                    className="w-full text-sm text-gray-500 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 dark:file:bg-primary-900/30 dark:file:text-primary-400 transition-all cursor-pointer"
+                  />
+                  <p className="text-[10px] text-gray-400 mt-1.5">Recommended size: 400x400px</p>
+                </div>
+              </div>
+              {errors.image && <p className="text-xs text-red-500 mt-1">{errors.image[0]}</p>}
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category Name</label>
@@ -183,7 +240,7 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
               {errors.parent && <p className="text-xs text-red-500 mt-1">{errors.parent[0]}</p>}
             </div>
 
-            <div className="pt-4 flex justify-end gap-3">
+            <div className="pt-4 flex justify-end gap-3 sticky bottom-0 bg-white dark:bg-gray-900">
               <button
                 type="button"
                 onClick={() => setOpen(false)}

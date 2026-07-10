@@ -1,4 +1,4 @@
-import { Home, Users, Settings, FileText, Image, LayoutGrid, Package } from 'lucide-react';
+import { Home, Users, Settings, FileText, Image, LayoutGrid, Package, ShoppingBag, BarChart2 } from 'lucide-react';
 
 export const menuConfig = [
   {
@@ -26,21 +26,18 @@ export const menuConfig = [
     subMenu: []
   },
   {
-    key: 'employees',
-    title: 'Employees',
-    path: '/employees',
-    icon: Users,
-    roles: ['admin'], // only admin can see
-    subMenu: [
-      { title: 'All Employees', path: '/employees/all', roles: ['admin'] },
-      { title: 'Add Employee', path: '/employees/add', roles: ['admin'] }
-    ]
+    key: 'orders',
+    title: 'Orders',
+    path: '/orders',
+    icon: ShoppingBag,
+    roles: ['admin'], // only admin
+    subMenu: []
   },
   {
-    key: 'reports',
-    title: 'Reports',
-    path: '/reports',
-    icon: FileText,
+    key: 'sales-report',
+    title: 'Sales Report',
+    path: '/sales-report',
+    icon: BarChart2,
     roles: ['admin'], // only admin
     subMenu: []
   },
@@ -52,11 +49,12 @@ export const menuConfig = [
     roles: ['admin'], // only admin
     subMenu: []
   },
+
   {
-    key: 'ads',
-    title: 'Banners',
-    path: '/ads',
-    icon: Image,
+    key: 'reviews',
+    title: 'Reviews',
+    path: '/reviews',
+    icon: FileText,
     roles: ['admin'], // only admin
     subMenu: []
   }
