@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Montserrat, Cinzel } from "next/font/google";
 import "./globals.css";
+import Providers from "@/components/Providers";
 
 const montserrat = Montserrat({
   variable: "--font-montserrat",
@@ -30,7 +31,9 @@ export default function RootLayout({
       className={`${montserrat.variable} ${cinzel.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans" suppressHydrationWarning>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
       </body>
     </html>
   );

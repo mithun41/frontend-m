@@ -1,12 +1,76 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-export const metadata = {
-  title: "Register - BrandName",
-  description: "Create a new account.",
-};
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { authService } from "@/lib/api/authService";
+import { useAuthStore } from "@/store/useAuthStore";
+import Swal from "sweetalert2";
 
 export default function RegisterPage() {
+  const router = useRouter();
+  const setAuth = useAuthStore((state) => state.setAuth);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone_number: "",
+    password: "",
+  });
+  
+  const [errors, setErrors] = useState<Record<string, string[]>>({});
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+    if (errors[e.target.name]) {
+      setErrors({ ...errors, [e.target.name]: [] });
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrors({});
+    setIsLoading(true);
+
+    try {
+      await authService.register(formData);
+      
+      Swal.fire({
+        title: "Registration Successful!",
+        text: "Logging you into your new account...",
+        icon: "success",
+        timer: 2000,
+        showConfirmButton: false,
+        background: "#1f2937",
+        color: "#fff",
+      });
+      
+      try {
+        const loginData = await authService.login({ email: formData.email, password: formData.password });
+        setAuth(loginData.user, loginData.access, loginData.refresh);
+        router.push("/dashboard");
+      } catch (loginErr) {
+        router.push("/login");
+      }
+
+    } catch (error: any) {
+      const data = error?.response?.data;
+      if (data && typeof data === 'object') {
+        if (data.detail) {
+          setErrors({ general: [data.detail] });
+        } else {
+          setErrors(data);
+        }
+      } else {
+        setErrors({ general: ["Registration failed. Please try again."] });
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-8">
       {/* Background Image */}
@@ -26,7 +90,6 @@ export default function RegisterPage() {
         
         {/* Left Column (Visual): Logo & Branding */}
         <div className="flex-1 p-8 md:p-12 flex flex-col justify-center items-center text-center bg-black/20 border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden">
-          {/* Subtle glow effect */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/20 rounded-full blur-[80px] pointer-events-none"></div>
           
           <div className="w-20 h-20 rounded-full bg-primary-500 flex items-center justify-center mb-6 shadow-xl shadow-primary-500/40 relative z-10">
@@ -46,26 +109,39 @@ export default function RegisterPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Create Account</h1>
             <p className="text-white/60 text-sm mb-8">Sign up to get started with BrandName.</p>
 
-            <form className="flex flex-col gap-5">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               
+              {errors.general && (
+                <div className="p-3 bg-red-500/20 border border-red-500/50 rounded-xl text-red-200 text-sm">
+                  {errors.general[0]}
+                </div>
+              )}
+
               <div className="grid grid-cols-2 gap-4">
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-white/80">First Name</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-white/80">Full Name</label>
                   <input 
                     type="text" 
-                    placeholder="John"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
+                    placeholder="John Doe"
+                    className={`w-full bg-white/10 border rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:bg-white/20 transition-all backdrop-blur-md ${errors.name ? 'border-red-500 focus:ring-red-500' : 'border-white/20 focus:ring-primary-500'}`}
                     required
                   />
+                  {errors.name && <p className="text-xs text-red-400 mt-1">{errors.name[0]}</p>}
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-xs font-bold uppercase tracking-wider text-white/80">Last Name</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-white/80">Phone Number</label>
                   <input 
                     type="text" 
-                    placeholder="Doe"
-                    className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
-                    required
+                    name="phone_number"
+                    value={formData.phone_number}
+                    onChange={handleChange}
+                    placeholder="+880..."
+                    className={`w-full bg-white/10 border rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:bg-white/20 transition-all backdrop-blur-md ${errors.phone_number ? 'border-red-500 focus:ring-red-500' : 'border-white/20 focus:ring-primary-500'}`}
                   />
+                  {errors.phone_number && <p className="text-xs text-red-400 mt-1">{errors.phone_number[0]}</p>}
                 </div>
               </div>
 
@@ -73,26 +149,42 @@ export default function RegisterPage() {
                 <label className="text-xs font-bold uppercase tracking-wider text-white/80">Email Address</label>
                 <input 
                   type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="name@example.com"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
+                  className={`w-full bg-white/10 border rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:bg-white/20 transition-all backdrop-blur-md ${errors.email ? 'border-red-500 focus:ring-red-500' : 'border-white/20 focus:ring-primary-500'}`}
                   required
                 />
+                {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email[0]}</p>}
               </div>
 
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-white/80">Password</label>
                 <input 
                   type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
-                  className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
+                  className={`w-full bg-white/10 border rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:bg-white/20 transition-all backdrop-blur-md ${errors.password ? 'border-red-500 focus:ring-red-500' : 'border-white/20 focus:ring-primary-500'}`}
                   required
                 />
+                {errors.password ? (
+                  <p className="text-xs text-red-400 mt-1">{errors.password[0]}</p>
+                ) : (
+                  <p className="text-[10px] text-white/50 mt-1 leading-tight">Must be at least 8 characters long, and shouldn't be a commonly used password.</p>
+                )}
               </div>
 
               <button 
                 type="submit"
-                className="mt-6 w-full bg-primary-600 text-white py-4 rounded-xl font-bold tracking-widest uppercase text-sm hover:bg-primary-500 transition-colors duration-300 shadow-lg shadow-primary-500/30"
+                disabled={isLoading}
+                className="mt-6 w-full bg-primary-600 text-white py-4 rounded-xl font-bold tracking-widest uppercase text-sm hover:bg-primary-500 transition-colors duration-300 shadow-lg shadow-primary-500/30 disabled:opacity-50 flex items-center justify-center gap-2"
               >
+                {isLoading && (
+                  <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                )}
                 Create Account
               </button>
             </form>

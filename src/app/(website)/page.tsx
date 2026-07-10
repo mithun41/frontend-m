@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { HeroSlider } from "@/components/home/HeroSlider";
+import { VideoSection } from "@/components/home/VideoSection";
 
 export default function HomePage() {
   const categories = [
@@ -145,9 +146,7 @@ export default function HomePage() {
               ))}
             </div>
           </section>
-
-          {/* PROMO BANNER */}
-          <section className="relative w-full h-[700px] my-12">
+                 <section className="relative w-full h-[700px] my-12">
             <Link href="/shop" className="relative block w-full h-full">
               <Image
                 src="/promo.jpg"
@@ -158,6 +157,7 @@ export default function HomePage() {
               />
             </Link>
           </section>
+         
 
           {/* BEST SELLING */}
           <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
@@ -191,7 +191,8 @@ export default function HomePage() {
               ))}
             </div>
           </section>
-
+               {/* VIDEO SECTION */}
+          <VideoSection />
           {/* NEWSLETTER */}
           <section className="py-24 px-6 sm:px-12 lg:px-24 bg-black text-white text-center w-full flex flex-col items-center">
             <div className="max-w-xl flex flex-col items-center gap-6 w-full">

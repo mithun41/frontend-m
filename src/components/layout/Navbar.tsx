@@ -2,29 +2,69 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ShoppingCart, User } from 'lucide-react';
+import { ShoppingCart, User, ChevronDown, LogOut } from 'lucide-react';
 import { useState, useEffect } from 'react';
+import { useAuthStore } from "@/store/useAuthStore";
+
+const megaMenuData = {
+  categories: [
+    {
+      title: 'Tops',
+      items: ['T-Shirts', 'Jackets', 'Tank Tops', 'Polo Shirts', 'Cycling Tops', 'Muscle Tank Tops', 'Compression T-Shirts', 'Hoodies & Sweatshirts'],
+    },
+    {
+      title: 'Bottoms',
+      items: ['Pants', 'Shorts', 'Joggers', '2 in 1 Shorts', 'Swim Shorts', 'Cycling Shorts', 'Compression Shorts', 'Compression Leggings'],
+    },
+    {
+      title: 'Activity',
+      items: ['Run', 'Train', 'Move', 'Golf'],
+    },
+    {
+      title: 'Trending',
+      items: ['Athleisure', 'Best Sellers', 'New Arrivals', 'Matching Sets', 'Breeze Edition', 'Everyday Essentials'],
+    }
+  ],
+  images: [
+    { src: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop', alt: 'Model 1' },
+    { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=400&auto=format&fit=crop', alt: 'Model 2' },
+    { src: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=400&auto=format&fit=crop', alt: 'Model 3' },
+  ]
+};
 
 export function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenusOpen, setMobileMenusOpen] = useState<{[key: string]: boolean}>({});
+
+  const user = useAuthStore(state => state.user);
+  const logout = useAuthStore(state => state.logout);
+  const [isMounted, setIsMounted] = useState(false);
 
   const navLinks = [
     { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
+    { name: 'Men', href: '/men', hasMegaMenu: true },
+    { name: 'Women', href: '/women', hasMegaMenu: true },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' },
   ];
 
-  // Handle scroll effect
+  // Handle scroll effect & hydration
   useEffect(() => {
+    setIsMounted(true);
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  const toggleMobileMenu = (name: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    setMobileMenusOpen(prev => ({...prev, [name]: !prev[name]}));
+  };
 
   return (
     <nav
@@ -54,20 +94,62 @@ export function Navbar() {
             {navLinks.map((link, index) => {
               const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
               return (
-                <Link
-                  key={index}
-                  href={link.href}
-                  className={`relative group px-1 py-2 text-[14px] font-semibold tracking-wide uppercase transition-colors duration-300 ${
-                    isActive ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
-                  }`}
-                >
-                  {link.name}
-                  <span
-                    className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${
-                      isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                <div key={index} className="group relative">
+                  <Link
+                    href={link.href}
+                    className={`relative flex items-center gap-1 py-2 text-[14px] font-semibold tracking-wide uppercase transition-colors duration-300 ${
+                      isActive ? 'text-primary-600' : 'text-gray-600 group-hover:text-primary-600'
                     }`}
-                  ></span>
-                </Link>
+                  >
+                    {link.name}
+                    {link.hasMegaMenu && (
+                      <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                    )}
+                    <span
+                      className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${
+                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      }`}
+                    ></span>
+                  </Link>
+
+                  {/* Mega Menu Dropdown */}
+                  {link.hasMegaMenu && (
+                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[800px] xl:w-[900px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
+                      <div className="bg-white shadow-2xl border border-gray-100 p-8 rounded-xl cursor-default">
+                        {/* Top categories */}
+                        <div className="grid grid-cols-4 gap-8">
+                          {megaMenuData.categories.map((category, catIdx) => (
+                            <div key={catIdx}>
+                              <h3 className="text-sm font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">{category.title}</h3>
+                              <ul className="space-y-3">
+                                {category.items.map((item, itemIdx) => (
+                                  <li key={itemIdx}>
+                                    <Link href={`${link.href}/${item.toLowerCase().replace(/ /g, '-')}`} className="text-sm text-gray-500 hover:text-primary-600 transition-colors block">
+                                      {item}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
+                        </div>
+                        {/* Bottom images */}
+                        <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100">
+                          {megaMenuData.images.map((image, imgIdx) => (
+                            <div key={imgIdx} className="group/img relative overflow-hidden bg-gray-100 rounded-lg aspect-[4/3]">
+                              <img 
+                                src={image.src} 
+                                alt={image.alt} 
+                                className="w-full h-full object-cover transform transition-transform duration-700 group-hover/img:scale-105"
+                              />
+                              <div className="absolute inset-0 bg-black/5 group-hover/img:bg-black/10 transition-colors duration-300" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -78,14 +160,24 @@ export function Navbar() {
             <div className="hidden sm:flex items-center gap-5">
               <Link href="/cart" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
                 <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
-                
               </Link>
               
               <div className="h-5 w-px bg-gray-300"></div>
               
-              <Link href="/login" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
-                <User className="h-5 w-5 transition-transform group-hover:scale-110" />
-              </Link>
+              {isMounted && user ? (
+                <>
+                  <Link href="/dashboard" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Dashboard">
+                    <User className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </Link>
+                  <button onClick={logout} className="text-gray-600 hover:text-red-600 transition-colors duration-300 flex items-center gap-2 group" title="Logout">
+                    <LogOut className="h-5 w-5 transition-transform group-hover:scale-110" />
+                  </button>
+                </>
+              ) : (
+                <Link href="/login" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Login">
+                  <User className="h-5 w-5 transition-transform group-hover:scale-110" />
+                </Link>
+              )}
             </div>
 
             {/* Mobile Menu Button (Hamburger) */}
@@ -108,26 +200,63 @@ export function Navbar() {
 
       {/* Mobile Menu Dropdown */}
       <div
-        className={`lg:hidden absolute w-full bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out origin-top ${
+        className={`lg:hidden absolute w-full max-h-[85vh] overflow-y-auto bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out origin-top ${
           isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
         }`}
       >
         <div className="px-4 pt-4 pb-8 space-y-2">
           {navLinks.map((link, index) => {
             const isActive = pathname === link.href || (link.href !== '/' && pathname.startsWith(link.href));
+            const isSubMenuOpen = mobileMenusOpen[link.name];
+            
             return (
-              <Link
-                key={index}
-                href={link.href}
-                onClick={() => setIsOpen(false)}
-                className={`block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${
-                  isActive
-                    ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
-                    : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 hover:border-l-4 hover:border-primary-300'
-                }`}
-              >
-                {link.name}
-              </Link>
+              <div key={index}>
+                <div className="flex items-center">
+                  <Link
+                    href={link.href}
+                    onClick={() => { if(!link.hasMegaMenu) setIsOpen(false); }}
+                    className={`flex-1 block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${
+                      isActive
+                        ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
+                        : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 hover:border-l-4 hover:border-primary-300'
+                    }`}
+                  >
+                    {link.name}
+                  </Link>
+                  {link.hasMegaMenu && (
+                    <button 
+                      onClick={(e) => toggleMobileMenu(link.name, e)}
+                      className="p-3 text-gray-500 hover:text-primary-600 transition-colors"
+                    >
+                      <ChevronDown className={`w-5 h-5 transition-transform ${isSubMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
+                  )}
+                </div>
+                
+                {/* Mobile Submenu */}
+                {link.hasMegaMenu && isSubMenuOpen && (
+                  <div className="pl-8 pr-4 py-2 space-y-4 bg-gray-50 rounded-lg mt-1 border border-gray-100">
+                    {megaMenuData.categories.map((category, catIdx) => (
+                      <div key={catIdx}>
+                        <h4 className="text-xs font-bold text-gray-900 mb-2 uppercase">{category.title}</h4>
+                        <ul className="space-y-2">
+                          {category.items.map((item, itemIdx) => (
+                            <li key={itemIdx}>
+                              <Link 
+                                href={`${link.href}/${item.toLowerCase().replace(/ /g, '-')}`}
+                                onClick={() => setIsOpen(false)}
+                                className="text-sm text-gray-500 hover:text-primary-600 block py-1"
+                              >
+                                {item}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
             );
           })}
           
@@ -137,14 +266,38 @@ export function Navbar() {
               <ShoppingCart className="h-5 w-5" />
               Cart
             </Link>
-            <Link 
-              href="/login" 
-              onClick={() => setIsOpen(false)} 
-              className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all"
-            >
-              <User className="h-5 w-5" />
-              Login
-            </Link>
+            
+            {isMounted && user ? (
+              <>
+                <Link 
+                  href="/dashboard" 
+                  onClick={() => setIsOpen(false)} 
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all"
+                >
+                  <User className="h-5 w-5" />
+                  Dashboard
+                </Link>
+                <button 
+                  onClick={() => {
+                    logout();
+                    setIsOpen(false);
+                  }} 
+                  className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-red-600 rounded-lg transition-all text-left w-full"
+                >
+                  <LogOut className="h-5 w-5" />
+                  Logout
+                </button>
+              </>
+            ) : (
+              <Link 
+                href="/login" 
+                onClick={() => setIsOpen(false)} 
+                className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all"
+              >
+                <User className="h-5 w-5" />
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </div>

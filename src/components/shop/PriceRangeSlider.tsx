@@ -37,15 +37,21 @@ export function PriceRangeSlider({ minLimit, maxLimit }: PriceRangeSliderProps) 
   // Debounce updating the URL
   useEffect(() => {
     const handler = setTimeout(() => {
-      // Only push to URL if values are valid (min <= max)
-      if (minPrice <= maxPrice) {
-        const query = createQueryString(minPrice, maxPrice);
-        router.push(pathname + (query ? `?${query}` : ""), { scroll: false });
+      // Check if the URL already matches our state to avoid infinite loops
+      const currentMin = parseInt(searchParams.get("minPrice") || String(minLimit), 10);
+      const currentMax = parseInt(searchParams.get("maxPrice") || String(maxLimit), 10);
+      
+      if (currentMin !== minPrice || currentMax !== maxPrice) {
+        if (minPrice <= maxPrice) {
+          const query = createQueryString(minPrice, maxPrice);
+          router.push(pathname + (query ? `?${query}` : ""), { scroll: false });
+        }
       }
     }, 400);
 
     return () => clearTimeout(handler);
-  }, [minPrice, maxPrice, pathname, router, createQueryString]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [minPrice, maxPrice]);
 
   // Sync state if URL changes externally
   useEffect(() => {

@@ -1,12 +1,40 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
-
-export const metadata = {
-  title: "Login - BrandName",
-  description: "Sign in to your account.",
-};
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { useMutation } from "@tanstack/react-query";
+import { authService } from "@/lib/api/authService";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function LoginPage() {
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+  
+  const setAuth = useAuthStore((state) => state.setAuth);
+
+  const loginMutation = useMutation({
+    mutationFn: authService.login,
+    onSuccess: (data) => {
+      // Store user and tokens in global state (zustand + local storage)
+      setAuth(data.user, data.access, data.refresh);
+      // Redirect to dashboard
+      router.push("/dashboard");
+    },
+    onError: (error: any) => {
+      setErrorMsg(error?.response?.data?.detail || "Failed to login. Please check your credentials.");
+    }
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMsg("");
+    loginMutation.mutate({ email, password });
+  };
+
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 sm:p-8">
       {/* Background Image */}
@@ -46,11 +74,19 @@ export default function LoginPage() {
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Welcome Back</h1>
             <p className="text-white/60 text-sm mb-8">Sign in to your account to continue.</p>
 
-            <form className="flex flex-col gap-5">
+            {errorMsg && (
+              <div className="mb-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-200 text-sm">
+                {errorMsg}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               <div className="flex flex-col gap-2">
                 <label className="text-xs font-bold uppercase tracking-wider text-white/80">Email Address</label>
                 <input 
                   type="email" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   placeholder="name@example.com"
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
                   required
@@ -64,6 +100,8 @@ export default function LoginPage() {
                 </div>
                 <input 
                   type="password" 
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
                   className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white/20 transition-all backdrop-blur-md"
                   required
@@ -77,9 +115,17 @@ export default function LoginPage() {
 
               <button 
                 type="submit"
-                className="mt-6 w-full bg-primary-600 text-white py-4 rounded-xl font-bold tracking-widest uppercase text-sm hover:bg-primary-500 transition-colors duration-300 shadow-lg shadow-primary-500/30"
+                disabled={loginMutation.isPending}
+                className="mt-6 w-full bg-primary-600 text-white py-4 rounded-xl font-bold tracking-widest uppercase text-sm hover:bg-primary-500 transition-colors duration-300 shadow-lg shadow-primary-500/30 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Sign In
+                {loginMutation.isPending ? (
+                  <>
+                    <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                    SIGNING IN...
+                  </>
+                ) : (
+                  "SIGN IN"
+                )}
               </button>
             </form>
 

@@ -7,12 +7,11 @@ import { ChevronDown, ChevronRight, Menu } from "lucide-react";
 import menuConfig from "@/config/menuConfig";
 import { useMediaQuery } from "@/utils/useMediaQuery";
 
-// Mocking useAuthStore since it doesn't exist yet
-const useAuthStore = () => ({ authUser: { roleName: 'Admin' } });
+import { useAuthStore } from "@/store/useAuthStore";
 
 const Sidebar = () => {
   const pathname = usePathname();
-  const { authUser } = useAuthStore();
+  const user = useAuthStore((state) => state.user);
   const isMobile = useMediaQuery("(max-width: 640px)");
 
   const [open, setOpen] = useState(true);
@@ -23,7 +22,7 @@ const Sidebar = () => {
     setSubMenus((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const userRole = authUser?.roleName || 'Admin';
+  const userRole = user?.role || 'customer'; // Default to customer or lowest privilege
 
   const filteredMenus = menuConfig
     .filter((menu) => menu.roles.includes(userRole))

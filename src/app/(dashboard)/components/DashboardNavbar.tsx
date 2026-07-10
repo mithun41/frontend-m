@@ -2,20 +2,29 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Moon, Sun, ChevronRight, LogOut, User, MoreVertical, Key } from "lucide-react";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useRouter } from "next/navigation";
+import ProfileModal from "./ProfileModal";
 
-// Mocking hooks since they don't exist yet
+// Mocking theme hook since we haven't implemented global theme yet
 const useTheme = () => {
   const [isDark, setIsDark] = useState(false);
   return { isDark, toggleTheme: () => setIsDark(!isDark) };
 };
-const useAuthStore = () => ({ authUser: { fullName: 'John Doe', employeeId: 'EMP-001', roleName: 'Admin' } });
-const useLogout = () => ({ logout: () => console.log('Logged out') });
 
 const DashboardNavbar = () => {
   const { isDark, toggleTheme } = useTheme();
-  const { authUser } = useAuthStore();
+  const authUser = useAuthStore((state) => state.user);
+  console.log(authUser)
+  const logoutAction = useAuthStore((state) => state.logout);
+  const router = useRouter();
+  
   const [changePasswordOpen, setChangePasswordOpen] = useState(false);
-  const { logout } = useLogout();
+  
+  const logout = () => {
+    logoutAction();
+    router.push('/');
+  };
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -69,21 +78,25 @@ const DashboardNavbar = () => {
             transition-all duration-200 shadow-sm
           "
         >
-          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold text-sm shrink-0">
-            {authUser?.fullName?.charAt(0).toUpperCase()}
+          <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden border border-gray-200 dark:border-gray-700">
+            {authUser?.profile_pic ? (
+              <img src={authUser.profile_pic} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              authUser?.name?.charAt(0).toUpperCase()
+            )}
           </div>
 
           <div className="hidden sm:flex flex-col justify-center leading-none overflow-hidden">
             <span className="text-[10px] text-primary-600 font-medium truncate">
-              {authUser?.employeeId}
+              ID-{authUser?.id}
             </span>
 
             <span className="text-sm font-semibold text-navbar-text dark:text-navbar-text-dark truncate leading-4 mt-0.5">
-              {authUser?.fullName}
+              {authUser?.name}
             </span>
 
             <span className="text-[10px] text-text-light dark:text-gray-400 truncate capitalize leading-4 mt-0.5">
-              {authUser?.roleName}
+              {authUser?.role}
             </span>
           </div>
 
@@ -156,10 +169,8 @@ const DashboardNavbar = () => {
         </div>
       </div>
       
-      {/* 
-        <ChangePasswordModal open={changePasswordOpen} setOpen={setChangePasswordOpen} />
-        <ProfileModal open={profileOpen} setOpen={setProfileOpen} /> 
-      */}
+      {/* <ChangePasswordModal open={changePasswordOpen} setOpen={setChangePasswordOpen} /> */}
+      <ProfileModal open={profileOpen} setOpen={setProfileOpen} /> 
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import { Home, Users, Settings, FileText, Image } from 'lucide-react';
+import { Home, Users, Settings, FileText, Image, LayoutGrid, Package } from 'lucide-react';
 
 export const menuConfig = [
   {
@@ -6,7 +6,23 @@ export const menuConfig = [
     title: 'Dashboard',
     path: '/dashboard',
     icon: Home,
-    roles: ['Admin', 'HR', 'Employee'],
+    roles: ['admin', 'customer'], // both can see dashboard
+    subMenu: []
+  },
+  {
+    key: 'categories',
+    title: 'Categories',
+    path: '/categories',
+    icon: LayoutGrid,
+    roles: ['admin'], // only admin
+    subMenu: []
+  },
+  {
+    key: 'products',
+    title: 'Products',
+    path: '/products',
+    icon: Package,
+    roles: ['admin'], // only admin
     subMenu: []
   },
   {
@@ -14,10 +30,10 @@ export const menuConfig = [
     title: 'Employees',
     path: '/employees',
     icon: Users,
-    roles: ['Admin', 'HR'],
+    roles: ['admin'], // only admin can see
     subMenu: [
-      { title: 'All Employees', path: '/employees/all', roles: ['Admin', 'HR'] },
-      { title: 'Add Employee', path: '/employees/add', roles: ['Admin', 'HR'] }
+      { title: 'All Employees', path: '/employees/all', roles: ['admin'] },
+      { title: 'Add Employee', path: '/employees/add', roles: ['admin'] }
     ]
   },
   {
@@ -25,7 +41,7 @@ export const menuConfig = [
     title: 'Reports',
     path: '/reports',
     icon: FileText,
-    roles: ['Admin', 'HR'],
+    roles: ['admin'], // only admin
     subMenu: []
   },
   {
@@ -33,7 +49,7 @@ export const menuConfig = [
     title: 'Settings',
     path: '/settings',
     icon: Settings,
-    roles: ['Admin'],
+    roles: ['admin'], // only admin
     subMenu: []
   },
   {
@@ -41,7 +57,7 @@ export const menuConfig = [
     title: 'Banners',
     path: '/ads',
     icon: Image,
-    roles: ['Admin', 'HR'],
+    roles: ['admin'], // only admin
     subMenu: []
   }
 ];
