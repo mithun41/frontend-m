@@ -18,6 +18,22 @@ export const menuConfig = [
     subMenu: []
   },
   {
+    key: 'banners',
+    title: 'Banners',
+    path: '/banners',
+    icon: Image,
+    roles: ['admin'], // only admin
+    subMenu: []
+  },
+  {
+    key: 'instagram-images',
+    title: 'Instagram Images',
+    path: '/instagram-images',
+    icon: Image,
+    roles: ['admin'], // only admin
+    subMenu: []
+  },
+  {
     key: 'products',
     title: 'Products',
     path: '/products',

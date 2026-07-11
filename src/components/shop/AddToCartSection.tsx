@@ -6,6 +6,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { cartService } from "@/lib/api/cartService";
 import { useAuthStore } from "@/store/useAuthStore";
 import toast from "react-hot-toast";
+import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
 interface AddToCartSectionProps {
   productId: number;
@@ -83,21 +84,7 @@ export function AddToCartSection({ productId }: AddToCartSectionProps) {
       </div>
 
       {/* Buy Now */}
-      <button 
-        onClick={() => {
-          if (!user) {
-            router.push("/login");
-            return;
-          }
-          // Assuming immediate checkout involves adding to cart then redirecting to checkout
-          // For now just redirect to cart if they click buy now.
-          handleAddToCart();
-        }}
-        disabled={addMutation.isPending}
-        className="w-full bg-primary-500 text-white h-11 rounded-lg font-semibold uppercase tracking-widest text-[11px] hover:bg-primary-600 transition-colors shadow-sm shadow-primary-500/20 disabled:opacity-50"
-      >
-        Buy it Now
-      </button>
+      <OrderNowButton productId={productId} quantity={quantity} />
     </div>
   );
 }

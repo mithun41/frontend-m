@@ -2,7 +2,7 @@ export function VideoSection() {
   const videoId = "7wtfhZwyrcc";
 
   return (
-    <section className="relative w-screen h-screen overflow-hidden bg-black">
+    <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[800px] overflow-hidden bg-black">
       {/* Fullscreen YouTube video, title bar hidden by shifting iframe up */}
       <iframe
         className="absolute left-0 w-full z-0"

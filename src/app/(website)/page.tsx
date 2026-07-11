@@ -2,73 +2,43 @@ import Link from "next/link";
 import Image from "next/image";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { VideoSection } from "@/components/home/VideoSection";
+import { InstagramSection } from "@/components/home/InstagramSection";
+import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
+import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
-export default function HomePage() {
+import { productService } from "@/lib/api/productService";
+
+import { bannerService } from "@/lib/api/bannerService";
+
+export default async function HomePage() {
   const categories = [
     { name: "MEN", image: "https://images.unsplash.com/photo-1516826957135-700ede19c6e4?w=800&q=80" },
     { name: "WOMEN", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80" },
     { name: "UNISEX", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80" },
   ];
 
-  const newArrivals = [
-    {
-      id: "na_1",
-      name: "Premium Active Fit Tee",
-      price: "1,250 BDT",
-      image: "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80",
-    },
-    {
-      id: "na_2",
-      name: "Performance Shorts",
-      price: "1,850 BDT",
-      image: "https://images.unsplash.com/photo-1591561954557-26941169b49e?w=500&q=80",
-    },
-    {
-      id: "na_3",
-      name: "Seamless Sports Bra",
-      price: "1,450 BDT",
-      image: "https://images.unsplash.com/photo-1620799140188-3b2a02fd9a77?w=500&q=80",
-    },
-    {
-      id: "na_4",
-      name: "Lightweight Run Jacket",
-      price: "3,200 BDT",
-      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80",
-    },
-  ];
+  // Fetch banners
+  let banners = [];
+  try {
+    banners = await bannerService.getAll();
+    banners = banners.filter(b => b.is_active);
+  } catch (error) {
+    console.error("Error fetching banners:", error);
+  }
 
-  const bestSelling = [
-    {
-      id: "bs_1",
-      name: "Everyday Yoga Leggings",
-      price: "2,100 BDT",
-      image: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500&q=80",
-    },
-    {
-      id: "bs_2",
-      name: "Core Tech Hoodie",
-      price: "2,800 BDT",
-      image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80",
-    },
-    {
-      id: "bs_3",
-      name: "Pro Grip Training Gloves",
-      price: "850 BDT",
-      image: "https://images.unsplash.com/photo-1583416750470-965b2707b355?w=500&q=80",
-    },
-    {
-      id: "bs_4",
-      name: "Studio Duffel Bag",
-      price: "3,500 BDT",
-      image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=500&q=80",
-    },
-  ];
+  // Fetch new arrivals (latest 4 products)
+  const newArrivalsResponse = await productService.getProducts(1, { ordering: '-created_at' });
+  const newArrivals = newArrivalsResponse.results.slice(0, 4);
+
+  // Fetch best selling (top 4 sold products)
+  const bestSellingResponse = await productService.getProducts(1, { ordering: '-sold_quantity' });
+  const bestSelling = bestSellingResponse.results.slice(0, 4);
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
       {/* Hero Banner */}
-          <HeroSlider />
-
+          <HeroSlider initialBanners={banners} />
+     
           {/* LIVE LIMITLESS (Categories) */}
           <section className="py-12 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
             <div className="relative w-full flex flex-col md:flex-row gap-4 h-[500px] sm:h-[600px]">
@@ -102,51 +72,17 @@ export default function HomePage() {
                   Checkout Our Collection
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6 sm:gap-16 w-full justify-center">
-                  <Link href="/categories/men" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
+                  <Link href="shop?category=Men" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
                     Men's Collection
                   </Link>
-                  <Link href="/categories/women" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
+                  <Link href="shop?category=Women" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
                     Women's Collection
                   </Link>
                 </div>
               </div>
             </div>
           </section>
-
-          {/* NEW ARRIVALS (Product Grid) */}
-          <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
-            <h2 className="text-2xl sm:text-3xl font-bold tracking-[0.2em] uppercase text-center mb-10">
-              New Arrivals
-            </h2>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
-              {newArrivals.map((product) => (
-                <Link href={`/shop/${product.id}`} key={product.id} className="group flex flex-col">
-                  <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover"
-                    />
-                    {/* Hover Overlay */}
-                    <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <div className="flex flex-col gap-1 px-1">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-sm font-semibold">
-                      {product.price}
-                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-                 <section className="relative w-full h-[700px] my-12">
+           <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] my-8 sm:my-12">
             <Link href="/shop" className="relative block w-full h-full">
               <Image
                 src="/promo.jpg"
@@ -157,7 +93,55 @@ export default function HomePage() {
               />
             </Link>
           </section>
-         
+
+          {/* NEW ARRIVALS (Product Grid) */}
+          <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
+            <h2 className="text-2xl sm:text-3xl font-bold tracking-[0.2em] uppercase text-center mb-10">
+              New Arrivals
+            </h2>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
+              {newArrivals.map((product) => (
+                <div key={product.id} className="group flex flex-col">
+                  <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
+                    <Link href={`/shop/${product.id}`} className="absolute inset-0 z-0">
+                      <Image
+                        src={product.image_1 || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80"}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover"
+                        unoptimized
+                      />
+                      {/* Hover Overlay */}
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </Link>
+                    
+                    {/* Add to Cart Icon Overlay */}
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
+                      <AddToCartIcon productId={product.id} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-1 px-1">
+                    <Link href={`/shop/${product.id}`}>
+                      <h3 className="text-sm font-medium text-gray-900 line-clamp-1 hover:underline">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      {product.price} BDT
+                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
+                    </div>
+                    <div className="mt-1">
+                      <OrderNowButton productId={product.id} />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+          
+           <VideoSection />
 
           {/* BEST SELLING */}
           <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
@@ -167,54 +151,48 @@ export default function HomePage() {
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-6">
               {bestSelling.map((product) => (
-                <Link href={`/shop/${product.id}`} key={product.id} className="group flex flex-col">
+                <div key={product.id} className="group flex flex-col">
                   <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
-                    <Image
-                      src={product.image}
-                      alt={product.name}
-                      fill
-                      sizes="(max-width: 768px) 50vw, 25vw"
-                      className="object-cover"
-                    />
-                    <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  </div>
-                  <div className="flex flex-col gap-1 px-1">
-                    <h3 className="text-sm font-medium text-gray-900 line-clamp-1">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center gap-1 text-sm font-semibold">
-                      {product.price}
-                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
+                    <Link href={`/shop/${product.id}`} className="absolute inset-0 z-0">
+                      <Image
+                        src={product.image_1 || "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500&q=80"}
+                        alt={product.name}
+                        fill
+                        sizes="(max-width: 768px) 50vw, 25vw"
+                        className="object-cover"
+                        unoptimized
+                      />
+                      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    </Link>
+                    
+                    <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
+                      <AddToCartIcon productId={product.id} />
                     </div>
                   </div>
-                </Link>
+                  <div className="flex flex-col gap-1 px-1">
+                    <Link href={`/shop/${product.id}`}>
+                      <h3 className="text-sm font-medium text-gray-900 line-clamp-1 hover:underline">
+                        {product.name}
+                      </h3>
+                    </Link>
+                    <div className="flex items-center gap-1 text-sm font-semibold">
+                      {product.price} BDT
+                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
+                    </div>
+                    <div className="mt-1">
+                      <OrderNowButton productId={product.id} />
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           </section>
-               {/* VIDEO SECTION */}
-          <VideoSection />
-          {/* NEWSLETTER */}
-          <section className="py-24 px-6 sm:px-12 lg:px-24 bg-black text-white text-center w-full flex flex-col items-center">
-            <div className="max-w-xl flex flex-col items-center gap-6 w-full">
-              <h2 className="text-2xl sm:text-3xl font-bold tracking-[0.1em] uppercase">
-                Join Our Community
-              </h2>
-              <p className="text-gray-400 text-sm">
-                Sign up to receive early access to new releases, exclusive events, and athletic inspiration.
-              </p>
-              <div className="flex w-full max-w-md mt-4 border-b border-gray-600 pb-2 focus-within:border-white transition-colors">
-                <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  className="bg-transparent text-white placeholder-gray-500 focus:outline-none flex-grow px-2 text-sm"
-                  required
-                />
-                <button className="text-sm font-bold uppercase tracking-wider hover:text-gray-300 transition-colors pl-4 border-l border-gray-600 ml-2 py-1">
-                  Subscribe
-                </button>
-              </div>
-            </div>
-          </section>
+          {/* VIDEO SECTION */}
+        
+          
+          {/* INSTAGRAM SECTION */}
+          <InstagramSection />
+          
         </div>
   );
 }

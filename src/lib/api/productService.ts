@@ -32,8 +32,10 @@ export interface PaginatedResponse<T> {
 }
 
 export const productService = {
-  getProducts: async (page = 1): Promise<PaginatedResponse<Product>> => {
-    const response = await axiosClient.get(`/products/?page=${page}`);
+  getProducts: async (page = 1, params?: Record<string, any>): Promise<PaginatedResponse<Product>> => {
+    const response = await axiosClient.get(`/products/`, {
+      params: { page, ...params }
+    });
     return response.data;
   },
 

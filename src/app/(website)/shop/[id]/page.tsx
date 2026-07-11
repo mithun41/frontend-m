@@ -5,6 +5,8 @@ import { productService, Product } from "@/lib/api/productService";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { ProductReviews } from "@/components/shop/ProductReviews";
 import { AddToCartSection } from "@/components/shop/AddToCartSection";
+import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
+import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -113,24 +115,34 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               {relatedProducts.map((prod) => (
-                <Link href={`/shop/${prod.id}`} key={prod.id} className="group flex flex-col gap-3 bg-white dark:bg-neutral-900/50 p-3 rounded-2xl border border-neutral-100 dark:border-neutral-800/60 hover:border-primary-200 dark:hover:border-primary-900/50 transition-all duration-300">
+                <div key={prod.id} className="group flex flex-col gap-3 bg-white dark:bg-neutral-900/50 p-3 rounded-2xl border border-neutral-100 dark:border-neutral-800/60 hover:border-primary-200 dark:hover:border-primary-900/50 transition-all duration-300">
                   <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-900">
-                    <Image
-                      src={prod.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"}
-                      alt={prod.name}
-                      fill
-                      unoptimized
-                      sizes="(max-width: 640px) 50vw, 25vw"
-                      className="object-contain p-2 group-hover:scale-105 transition-transform duration-500 ease-out"
-                    />
+                    <Link href={`/shop/${prod.id}`} className="absolute inset-0 z-0">
+                      <Image
+                        src={prod.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"}
+                        alt={prod.name}
+                        fill
+                        unoptimized
+                        sizes="(max-width: 640px) 50vw, 25vw"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                      />
+                    </Link>
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
+                      <AddToCartIcon productId={prod.id} />
+                    </div>
                   </div>
-                  <div className="flex flex-col gap-1 px-1 pb-1 text-center sm:text-left">
-                    <h3 className="font-medium text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-primary-600 transition-colors line-clamp-1">
-                      {prod.name}
-                    </h3>
+                  <div className="flex flex-col gap-1 px-1 pb-1 text-center sm:text-left flex-grow">
+                    <Link href={`/shop/${prod.id}`}>
+                      <h3 className="font-medium text-sm text-neutral-800 dark:text-neutral-200 group-hover:text-primary-600 transition-colors line-clamp-1 hover:underline">
+                        {prod.name}
+                      </h3>
+                    </Link>
                     <span className="font-semibold text-[13px] text-neutral-900 dark:text-white">{parseFloat(prod.price || prod.selling_price || "0").toFixed(2)} BDT</span>
+                    <div className="mt-auto pt-2">
+                      <OrderNowButton productId={prod.id} />
+                    </div>
                   </div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
