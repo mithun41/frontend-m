@@ -89,7 +89,7 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    let { name, value } = e.target;
+    const { name, value } = e.target;
     
     // Auto-generate slug from name if creating
     if (name === "name" && !categoryToEdit) {

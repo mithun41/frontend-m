@@ -146,7 +146,7 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    let { name, value } = e.target;
+    const { name, value } = e.target;
     
     if (name === "name" && !productToEdit) {
       const slugValue = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
