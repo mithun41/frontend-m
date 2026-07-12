@@ -6,6 +6,7 @@ import { bannerService, Banner } from "@/lib/api/bannerService";
 import Swal from "sweetalert2";
 import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface BannerModalProps {
   open: boolean;
@@ -43,7 +44,7 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
         is_active: bannerToEdit.is_active ?? true,
       });
       if (bannerToEdit.image) {
-        setImagePreview(bannerToEdit.image.startsWith('/') ? `http://127.0.0.1:8000${bannerToEdit.image}` : bannerToEdit.image);
+        setImagePreview(getImageUrl(bannerToEdit.image));
       } else {
         setImagePreview(null);
       }

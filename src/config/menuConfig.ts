@@ -1,6 +1,15 @@
 import { Home, Users, Settings, FileText, Image, LayoutGrid, Package, ShoppingBag, BarChart2 } from 'lucide-react';
 
-export const menuConfig = [
+export interface MenuItem {
+  key: string;
+  title: string;
+  path: string;
+  icon?: any;
+  roles: string[];
+  subMenu?: MenuItem[];
+}
+
+export const menuConfig: MenuItem[] = [
   {
     key: 'dashboard',
     title: 'Dashboard',

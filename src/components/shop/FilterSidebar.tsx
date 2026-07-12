@@ -35,7 +35,13 @@ export function FilterSidebar() {
     router.push(pathname + "?" + createQueryString("category", category || ""));
   };
 
-  const categories = [
+  type SidebarCategory = {
+    label: string;
+    value: string | null;
+    subcategories?: { label: string; value: string }[];
+  };
+
+  const categories: SidebarCategory[] = [
     { label: "All Categories", value: null },
     ...(rawCategories || []).map(cat => ({
       label: cat.name,

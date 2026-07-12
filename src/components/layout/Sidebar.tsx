@@ -28,7 +28,7 @@ const Sidebar = () => {
     .filter((menu) => menu.roles.includes(userRole))
     .map((menu) => ({
       ...menu,
-      subMenu: menu.subMenu.filter((sub) => sub.roles.includes(userRole)),
+      subMenu: menu.subMenu ? menu.subMenu.filter((sub) => sub.roles.includes(userRole)) : [],
     }));
     
   const isMenuActive = (menu: any) =>

@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { instagramService } from "@/lib/api/instagramService";
+import { instagramService, InstagramImage } from "@/lib/api/instagramService";
+import { getImageUrl } from "@/lib/utils";
 
 const InstagramIcon = ({ className }: { className?: string }) => (
   <svg
@@ -22,7 +23,7 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 );
 
 export async function InstagramSection() {
-  let images = [];
+  let images: InstagramImage[] = [];
   try {
     images = await instagramService.getAll();
   } catch (error) {
@@ -52,7 +53,7 @@ export async function InstagramSection() {
             className="relative aspect-square w-full overflow-hidden group block"
           >
             <Image
-              src={post.image.startsWith('/') ? `http://127.0.0.1:8000${post.image}` : post.image}
+              src={getImageUrl(post.image)}
               alt="Instagram Post"
               fill
               unoptimized

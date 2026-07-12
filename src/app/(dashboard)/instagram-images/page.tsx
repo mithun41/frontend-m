@@ -8,6 +8,7 @@ import InstagramImageModal from "./components/InstagramImageModal";
 import Swal from "sweetalert2";
 import { Plus, Trash2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 export default function InstagramImagesPage() {
   const queryClient = useQueryClient();
@@ -64,7 +65,7 @@ export default function InstagramImagesPage() {
         <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden relative shrink-0">
           {item.image ? (
             <Image
-              src={item.image.startsWith('/') ? `http://127.0.0.1:8000${item.image}` : item.image}
+              src={getImageUrl(item.image)}
               alt="Instagram Image"
               fill
               unoptimized

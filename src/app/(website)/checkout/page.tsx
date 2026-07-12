@@ -9,6 +9,7 @@ import { settingService } from "@/lib/api/settingService";
 import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
 import toast from "react-hot-toast";
+import { getImageUrl } from "@/lib/utils";
 
 export default function CheckoutPage() {
   const router = useRouter();
@@ -248,7 +249,7 @@ export default function CheckoutPage() {
                     <div className="relative w-16 h-16 bg-neutral-100 dark:bg-neutral-800 rounded-lg overflow-hidden shrink-0 border border-neutral-200 dark:border-neutral-700">
                       {item.product_image ? (
                         <Image
-                          src={item.product_image.startsWith('/') ? `http://127.0.0.1:8000${item.product_image}` : item.product_image}
+                          src={getImageUrl(item.product_image)}
                           alt={item.product_name}
                           fill
                           unoptimized

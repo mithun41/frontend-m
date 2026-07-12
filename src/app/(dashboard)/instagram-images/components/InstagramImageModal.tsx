@@ -6,6 +6,7 @@ import { instagramService, InstagramImage } from "@/lib/api/instagramService";
 import Swal from "sweetalert2";
 import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface InstagramImageModalProps {
   open: boolean;
@@ -22,7 +23,7 @@ export default function InstagramImageModal({ open, setOpen, imageToEdit }: Inst
   useEffect(() => {
     if (imageToEdit) {
       if (imageToEdit.image) {
-        setImagePreview(imageToEdit.image.startsWith('/') ? `http://127.0.0.1:8000${imageToEdit.image}` : imageToEdit.image);
+        setImagePreview(getImageUrl(imageToEdit.image));
       } else {
         setImagePreview(null);
       }

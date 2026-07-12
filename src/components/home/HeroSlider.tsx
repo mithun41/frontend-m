@@ -6,6 +6,8 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { Banner } from "@/lib/api/bannerService";
 
+import { getImageUrl } from "@/lib/utils";
+
 export function HeroSlider({ initialBanners = [] }: { initialBanners?: Banner[] }) {
   const [current, setCurrent] = useState(0);
 
@@ -44,7 +46,7 @@ export function HeroSlider({ initialBanners = [] }: { initialBanners?: Banner[] 
         >
           <div className="absolute inset-0 opacity-40">
             <Image
-              src={slide.image.startsWith('/') ? `http://127.0.0.1:8000${slide.image}` : slide.image}
+              src={getImageUrl(slide.image)}
               alt={slide.title}
               fill
               priority={index === 0}

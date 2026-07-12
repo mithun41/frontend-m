@@ -6,6 +6,7 @@ import { categoryService, Category } from "@/lib/api/categoryService";
 import Swal from "sweetalert2";
 import { X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
+import { getImageUrl } from "@/lib/utils";
 
 interface CategoryModalProps {
   open: boolean;
@@ -174,7 +175,7 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
                 <div className="w-20 h-20 bg-gray-50 dark:bg-gray-800 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl overflow-hidden flex flex-col items-center justify-center relative shrink-0">
                   {imagePreview ? (
                     <Image 
-                      src={imagePreview.startsWith('blob:') || imagePreview.startsWith('/') ? imagePreview : `http://127.0.0.1:8000${imagePreview}`}
+                      src={getImageUrl(imagePreview)}
                       alt="Preview" 
                       fill
                       unoptimized

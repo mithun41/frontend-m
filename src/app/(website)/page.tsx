@@ -8,7 +8,7 @@ import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
 import { productService } from "@/lib/api/productService";
 
-import { bannerService } from "@/lib/api/bannerService";
+import { bannerService, Banner } from "@/lib/api/bannerService";
 
 export default async function HomePage() {
   const categories = [
@@ -18,7 +18,7 @@ export default async function HomePage() {
   ];
 
   // Fetch banners
-  let banners = [];
+  let banners: Banner[] = [];
   try {
     banners = await bannerService.getAll();
     banners = banners.filter(b => b.is_active);

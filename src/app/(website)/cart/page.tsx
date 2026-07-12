@@ -10,6 +10,7 @@ import Swal from "sweetalert2";
 import { Trash2, ArrowRight } from "lucide-react";
 import { useEffect } from "react";
 import { settingService } from "@/lib/api/settingService";
+import { getImageUrl } from "@/lib/utils";
 
 export default function CartPage() {
   const router = useRouter();
@@ -132,7 +133,7 @@ export default function CartPage() {
                         <Link href={`/shop/${item.product}`} className="shrink-0 relative w-20 h-20 bg-neutral-100 dark:bg-neutral-800 rounded-xl overflow-hidden group">
                           {item.product_image ? (
                             <Image 
-                              src={item.product_image.startsWith('/') ? `http://127.0.0.1:8000${item.product_image}` : item.product_image} 
+                              src={getImageUrl(item.product_image)} 
                               alt={item.product_name} 
                               fill 
                               unoptimized
