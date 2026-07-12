@@ -8,7 +8,7 @@ import { InstagramSection } from "@/components/home/InstagramSection";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
-import { productService } from "@/lib/api/productService";
+import { productService, Product } from "@/lib/api/productService";
 
 import { bannerService, Banner } from "@/lib/api/bannerService";
 
@@ -29,12 +29,22 @@ export default async function HomePage() {
   }
 
   // Fetch new arrivals (latest 4 products)
-  const newArrivalsResponse = await productService.getProducts(1, { ordering: '-created_at' });
-  const newArrivals = newArrivalsResponse.results.slice(0, 4);
+  let newArrivals: Product[] = [];
+  try {
+    const newArrivalsResponse = await productService.getProducts(1, { ordering: '-created_at' });
+    newArrivals = newArrivalsResponse.results.slice(0, 4);
+  } catch (error) {
+    console.error("Error fetching new arrivals:", error);
+  }
 
   // Fetch best selling (top 4 sold products)
-  const bestSellingResponse = await productService.getProducts(1, { ordering: '-sold_quantity' });
-  const bestSelling = bestSellingResponse.results.slice(0, 4);
+  let bestSelling: Product[] = [];
+  try {
+    const bestSellingResponse = await productService.getProducts(1, { ordering: '-sold_quantity' });
+    bestSelling = bestSellingResponse.results.slice(0, 4);
+  } catch (error) {
+    console.error("Error fetching best selling:", error);
+  }
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
