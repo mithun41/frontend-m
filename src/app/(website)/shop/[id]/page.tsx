@@ -44,12 +44,12 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
         </nav>
       </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-24 pb-20">
+      <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-24 pb-10">
         {/* Main Product Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
           
           {/* Left: Image Gallery */}
-          <div className="w-full lg:w-full">
+          <div className="w-full">
             <ProductGallery 
               images={[
                 product.image_1, 
@@ -59,8 +59,8 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
             />
           </div>
 
-          {/* Right: Product Info */}
-          <div className="flex flex-col py-2 lg:py-6 pl-0 lg:pl-10">
+          {/* Right: Product Info & Buy */}
+          <div className="flex flex-col py-2 lg:py-0">
             <div className="mb-4">
               <span className="text-[10px] uppercase tracking-widest text-primary-600 dark:text-primary-400 font-semibold bg-primary-50 dark:bg-primary-950/20 px-3 py-1 rounded-full border border-primary-100 dark:border-primary-900/30">
                 {product.category?.name || "Uncategorized"}
@@ -83,23 +83,44 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               </div>
             </div>
 
-            <p className="text-sm text-neutral-500 dark:text-neutral-400 leading-loose font-light mb-8 max-w-xl">
-              {product.description || "Premium quality guaranteed. Engineered to perfection with attention to detail and long-lasting durability."}
-            </p>
-
-            {/* Action Area */}
+            {/* Action Area (Add to Cart / Order Now) */}
             <AddToCartSection productId={product.id} />
+          </div>
+        </div>
 
-            {/* Details Accordion */}
-            <div className="mt-12 flex flex-col gap-0 border-t border-neutral-100 dark:border-neutral-800/60 pt-4">
-              {['Product Details', 'Shipping Information', 'Care Instructions'].map((tab, idx) => (
-                <div key={idx} className="border-b border-neutral-100 dark:border-neutral-800/60 py-4 cursor-pointer group">
-                  <div className="flex justify-between items-center text-neutral-700 dark:text-neutral-300 font-medium uppercase tracking-widest text-[11px] group-hover:text-primary-500 transition-colors">
-                    {tab}
-                    <span className="text-lg font-light text-neutral-400 group-hover:text-primary-500 transition-colors">+</span>
-                  </div>
+        {/* Product Details Section (Full Width, Under Photo/Grid) */}
+        <div className="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800">
+          <div className="w-full">
+            <h2 className="text-lg font-semibold uppercase tracking-widest text-neutral-900 dark:text-neutral-100 mb-6">
+              Product Details & Description
+            </h2>
+            
+            <div className="prose prose-neutral dark:prose-invert max-w-none text-neutral-600 dark:text-neutral-300 leading-relaxed space-y-4 whitespace-pre-wrap text-sm sm:text-base mb-10">
+              {product.description || "No description available for this product."}
+            </div>
+
+            {/* Dynamic specifications/attributes */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-6 border-t border-b border-neutral-200 dark:border-neutral-800 py-6">
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-neutral-400 mb-1">Category</span>
+                <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{product.category?.name || "Uncategorized"}</span>
+              </div>
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-neutral-400 mb-1">Stock Status</span>
+                <span className={`text-sm font-medium ${product.stock > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400'}`}>
+                  {product.stock > 0 ? `In Stock (${product.stock} items)` : 'Out of Stock'}
+                </span>
+              </div>
+              {product.sold_quantity > 0 && (
+                <div>
+                  <span className="block text-[10px] uppercase tracking-widest text-neutral-400 mb-1">Popularity</span>
+                  <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">{product.sold_quantity}+ units sold</span>
                 </div>
-              ))}
+              )}
+              <div>
+                <span className="block text-[10px] uppercase tracking-widest text-neutral-400 mb-1">Rating</span>
+                <span className="text-sm font-medium text-neutral-800 dark:text-neutral-200">★ {product.average_rating || "No reviews yet"}</span>
+              </div>
             </div>
           </div>
         </div>
