@@ -7,8 +7,10 @@ import { orderService } from "@/lib/api/orderService";
 import Swal from "sweetalert2";
 import OrderModal from "./components/OrderModal";
 import { DataTable, Column } from "@/components/ui/DataTable";
+import { useAuthStore } from "@/store/useAuthStore";
 
 export default function OrdersPage() {
+  const user = useAuthStore((state) => state.user);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -173,13 +175,15 @@ export default function OrdersPage() {
                       >
                         <Eye className="w-4 h-4" />
                       </button>
-                      <button
-                        onClick={() => handleDelete(order.id)}
-                        className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Delete Order"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+                      {user?.role === "admin" && (
+                        <button
+                          onClick={() => handleDelete(order.id)}
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Delete Order"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
                     </div>
                   ) 
                 }

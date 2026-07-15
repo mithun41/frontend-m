@@ -55,7 +55,7 @@ export const menuConfig: MenuItem[] = [
     title: 'Orders',
     path: '/orders',
     icon: ShoppingBag,
-    roles: ['admin'], // only admin
+    roles: ['admin', 'customer'], // admin and customer
     subMenu: []
   },
   {

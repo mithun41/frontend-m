@@ -25,9 +25,38 @@ export interface DashboardStats {
   }[];
 }
 
+export interface CustomerDashboardResponse {
+  user: {
+    id: number;
+    name: string;
+    email: string;
+    phone_number: string;
+    profile_pic: string | null;
+  };
+  order_summary: {
+    total_orders: number;
+    pending: number;
+    processing: number;
+    shipped: number;
+    delivered: number;
+    cancelled: number;
+  };
+  recent_orders: {
+    order_number: string;
+    status: string;
+    total_amount: number;
+    created_at: string;
+  }[];
+}
+
 export const dashboardService = {
   getStats: async (): Promise<DashboardStats> => {
     const response = await axiosClient.get("/dashboard/stats/");
     return response.data;
   },
+
+  getCustomerDashboard: async (): Promise<CustomerDashboardResponse> => {
+    const response = await axiosClient.get("/users/customer/dashboard/");
+    return response.data;
+  }
 };

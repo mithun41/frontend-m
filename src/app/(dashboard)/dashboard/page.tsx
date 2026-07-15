@@ -19,14 +19,23 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import Link from "next/link";
+import { useAuthStore } from "@/store/useAuthStore";
+import CustomerDashboard from "./components/CustomerDashboard";
 
 const COLORS = ['#0ea5e9', '#f43f5e', '#10b981', '#f59e0b', '#8b5cf6'];
 
 export default function DashboardHomePage() {
+  const user = useAuthStore((state) => state.user);
+  
   const { data: stats, isLoading, isError } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: dashboardService.getStats,
+    enabled: user?.role === "admin" || user?.role === "superuser" || user?.role === "staff", // Only fetch admin stats if not customer
   });
+
+  if (user?.role === 'customer' || !user?.role) {
+    return <CustomerDashboard />;
+  }
 
   if (isLoading) {
     return (

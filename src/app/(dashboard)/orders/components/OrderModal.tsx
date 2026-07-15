@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { X, Package, MapPin, User, Calendar, CreditCard, Mail, Phone, ShoppingBag, Truck, CheckCircle, Clock } from "lucide-react";
 import { orderService, Order } from "@/lib/api/orderService";
 import Swal from "sweetalert2";
+import { useAuthStore } from "@/store/useAuthStore";
 
 interface OrderModalProps {
   open: boolean;
@@ -35,6 +36,7 @@ const getStatusIcon = (status: string) => {
 }
 
 export default function OrderModal({ open, onClose, orderId }: OrderModalProps) {
+  const user = useAuthStore((state) => state.user);
   const queryClient = useQueryClient();
   const [status, setStatus] = useState("");
 
@@ -262,7 +264,8 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                       <select
                         value={status}
                         onChange={(e) => setStatus(e.target.value)}
-                        className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm font-bold text-gray-800 bg-white cursor-pointer appearance-none shadow-sm hover:border-gray-300 transition-colors"
+                        disabled={user?.role !== 'admin'}
+                        className="w-full pl-4 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm font-bold text-gray-800 bg-white cursor-pointer appearance-none shadow-sm hover:border-gray-300 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                       >
                         <option value="Pending">Pending</option>
                         <option value="Processing">Processing</option>
@@ -308,19 +311,21 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
           >
             Close Window
           </button>
-          <button
-            type="button"
-            onClick={handleUpdateStatus}
-            disabled={updateMutation.isPending || status === order?.status}
-            className="px-8 py-3 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-all disabled:opacity-50 disabled:hover:bg-primary-600 uppercase tracking-wider shadow-lg shadow-primary-500/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
-          >
-            {updateMutation.isPending ? (
-              <>
-                <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                Saving...
-              </>
-            ) : "Save Changes"}
-          </button>
+          {user?.role === 'admin' && (
+            <button
+              type="button"
+              onClick={handleUpdateStatus}
+              disabled={updateMutation.isPending || status === order?.status}
+              className="px-8 py-3 text-sm font-bold text-white bg-primary-600 hover:bg-primary-700 rounded-xl transition-all disabled:opacity-50 disabled:hover:bg-primary-600 uppercase tracking-wider shadow-lg shadow-primary-500/30 hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2"
+            >
+              {updateMutation.isPending ? (
+                <>
+                  <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
+                  Saving...
+                </>
+              ) : "Save Changes"}
+            </button>
+          )}
         </div>
 
       </div>
