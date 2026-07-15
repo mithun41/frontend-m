@@ -131,7 +131,7 @@ export default async function HomePage() {
                     
                     {/* Add to Cart Icon Overlay */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
-                      <AddToCartIcon productId={product.id} />
+                      <AddToCartIcon product={product} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 px-1">
@@ -140,12 +140,21 @@ export default async function HomePage() {
                         {product.name}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-1 text-sm font-semibold">
-                      {product.price} BDT
+                    <div className="flex items-center gap-1.5 text-sm font-semibold">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-black">
+                          ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                        </span>
+                        {product.offer_price && parseFloat(product.offer_price) > 0 && (
+                          <span className="text-xs text-gray-500 line-through">
+                            ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
                     </div>
                     <div className="mt-1">
-                      <OrderNowButton productId={product.id} />
+                      <OrderNowButton product={product} />
                     </div>
                   </div>
                 </div>
@@ -178,7 +187,7 @@ export default async function HomePage() {
                     </Link>
                     
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
-                      <AddToCartIcon productId={product.id} />
+                      <AddToCartIcon product={product} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 px-1">
@@ -187,12 +196,21 @@ export default async function HomePage() {
                         {product.name}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-1 text-sm font-semibold">
-                      {product.price} BDT
+                    <div className="flex items-center gap-1.5 text-sm font-semibold">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-black">
+                          ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                        </span>
+                        {product.offer_price && parseFloat(product.offer_price) > 0 && (
+                          <span className="text-xs text-gray-500 line-through">
+                            ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                          </span>
+                        )}
+                      </div>
                       <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
                     </div>
                     <div className="mt-1">
-                      <OrderNowButton productId={product.id} />
+                      <OrderNowButton product={product} />
                     </div>
                   </div>
                 </div>

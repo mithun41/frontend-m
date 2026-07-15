@@ -5,9 +5,10 @@ import { usePathname, useSearchParams } from 'next/navigation';
 import { ShoppingCart, User, ChevronDown, LogOut } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
-import { cartService } from "@/lib/api/cartService";
 import { categoryService, Category } from "@/lib/api/categoryService";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 const megaMenuData = {
   categories: [
@@ -48,34 +49,26 @@ function NavbarContent() {
   const searchParams = useSearchParams();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [mobileMenusOpen, setMobileMenusOpen] = useState<{[key: string]: boolean}>({});
+  const [mobileMenusOpen, setMobileMenusOpen] = useState<{ [key: string]: boolean }>({});
 
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
   const [isMounted, setIsMounted] = useState(false);
 
-  const { data: cart } = useQuery({
-    queryKey: ["cart"],
-    queryFn: cartService.getCart,
-    enabled: !!user,
-  });
+  const cartItemsCount = useCartStore(state => state.cart.items.reduce((acc, item) => acc + item.quantity, 0));
 
   const { data: rawCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: categoryService.getAll,
   });
 
-  const cartItemsCount = cart?.items?.reduce((acc, item) => acc + item.quantity, 0) || 0;
-
   const navLinks = [
-    { name: 'Home', href: '/' },
     { name: 'Shop', href: '/shop' },
     { name: 'Men', href: '/men', hasMegaMenu: true },
     { name: 'Women', href: '/women', hasMegaMenu: true },
     { name: 'Gym Accessories', href: '/gym-accessories', hasMegaMenu: true },
     { name: 'Gym Bag', href: '/gym-bag' },
-    { name: 'About', href: '/about' },
-    { name: 'Contact', href: '/contact' },
+    { name: 'Track Order', href: '/track-order' },
   ];
 
   // Handle scroll effect & hydration
@@ -90,34 +83,31 @@ function NavbarContent() {
 
   const toggleMobileMenu = (name: string, e: React.MouseEvent) => {
     e.preventDefault();
-    setMobileMenusOpen(prev => ({...prev, [name]: !prev[name]}));
+    setMobileMenusOpen(prev => ({ ...prev, [name]: !prev[name] }));
   };
 
   return (
     <nav
-      className={`fixed top-0 w-full z-50 transition-all duration-300 ${
-        scrolled
+      className={`fixed top-0 w-full z-50 transition-all duration-300 ${scrolled
           ? 'bg-white/90 backdrop-blur-lg shadow-sm border-b border-gray-100 py-3'
           : 'bg-white py-5 shadow-sm'
-      }`}
+        }`}
     >
-      <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 xl:px-12">
         <div className="flex justify-between items-center transition-all duration-300">
-          
+
           {/* Left: Logo */}
-          <div className="flex-shrink-0 flex items-center cursor-pointer group">
-            <Link href="/" className="flex items-center">
-              <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center mr-3 shadow-md group-hover:bg-primary-600 transition-colors duration-300">
-                 <span className="text-white font-bold text-xl">BN</span>
-              </div>
-              <span className="text-2xl lg:text-3xl font-bold tracking-wide text-gray-900 group-hover:text-primary-600 transition-colors duration-300">
-                Brand<span className="text-primary-500">Name</span>
+          <div className="flex-1 flex items-center justify-start cursor-pointer group">
+            <Link href="/" className="flex items-center gap-3">
+              <img src="/logo.jpg" alt="Logo" className="h-10 w-auto object-contain rounded-md" />
+              <span className="text-2xl lg:text-3xl font-extrabold tracking-wide text-gray-900 group-hover:text-primary-600 transition-colors duration-300">
+                DRAVON
               </span>
             </Link>
           </div>
 
           {/* Middle: Desktop Menu */}
-          <div className="hidden lg:flex items-center space-x-8">
+          <div className="hidden lg:flex flex-1 justify-center items-center space-x-4 xl:space-x-8">
             {navLinks.map((link, index) => {
               const normalizedLinkName = link.name.toLowerCase().replace(/\s+/g, ' ');
               const linkCategory = rawCategories?.find(c => c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName);
@@ -129,18 +119,16 @@ function NavbarContent() {
                 <div key={index} className="group relative">
                   <Link
                     href={dynamicHref}
-                    className={`relative flex items-center gap-1 py-2 text-[14px] font-semibold tracking-wide uppercase transition-colors duration-300 ${
-                      isActive ? 'text-primary-600' : 'text-gray-600 group-hover:text-primary-600'
-                    }`}
+                    className={`relative flex items-center gap-1 py-2 text-[13px] whitespace-nowrap font-semibold tracking-wide uppercase transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-600 group-hover:text-primary-600'
+                      }`}
                   >
                     {link.name}
                     {link.hasMegaMenu && (
                       <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
                     )}
                     <span
-                      className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${
-                        isActive ? 'w-full' : 'w-0 group-hover:w-full'
-                      }`}
+                      className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                        }`}
                     ></span>
                   </Link>
 
@@ -152,10 +140,10 @@ function NavbarContent() {
                         <div className="grid grid-cols-4 gap-8">
                           {(() => {
                             let displayCategories: { title: string; items: string[] }[] = [];
-                            
+
                             if (linkCategory && linkCategory.subcategories && linkCategory.subcategories.length > 0) {
                               const hasDeepSubcategories = linkCategory.subcategories.some(sub => sub.subcategories && sub.subcategories.length > 0);
-                              
+
                               if (hasDeepSubcategories) {
                                 displayCategories = linkCategory.subcategories.map(sub => ({
                                   title: sub.name,
@@ -189,9 +177,9 @@ function NavbarContent() {
                         <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100">
                           {megaMenuData.images.map((image, imgIdx) => (
                             <div key={imgIdx} className="group/img relative overflow-hidden bg-gray-100 rounded-lg aspect-[4/3]">
-                              <img 
-                                src={image.src} 
-                                alt={image.alt} 
+                              <img
+                                src={image.src}
+                                alt={image.alt}
                                 className="w-full h-full object-cover transform transition-transform duration-700 group-hover/img:scale-105"
                               />
                               <div className="absolute inset-0 bg-black/5 group-hover/img:bg-black/10 transition-colors duration-300" />
@@ -207,7 +195,7 @@ function NavbarContent() {
           </div>
 
           {/* Right: Cart, Login & Mobile Toggle */}
-          <div className="flex items-center gap-4">
+          <div className="flex-1 flex items-center justify-end gap-4">
             {/* Desktop Cart & Login */}
             <div className="hidden sm:flex items-center gap-5">
               <Link href="/cart" className="relative text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
@@ -218,18 +206,38 @@ function NavbarContent() {
                   </span>
                 )}
               </Link>
-              
+
               <div className="h-5 w-px bg-gray-300"></div>
-              
+
               {isMounted && user ? (
-                <>
-                  <Link href="/dashboard" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Dashboard">
-                    <User className="h-5 w-5 transition-transform group-hover:scale-110" />
-                  </Link>
-                  <button onClick={logout} className="text-gray-600 hover:text-red-600 transition-colors duration-300 flex items-center gap-2 group" title="Logout">
-                    <LogOut className="h-5 w-5 transition-transform group-hover:scale-110" />
-                  </button>
-                </>
+                <div className="relative group cursor-pointer">
+                  <div className="flex items-center gap-2">
+                    <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-50 border-2 border-transparent group-hover:border-primary-500 transition-all duration-300 shadow-sm flex items-center justify-center">
+                      {user.profile_pic ? (
+                        <img src={getImageUrl(user.profile_pic) as string} alt={user.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <User className="w-5 h-5 text-gray-400" />
+                      )}
+                    </div>
+                  </div>
+                  {/* Dropdown Menu */}
+                  <div className="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
+                    <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2 w-56 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100 transition-transform">
+                      <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50 mb-1">
+                        <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
+                        <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
+                      </div>
+                      <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                        <User className="w-4 h-4" />
+                        Dashboard
+                      </Link>
+                      <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors text-left">
+                        <LogOut className="w-4 h-4" />
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                </div>
               ) : (
                 <Link href="/login" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Login">
                   <User className="h-5 w-5 transition-transform group-hover:scale-110" />
@@ -257,9 +265,8 @@ function NavbarContent() {
 
       {/* Mobile Menu Dropdown */}
       <div
-        className={`lg:hidden absolute w-full max-h-[85vh] overflow-y-auto bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out origin-top ${
-          isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
-        }`}
+        className={`lg:hidden absolute w-full max-h-[85vh] overflow-y-auto bg-white border-t border-gray-100 shadow-xl transition-all duration-300 ease-in-out origin-top ${isOpen ? 'opacity-100 scale-y-100' : 'opacity-0 scale-y-0 pointer-events-none'
+          }`}
       >
         <div className="px-4 pt-4 pb-8 space-y-2">
           {navLinks.map((link, index) => {
@@ -269,23 +276,22 @@ function NavbarContent() {
             const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.name)}` : link.href;
             const isActive = pathname === dynamicHref || (dynamicHref !== '/' && pathname.startsWith(dynamicHref.split('?')[0]) && searchParams.get('category') === linkCategory?.name);
             const isSubMenuOpen = mobileMenusOpen[link.name];
-            
+
             return (
               <div key={index}>
                 <div className="flex items-center">
                   <Link
                     href={dynamicHref}
-                    onClick={() => { if(!link.hasMegaMenu) setIsOpen(false); }}
-                    className={`flex-1 block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${
-                      isActive
+                    onClick={() => { if (!link.hasMegaMenu) setIsOpen(false); }}
+                    className={`flex-1 block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${isActive
                         ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
                         : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 hover:border-l-4 hover:border-primary-300'
-                    }`}
+                      }`}
                   >
                     {link.name}
                   </Link>
                   {link.hasMegaMenu && (
-                    <button 
+                    <button
                       onClick={(e) => toggleMobileMenu(link.name, e)}
                       className="p-3 text-gray-500 hover:text-primary-600 transition-colors"
                     >
@@ -293,16 +299,16 @@ function NavbarContent() {
                     </button>
                   )}
                 </div>
-                
+
                 {/* Mobile Submenu */}
                 {link.hasMegaMenu && isSubMenuOpen && (
                   <div className="pl-8 pr-4 py-2 space-y-4 bg-gray-50 rounded-lg mt-1 border border-gray-100">
                     {(() => {
                       let displayCategories: { title: string; items: string[] }[] = [];
-                      
+
                       if (linkCategory && linkCategory.subcategories && linkCategory.subcategories.length > 0) {
                         const hasDeepSubcategories = linkCategory.subcategories.some(sub => sub.subcategories && sub.subcategories.length > 0);
-                        
+
                         if (hasDeepSubcategories) {
                           displayCategories = linkCategory.subcategories.map(sub => ({
                             title: sub.name,
@@ -322,7 +328,7 @@ function NavbarContent() {
                           <ul className="space-y-2">
                             {category.items.map((item, itemIdx) => (
                               <li key={itemIdx}>
-                                <Link 
+                                <Link
                                   href={`/shop?category=${encodeURIComponent(item)}`}
                                   onClick={() => setIsOpen(false)}
                                   className="text-sm text-gray-500 hover:text-primary-600 block py-1"
@@ -340,7 +346,7 @@ function NavbarContent() {
               </div>
             );
           })}
-          
+
           {/* Mobile Cart & Login */}
           <div className="pt-4 mt-4 border-t border-gray-100 sm:hidden flex flex-col gap-2">
             <Link href="/cart" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all">
@@ -354,22 +360,22 @@ function NavbarContent() {
               </div>
               Cart
             </Link>
-            
+
             {isMounted && user ? (
               <>
-                <Link 
-                  href="/dashboard" 
-                  onClick={() => setIsOpen(false)} 
+                <Link
+                  href="/dashboard"
+                  onClick={() => setIsOpen(false)}
                   className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all"
                 >
                   <User className="h-5 w-5" />
                   Dashboard
                 </Link>
-                <button 
+                <button
                   onClick={() => {
                     logout();
                     setIsOpen(false);
-                  }} 
+                  }}
                   className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-red-600 rounded-lg transition-all text-left w-full"
                 >
                   <LogOut className="h-5 w-5" />
@@ -377,9 +383,9 @@ function NavbarContent() {
                 </button>
               </>
             ) : (
-              <Link 
-                href="/login" 
-                onClick={() => setIsOpen(false)} 
+              <Link
+                href="/login"
+                onClick={() => setIsOpen(false)}
                 className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all"
               >
                 <User className="h-5 w-5" />

@@ -22,23 +22,29 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     slug: "",
     category_id: "",
     description: "",
+    short_description: "",
     purchase_price: "",
     selling_price: "",
     offer_price: "",
     price: "",
     stock: "0",
+    size_names: "",
   });
   
   const [images, setImages] = useState({
     image_1: null as File | null,
     image_2: null as File | null,
     image_3: null as File | null,
+    image_4: null as File | null,
+    image_5: null as File | null,
   });
 
   const [previewImages, setPreviewImages] = useState({
     image_1: "",
     image_2: "",
     image_3: "",
+    image_4: "",
+    image_5: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string[]>>({});
@@ -70,16 +76,20 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           slug: productToEdit.slug || "",
           category_id: productToEdit.category_id?.toString() || "",
           description: productToEdit.description || "",
+          short_description: productToEdit.short_description || "",
           purchase_price: productToEdit.purchase_price || "",
           selling_price: productToEdit.selling_price || "",
           offer_price: productToEdit.offer_price || "",
           price: productToEdit.price || "",
           stock: productToEdit.stock?.toString() || "0",
+          size_names: productToEdit.sizes ? productToEdit.sizes.map(s => s.name).join(", ") : "",
         });
         setPreviewImages({
           image_1: productToEdit.image_1 || "",
           image_2: productToEdit.image_2 || "",
           image_3: productToEdit.image_3 || "",
+          image_4: productToEdit.image_4 || "",
+          image_5: productToEdit.image_5 || "",
         });
       } else {
         setFormData({
@@ -87,15 +97,17 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           slug: "",
           category_id: "",
           description: "",
+          short_description: "",
           purchase_price: "",
           selling_price: "",
           offer_price: "",
           price: "",
           stock: "0",
+          size_names: "",
         });
-        setPreviewImages({ image_1: "", image_2: "", image_3: "" });
+        setPreviewImages({ image_1: "", image_2: "", image_3: "", image_4: "", image_5: "" });
       }
-      setImages({ image_1: null, image_2: null, image_3: null });
+      setImages({ image_1: null, image_2: null, image_3: null, image_4: null, image_5: null });
       setErrors({});
     }
   }, [open, productToEdit]);
@@ -160,8 +172,8 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           const offer = parseFloat(newData.offer_price);
           const selling = parseFloat(newData.selling_price);
           
-          if (!isNaN(offer) && offer > 0) {
-            newData.price = offer.toString();
+          if (!isNaN(offer) && offer > 0 && !isNaN(selling)) {
+            newData.price = (selling - offer).toString();
           } else if (!isNaN(selling)) {
             newData.price = selling.toString();
           } else {
@@ -178,7 +190,7 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     }
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, field: "image_1" | "image_2" | "image_3") => {
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, field: "image_1" | "image_2" | "image_3" | "image_4" | "image_5") => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setImages(prev => ({ ...prev, [field]: file }));
@@ -204,6 +216,8 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     if (images.image_1) data.append("image_1", images.image_1);
     if (images.image_2) data.append("image_2", images.image_2);
     if (images.image_3) data.append("image_3", images.image_3);
+    if (images.image_4) data.append("image_4", images.image_4);
+    if (images.image_5) data.append("image_5", images.image_5);
 
     if (productToEdit) {
       updateMutation.mutate(data);
@@ -290,6 +304,18 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                 </div>
 
                 <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Description</label>
+                  <textarea
+                    name="short_description"
+                    value={formData.short_description}
+                    onChange={handleChange}
+                    rows={2}
+                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.short_description ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
+                  />
+                  {errors.short_description && <p className="text-xs text-red-500 mt-1">{errors.short_description[0]}</p>}
+                </div>
+
+                <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                   <textarea
                     name="description"
@@ -358,24 +384,38 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
-                    required
-                  />
-                  {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock[0]}</p>}
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
+                    <input
+                      type="number"
+                      name="stock"
+                      value={formData.stock}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      required
+                    />
+                    {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock[0]}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sizes (comma separated)</label>
+                    <input
+                      type="text"
+                      name="size_names"
+                      placeholder="e.g. S, M, L, XL"
+                      value={formData.size_names}
+                      onChange={handleChange}
+                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    />
+                    {errors.size_names && <p className="text-xs text-red-500 mt-1">{errors.size_names[0]}</p>}
+                  </div>
                 </div>
 
                 {/* Images */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Product Images</label>
-                  <div className="flex gap-4">
-                    {(["image_1", "image_2", "image_3"] as const).map((field, idx) => (
+                  <div className="flex flex-wrap gap-4">
+                    {(["image_1", "image_2", "image_3", "image_4", "image_5"] as const).map((field, idx) => (
                       <div key={field} className="relative w-24 h-24 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors overflow-hidden group">
                         <input
                           type="file"
@@ -397,6 +437,8 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                   {errors.image_1 && <p className="text-xs text-red-500 mt-1">Image 1: {errors.image_1[0]}</p>}
                   {errors.image_2 && <p className="text-xs text-red-500 mt-1">Image 2: {errors.image_2[0]}</p>}
                   {errors.image_3 && <p className="text-xs text-red-500 mt-1">Image 3: {errors.image_3[0]}</p>}
+                  {errors.image_4 && <p className="text-xs text-red-500 mt-1">Image 4: {errors.image_4[0]}</p>}
+                  {errors.image_5 && <p className="text-xs text-red-500 mt-1">Image 5: {errors.image_5[0]}</p>}
                 </div>
               </div>
             </div>

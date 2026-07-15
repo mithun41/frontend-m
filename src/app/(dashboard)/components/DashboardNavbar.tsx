@@ -5,6 +5,7 @@ import { Moon, Sun, ChevronRight, LogOut, User, MoreVertical, Key } from "lucide
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import ProfileModal from "./ProfileModal";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 // Mocking theme hook since we haven't implemented global theme yet
 const useTheme = () => {
@@ -15,7 +16,6 @@ const useTheme = () => {
 const DashboardNavbar = () => {
   const { isDark, toggleTheme } = useTheme();
   const authUser = useAuthStore((state) => state.user);
-  console.log(authUser)
   const logoutAction = useAuthStore((state) => state.logout);
   const router = useRouter();
   
@@ -80,7 +80,7 @@ const DashboardNavbar = () => {
         >
           <div className="w-8 h-8 rounded-full bg-primary-500 flex items-center justify-center text-white font-semibold text-sm shrink-0 overflow-hidden border border-gray-200 dark:border-gray-700">
             {authUser?.profile_pic ? (
-              <img src={authUser.profile_pic} alt="Profile" className="w-full h-full object-cover" />
+              <img src={getImageUrl(authUser.profile_pic) as string} alt="Profile" className="w-full h-full object-cover" />
             ) : (
               authUser?.name?.charAt(0).toUpperCase()
             )}

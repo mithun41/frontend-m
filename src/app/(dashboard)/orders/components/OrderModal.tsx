@@ -227,7 +227,12 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                               <div className="w-12 h-12 bg-gray-50 rounded-xl flex items-center justify-center shrink-0 border border-gray-100 group-hover:bg-white transition-colors">
                                 <Package className="w-6 h-6 text-gray-400" />
                               </div>
-                              <span className="font-bold text-gray-900">{item.product_name}</span>
+                              <span className="font-bold text-gray-900">
+                                {item.product_name}
+                                {item.size && (
+                                  <span className="block text-xs text-gray-500 font-medium mt-0.5">Size: {item.size}</span>
+                                )}
+                              </span>
                             </div>
                           </td>
                           <td className="px-6 py-4 text-center font-bold text-gray-600">

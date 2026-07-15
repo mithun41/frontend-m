@@ -6,6 +6,7 @@ export interface OrderItem {
   product_name: string;
   price: string;
   quantity: number;
+  size?: string;
 }
 
 export interface Order {
@@ -53,5 +54,10 @@ export const orderService = {
   
   delete: async (id: number): Promise<void> => {
     await axiosClient.delete(`/orders/${id}/`);
+  },
+
+  trackOrder: async (data: { order_number: string, phone: string }): Promise<Order> => {
+    const response = await axiosClient.post('/track-order/', data);
+    return response.data;
   }
 };

@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { cartService } from "@/lib/api/cartService";
+import { useCartStore } from "@/store/useCartStore";
 import { orderService } from "@/lib/api/orderService";
 import { settingService } from "@/lib/api/settingService";
 import { useAuthStore } from "@/store/useAuthStore";
@@ -15,20 +15,14 @@ export default function CheckoutPage() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const user = useAuthStore((state) => state.user);
-  const accessToken = useAuthStore((state) => state.accessToken);
+  
+  const [isMounted, setIsMounted] = useState(false);
+  const cart = useCartStore((state) => state.cart);
+  const clearCart = useCartStore((state) => state.clearCart);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.push('/login');
-    }
-  }, [router]);
-
-  const { data: cart, isLoading } = useQuery({
-    queryKey: ["cart"],
-    queryFn: cartService.getCart,
-    enabled: !!user,
-  });
+    setIsMounted(true);
+  }, []);
 
   const { data: settings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["settings"],
@@ -54,8 +48,6 @@ export default function CheckoutPage() {
     }
   }, [user]);
 
-
-
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
@@ -63,19 +55,28 @@ export default function CheckoutPage() {
 
   const createOrderMutation = useMutation({
     mutationFn: orderService.createOrder,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
+    onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["orders"] });
+      clearCart();
       toast.success("Order placed successfully!");
-      router.push("/checkout/success");
+      router.push(`/checkout/success?order_number=${data.order_number}&phone=${data.phone}`);
     },
     onError: (error: any) => {
-      const msg = error?.response?.data?.non_field_errors?.[0] || "Failed to place order. Please try again.";
+      console.error("Order creation error:", error?.response?.data);
+      const data = error?.response?.data;
+      let msg = "Failed to place order. Please try again.";
+      if (data) {
+        if (data.non_field_errors) {
+          msg = data.non_field_errors[0];
+        } else {
+          // Display the first validation error found
+          const firstKey = Object.keys(data)[0];
+          msg = `${firstKey}: ${JSON.stringify(data[firstKey])}`;
+        }
+      }
       toast.error(msg);
     }
   });
-
-  if (user === null) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,13 +90,14 @@ export default function CheckoutPage() {
       items: cart.items.map(item => ({
         product_id: item.product,
         quantity: item.quantity,
+        size: item.product_size
       }))
     };
 
     createOrderMutation.mutate(orderData);
   };
 
-  if (isLoading || isLoadingSettings) {
+  if (!isMounted || isLoadingSettings) {
     return <div className="min-h-[60vh] flex items-center justify-center">Loading checkout...</div>;
   }
 
@@ -261,6 +263,9 @@ export default function CheckoutPage() {
                     </div>
                     <div className="flex-1 flex flex-col justify-center">
                       <h4 className="font-bold text-sm text-neutral-900 dark:text-white line-clamp-1">{item.product_name}</h4>
+                      {item.product_size && (
+                        <p className="text-[11px] text-neutral-500 mt-0.5">Size: {item.product_size}</p>
+                      )}
                       <p className="text-xs text-neutral-500 mt-1">
                         {item.quantity} x ৳{parseFloat(item.product_price.toString()).toFixed(2)}
                       </p>

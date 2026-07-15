@@ -1,5 +1,5 @@
 import DashboardNavbar from "@/app/(dashboard)/components/DashboardNavbar";
-import Sidebar from "@/components/layout/Sidebar";
+import Sidebar from "@/components/layout/Sidebar"; 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 export default function DashboardLayout({

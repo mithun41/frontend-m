@@ -78,7 +78,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                       </Link>
                       
                       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
-                        <AddToCartIcon productId={product.id} />
+                        <AddToCartIcon product={product} />
                       </div>
                     </div>
                     <div className="flex flex-col gap-1.5 p-4 flex-grow">
@@ -90,15 +90,24 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                           {product.name}
                         </h3>
                       </Link>
-                      <div className="flex justify-between items-center mt-1">
-                        <span className="font-extrabold text-lg text-black dark:text-white">{product.price || product.selling_price} BDT</span>
+                        <div className="flex justify-between items-center mt-1">
+                        <div className="flex items-center gap-2">
+                          <span className="font-extrabold text-lg text-black dark:text-white">
+                            ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                          </span>
+                          {product.offer_price && parseFloat(product.offer_price) > 0 && (
+                            <span className="text-sm text-neutral-500 line-through">
+                              ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                            </span>
+                          )}
+                        </div>
                         <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
                           ★ {product.average_rating || 0}
                         </span>
                       </div>
                       
                       <div className="mt-auto pt-4 w-full">
-                        <OrderNowButton productId={product.id} />
+                        <OrderNowButton product={product} />
                       </div>
                     </div>
                   </div>

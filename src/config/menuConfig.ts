@@ -1,4 +1,4 @@
-import { Home, Users, Settings, FileText, Image, LayoutGrid, Package, ShoppingBag, BarChart2 } from 'lucide-react';
+import { Home, Users, Settings, FileText, Image, LayoutGrid, Package, ShoppingBag, BarChart2, Mail } from 'lucide-react';
 
 export interface MenuItem {
   key: string;
@@ -59,6 +59,14 @@ export const menuConfig: MenuItem[] = [
     subMenu: []
   },
   {
+    key: 'users',
+    title: 'Users',
+    path: '/users',
+    icon: Users,
+    roles: ['admin'], // only admin
+    subMenu: []
+  },
+  {
     key: 'sales-report',
     title: 'Sales Report',
     path: '/sales-report',
@@ -80,6 +88,14 @@ export const menuConfig: MenuItem[] = [
     title: 'Reviews',
     path: '/reviews',
     icon: FileText,
+    roles: ['admin'], // only admin
+    subMenu: []
+  },
+  {
+    key: 'contacts',
+    title: 'Contacts',
+    path: '/contacts',
+    icon: Mail,
     roles: ['admin'], // only admin
     subMenu: []
   }

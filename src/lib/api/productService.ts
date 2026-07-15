@@ -8,6 +8,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
+  short_description: string;
   purchase_price: string;
   selling_price: string;
   offer_price: string | null;
@@ -15,6 +16,9 @@ export interface Product {
   image_1: string | null;
   image_2: string | null;
   image_3: string | null;
+  image_4: string | null;
+  image_5: string | null;
+  sizes: { id: number; name: string }[];
   stock: number;
   sold_quantity: number;
   expire_date: string | null;

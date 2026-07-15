@@ -1,86 +1,45 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { cartService } from "@/lib/api/cartService";
-import { useAuthStore } from "@/store/useAuthStore";
+import { useQuery } from "@tanstack/react-query";
+import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
-import Swal from "sweetalert2";
 import { Trash2, ArrowRight } from "lucide-react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { settingService } from "@/lib/api/settingService";
 import { getImageUrl } from "@/lib/utils";
 
 export default function CartPage() {
   const router = useRouter();
-  const user = useAuthStore((state) => state.user);
-  const queryClient = useQueryClient();
+  const [isMounted, setIsMounted] = useState(false);
+  const cart = useCartStore((state) => state.cart);
+  const updateItem = useCartStore((state) => state.updateItem);
+  const removeItem = useCartStore((state) => state.removeItem);
 
   useEffect(() => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      router.push("/login");
-    }
-  }, [router]);
-
-  const { data: cart, isLoading, isError } = useQuery({
-    queryKey: ["cart"],
-    queryFn: cartService.getCart,
-    enabled: !!user,
-  });
+    setIsMounted(true);
+  }, []);
 
   const { data: settings } = useQuery({
     queryKey: ["settings"],
     queryFn: settingService.getSettings,
   });
 
-  const updateMutation = useMutation({
-    mutationFn: ({ id, quantity }: { id: number; quantity: number }) => 
-      cartService.updateItem(id, { quantity }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-    onError: () => {
-      Swal.fire("Error", "Failed to update item quantity.", "error");
-    }
-  });
-
-  const removeMutation = useMutation({
-    mutationFn: cartService.removeItem,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["cart"] });
-    },
-    onError: () => {
-      Swal.fire("Error", "Failed to remove item from cart.", "error");
-    }
-  });
-
-  const handleUpdateQuantity = (id: number, currentQuantity: number, change: number) => {
+  const handleUpdateQuantity = (id: string, currentQuantity: number, change: number) => {
     const newQuantity = currentQuantity + change;
     if (newQuantity < 1) return;
-    updateMutation.mutate({ id, quantity: newQuantity });
+    updateItem(id, newQuantity);
   };
 
-  const handleRemove = (id: number) => {
-    removeMutation.mutate(id);
+  const handleRemove = (id: string) => {
+    removeItem(id);
   };
 
-  if (!user) return null; // Redirecting in useEffect
-
-  if (isLoading) {
+  if (!isMounted) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex justify-center items-center">
         <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
-      </div>
-    );
-  }
-
-  if (isError) {
-    return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 flex flex-col justify-center items-center">
-        <p className="text-red-500 mb-4">Failed to load cart data.</p>
-        <button onClick={() => queryClient.invalidateQueries({ queryKey: ["cart"] })} className="px-4 py-2 bg-primary-600 text-white rounded-lg">Try Again</button>
       </div>
     );
   }
@@ -147,8 +106,13 @@ export default function CartPage() {
                           <Link href={`/shop/${item.product}`} className="font-semibold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors line-clamp-2">
                             {item.product_name}
                           </Link>
+                          {item.product_size && (
+                            <span className="text-xs text-neutral-500 mt-0.5">
+                              Size: {item.product_size}
+                            </span>
+                          )}
                           <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mt-1">
-                            {parseFloat(item.product_price).toFixed(2)} BDT
+                            {parseFloat(item.product_price).toFixed(2)} ৳
                           </span>
                         </div>
                       </div>
@@ -159,7 +123,7 @@ export default function CartPage() {
                         <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-lg h-10 bg-neutral-50 dark:bg-neutral-950 w-24">
                           <button 
                             onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
-                            disabled={updateMutation.isPending || removeMutation.isPending || item.quantity <= 1}
+                            disabled={item.quantity <= 1}
                             className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-50"
                           >
                             -
@@ -169,7 +133,6 @@ export default function CartPage() {
                           </span>
                           <button 
                             onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
-                            disabled={updateMutation.isPending || removeMutation.isPending}
                             className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-50"
                           >
                             +
@@ -180,11 +143,10 @@ export default function CartPage() {
                       {/* Total & Remove */}
                       <div className="col-span-4 w-full flex justify-between md:justify-end items-center mt-2 md:mt-0">
                         <div className="font-bold text-neutral-900 dark:text-white md:mr-6">
-                          {parseFloat(item.total_price.toString()).toFixed(2)} BDT
+                          {parseFloat(item.total_price.toString()).toFixed(2)} ৳
                         </div>
                         <button
                           onClick={() => handleRemove(item.id)}
-                          disabled={removeMutation.isPending || updateMutation.isPending}
                           className="p-2 text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/30 rounded-lg transition-colors disabled:opacity-50"
                           title="Remove item"
                         >
@@ -206,7 +168,7 @@ export default function CartPage() {
                 <div className="space-y-4 text-sm mb-6">
                   <div className="flex justify-between items-start gap-4 text-neutral-600 dark:text-neutral-400">
                     <span className="shrink-0">Subtotal ({cart.items.reduce((acc, item) => acc + item.quantity, 0)} items)</span>
-                    <span className="font-medium text-neutral-900 dark:text-white text-right">{parseFloat(cart.total_amount.toString()).toFixed(2)} BDT</span>
+                    <span className="font-medium text-neutral-900 dark:text-white text-right">{parseFloat(cart.total_amount.toString()).toFixed(2)} ৳</span>
                   </div>
                   <div className="flex justify-between items-start gap-4 text-neutral-600 dark:text-neutral-400">
                     <span className="shrink-0">Shipping Estimate</span>
@@ -223,7 +185,7 @@ export default function CartPage() {
                 <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mb-8">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-neutral-900 dark:text-white">Estimated Total</span>
-                    <span className="text-xl font-bold text-primary-600 dark:text-primary-400">{parseFloat(cart.total_amount.toString()).toFixed(2)} BDT</span>
+                    <span className="text-xl font-bold text-primary-600 dark:text-primary-400">{parseFloat(cart.total_amount.toString()).toFixed(2)} ৳</span>
                   </div>
                 </div>
 

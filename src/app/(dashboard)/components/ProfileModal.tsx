@@ -5,6 +5,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { authService } from "@/lib/api/authService";
 import { useAuthStore } from "@/store/useAuthStore";
 import { X, Camera } from "lucide-react";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 interface ProfileModalProps {
   open: boolean;
@@ -137,7 +138,7 @@ export default function ProfileModal({ open, setOpen }: ProfileModalProps) {
                 <div className="relative group">
                   <div className="w-24 h-24 rounded-full overflow-hidden bg-gray-100 border-4 border-white dark:border-gray-800 shadow-lg">
                     {previewUrl ? (
-                      <img src={previewUrl} alt="Profile" className="w-full h-full object-cover" />
+                      <img src={getImageUrl(previewUrl) as string} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
                       <div className="w-full h-full flex items-center justify-center text-3xl font-bold text-gray-400 bg-gray-50 dark:bg-gray-800">
                         {formData.name ? formData.name.charAt(0).toUpperCase() : "U"}

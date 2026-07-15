@@ -8,12 +8,10 @@ export function Footer() {
         {/* Brand Info */}
         <div className="flex flex-col gap-4">
           <Link href="/" className="flex items-center gap-2 text-white">
-            <span className="text-2xl font-extrabold tracking-tighter uppercase">
-              IRON<span className="text-primary-500">.</span>
-            </span>
+            <img src="/logo.jpg" alt="Logo" className="h-12 w-auto object-contain rounded-md" />
           </Link>
           <p className="text-sm leading-relaxed max-w-xs mt-2">
-            Premium gym accessories built for athletes. We engineer gear that survives your toughest workouts so you can focus on lifting heavier.
+            Premium fitness gear built for athletes. We engineer apparel and accessories that survive your toughest workouts.
           </p>
           <div className="flex items-center gap-5 mt-4 font-bold text-xs tracking-widest text-neutral-500">
             <Link href="#" className="hover:text-primary-500 transition-colors">INSTA</Link>
@@ -26,43 +24,42 @@ export function Footer() {
         {/* Quick Links */}
         <div className="flex flex-col gap-4">
           <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Shop</h4>
-          <Link href="/shop?category=Accessories" className="text-sm hover:text-primary-500 transition-colors">Lifting Belts</Link>
-          <Link href="/shop?category=Accessories" className="text-sm hover:text-primary-500 transition-colors">Wrist Wraps</Link>
-          <Link href="/shop?category=Accessories" className="text-sm hover:text-primary-500 transition-colors">Knee Sleeves</Link>
-          <Link href="/shop" className="text-sm hover:text-primary-500 transition-colors">All Products</Link>
+          <Link href="/shop?category=Men" className="text-sm hover:text-primary-500 transition-colors">Men's Apparel</Link>
+          <Link href="/shop?category=Women" className="text-sm hover:text-primary-500 transition-colors">Women's Apparel</Link>
+          <Link href="/shop?category=Gym+Accessories" className="text-sm hover:text-primary-500 transition-colors">Gym Accessories</Link>
+          <Link href="/shop?category=Gym+Bag" className="text-sm hover:text-primary-500 transition-colors">Gym Bags</Link>
+          <Link href="/shop" className="text-sm hover:text-primary-500 transition-colors mt-1 font-semibold text-white">All Products</Link>
         </div>
 
         {/* Company Links */}
         <div className="flex flex-col gap-4">
           <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Company</h4>
-          <Link href="/about" className="text-sm hover:text-primary-500 transition-colors">About Us</Link>
-          <Link href="#" className="text-sm hover:text-primary-500 transition-colors">Contact</Link>
+          <Link href="/about" className="text-sm hover:text-primary-500 transition-colors font-medium text-white">About Us</Link>
+          <Link href="/contact" className="text-sm hover:text-primary-500 transition-colors font-medium text-white">Contact</Link>
+          <Link href="/track-order" className="text-sm hover:text-primary-500 transition-colors">Track Order</Link>
           <Link href="#" className="text-sm hover:text-primary-500 transition-colors">Privacy Policy</Link>
           <Link href="#" className="text-sm hover:text-primary-500 transition-colors">Terms of Service</Link>
         </div>
 
-        {/* Newsletter */}
+        {/* Contact Us */}
         <div className="flex flex-col gap-4">
-          <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Stay Updated</h4>
+          <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Contact Us</h4>
           <p className="text-sm leading-relaxed">
-            Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals.
+            Mollik Tower (Lift-3), Holding No: 13-14,<br/>
+            Zoo Road Mirpur-1, Dhaka-1216.
           </p>
-          <div className="flex mt-2">
-            <input 
-              type="email" 
-              placeholder="Enter your email" 
-              className="bg-neutral-900 border border-neutral-800 text-white text-sm rounded-l-lg px-4 py-2.5 outline-none w-full focus:border-neutral-600 transition-colors"
-            />
-            <button className="bg-primary-500 text-neutral-950 font-bold text-sm px-5 py-2.5 rounded-r-lg hover:bg-primary-400 transition-colors">
-              Subscribe
-            </button>
-          </div>
+          <p className="text-sm">
+            <span className="font-semibold text-white">Phone:</span> 01815185843
+          </p>
+          <p className="text-sm">
+            <span className="font-semibold text-white">Email:</span> dravonofficial.bd@gmail.com
+          </p>
         </div>
 
       </div>
       
       <div className="max-w-7xl mx-auto px-6 mt-16 pt-8 border-t border-neutral-900 flex flex-col md:flex-row items-center justify-between gap-4 text-xs">
-        <p>© 2026 IRON Gym Gear. All rights reserved.</p>
+        <p>© 2026 BrandName. All rights reserved.</p>
         <div className="flex gap-4">
           <span>Secure Checkout</span>
           <span>Fast Shipping</span>

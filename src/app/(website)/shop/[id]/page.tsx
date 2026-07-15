@@ -54,7 +54,9 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
               images={[
                 product.image_1, 
                 product.image_2, 
-                product.image_3
+                product.image_3,
+                product.image_4,
+                product.image_5
               ].filter(Boolean) as string[]} 
             />
           </div>
@@ -70,9 +72,24 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
             <h1 className="text-2xl sm:text-3xl font-semibold tracking-wide mt-2 mb-4 text-neutral-900 dark:text-white leading-tight">
               {product.name}
             </h1>
+
+            {product.short_description && (
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 whitespace-pre-wrap">
+                {product.short_description}
+              </p>
+            )}
             
             <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-100 dark:border-neutral-800/60">
-              <span className="text-xl font-medium text-neutral-900 dark:text-white">{parseFloat(product.price || product.selling_price || "0").toFixed(2)} BDT</span>
+              <div className="flex items-center gap-3">
+                <span className="text-2xl font-medium text-neutral-900 dark:text-white">
+                  ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                </span>
+                {product.offer_price && parseFloat(product.offer_price) > 0 && (
+                  <span className="text-lg text-neutral-500 line-through">
+                    ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                  </span>
+                )}
+              </div>
               <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800"></div>
               <div className="flex items-center gap-1.5 text-xs">
                 <span className="text-primary-500 text-sm">★</span>
@@ -84,7 +101,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
             </div>
 
             {/* Action Area (Add to Cart / Order Now) */}
-            <AddToCartSection productId={product.id} />
+            <AddToCartSection product={product} />
           </div>
         </div>
 
@@ -149,7 +166,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
                       />
                     </Link>
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
-                      <AddToCartIcon productId={prod.id} />
+                      <AddToCartIcon product={prod} />
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 px-1 pb-1 text-center sm:text-left flex-grow">
@@ -158,9 +175,18 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
                         {prod.name}
                       </h3>
                     </Link>
-                    <span className="font-semibold text-[13px] text-neutral-900 dark:text-white">{parseFloat(prod.price || prod.selling_price || "0").toFixed(2)} BDT</span>
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-[13px] text-neutral-900 dark:text-white">
+                        ৳{parseFloat(prod.price || prod.selling_price || "0").toFixed(2)}
+                      </span>
+                      {prod.offer_price && parseFloat(prod.offer_price) > 0 && (
+                        <span className="text-[11px] text-neutral-500 line-through">
+                          ৳{parseFloat(prod.selling_price || "0").toFixed(2)}
+                        </span>
+                      )}
+                    </div>
                     <div className="mt-auto pt-2">
-                      <OrderNowButton productId={prod.id} />
+                      <OrderNowButton product={prod} />
                     </div>
                   </div>
                 </div>
