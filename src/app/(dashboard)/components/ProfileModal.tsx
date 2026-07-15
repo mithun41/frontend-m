@@ -64,7 +64,25 @@ export default function ProfileModal({ open, setOpen }: ProfileModalProps) {
       }, 2000);
     },
     onError: (error: any) => {
-      setErrorMsg(error?.response?.data?.detail || "Failed to update profile.");
+      const errorData = error?.response?.data;
+      if (errorData) {
+        if (typeof errorData === "string") {
+          setErrorMsg(errorData);
+        } else if (errorData.detail) {
+          setErrorMsg(errorData.detail);
+        } else {
+          const messages = Object.entries(errorData)
+            .map(([field, errs]) => {
+              const fieldName = field.charAt(0).toUpperCase() + field.slice(1).replace("_", " ");
+              const fieldErrors = Array.isArray(errs) ? errs.join(", ") : String(errs);
+              return `${fieldName}: ${fieldErrors}`;
+            })
+            .join(" | ");
+          setErrorMsg(messages || "Failed to update profile.");
+        }
+      } else {
+        setErrorMsg(error?.message || "Failed to update profile.");
+      }
     },
   });
 
@@ -102,11 +120,11 @@ export default function ProfileModal({ open, setOpen }: ProfileModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => setOpen(false)}></div>
       
-      <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transform transition-all">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between">
+      <div className="relative w-full max-w-lg bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800 transform transition-all max-h-[90vh] flex flex-col">
+        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">My Profile</h2>
           <button 
             onClick={() => setOpen(false)}
@@ -116,7 +134,7 @@ export default function ProfileModal({ open, setOpen }: ProfileModalProps) {
           </button>
         </div>
 
-        <div className="p-6">
+        <div className="p-6 overflow-y-auto flex-grow">
           {isLoading ? (
             <div className="flex justify-center py-10">
               <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>

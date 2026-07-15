@@ -4,13 +4,14 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingService, StoreSetting } from "@/lib/api/settingService";
 import Swal from "sweetalert2";
-import { Truck } from "lucide-react";
+import { Truck, Play } from "lucide-react";
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
   const [formData, setFormData] = useState({
     delivery_charge_inside_dhaka: "",
     delivery_charge_outside_dhaka: "",
+    youtube_video_id: "",
   });
 
   const { data: settings, isLoading } = useQuery({
@@ -23,6 +24,7 @@ export default function SettingsPage() {
       setFormData({
         delivery_charge_inside_dhaka: settings.delivery_charge_inside_dhaka,
         delivery_charge_outside_dhaka: settings.delivery_charge_outside_dhaka,
+        youtube_video_id: settings.youtube_video_id || "",
       });
     }
   }, [settings]);
@@ -109,6 +111,26 @@ export default function SettingsPage() {
                 required
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
               />
+            </div>
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-gray-100">
+            <div className="flex items-center gap-2 mb-6">
+              <Play className="w-5 h-5 text-red-500" />
+              <h2 className="text-lg font-bold text-gray-900">Home Video Settings</h2>
+            </div>
+            
+            <div className="space-y-2 max-w-md">
+              <label className="text-sm font-semibold text-gray-700">YouTube Video ID</label>
+              <input
+                type="text"
+                name="youtube_video_id"
+                value={formData.youtube_video_id}
+                onChange={handleChange}
+                placeholder="e.g. 7wtfhZwyrcc"
+                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+              />
+              <p className="text-xs text-gray-500">The 11-character code at the end of a YouTube URL (e.g. youtube.com/watch?v=<span className="font-semibold text-gray-700">7wtfhZwyrcc</span>).</p>
             </div>
           </div>
 

@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Eye, Trash2 } from "lucide-react";
+import { Search, Eye, Trash2, Edit } from "lucide-react";
 import { contactService, ContactData } from "@/lib/api/contactService";
 import Swal from "sweetalert2";
 import ContactModal from "./components/ContactModal";
@@ -13,12 +13,24 @@ export default function ContactsPage() {
   const [search, setSearch] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedContact, setSelectedContact] = useState<ContactData | null>(null);
+  const [modalMode, setModalMode] = useState<'view' | 'edit'>('view');
 
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["contacts", page, search],
-    queryFn: () => contactService.getContacts(page, search),
+    queryKey: ["contacts"],
+    queryFn: () => contactService.getContacts(),
+  });
+
+  const filteredContacts = (Array.isArray(data) ? data : []).filter((contact) => {
+    const searchLower = search.toLowerCase();
+    return (
+      contact.first_name?.toLowerCase().includes(searchLower) ||
+      contact.last_name?.toLowerCase().includes(searchLower) ||
+      contact.email?.toLowerCase().includes(searchLower) ||
+      contact.subject?.toLowerCase().includes(searchLower) ||
+      contact.message?.toLowerCase().includes(searchLower)
+    );
   });
 
   const deleteMutation = useMutation({
@@ -62,8 +74,15 @@ export default function ContactsPage() {
     });
   };
 
-  const openContactDetails = (contact: ContactData) => {
+  const handleView = (contact: ContactData) => {
     setSelectedContact(contact);
+    setModalMode('view');
+    setIsModalOpen(true);
+  };
+
+  const handleEdit = (contact: ContactData) => {
+    setSelectedContact(contact);
+    setModalMode('edit');
     setIsModalOpen(true);
   };
 
@@ -104,17 +123,28 @@ export default function ContactsPage() {
     {
       key: "status",
       header: "Status",
-      render: (item) => (
-        item.reply ? (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
-            Replied
-          </span>
-        ) : (
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
-            Pending
-          </span>
-        )
-      )
+      render: (item) => {
+        const status = item.status || 'pending';
+        if (status === 'replied') {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+              Replied
+            </span>
+          );
+        } else if (status === 'closed') {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400">
+              Closed
+            </span>
+          );
+        } else {
+          return (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+              Pending
+            </span>
+          );
+        }
+      }
     },
     {
       key: "actions",
@@ -122,11 +152,18 @@ export default function ContactsPage() {
       render: (item) => (
         <div className="flex items-center gap-2">
           <button
-            onClick={() => openContactDetails(item)}
+            onClick={() => handleView(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
-            title="View & Reply"
+            title="View Details"
           >
             <Eye className="w-4 h-4" />
+          </button>
+          <button
+            onClick={() => handleEdit(item)}
+            className="p-1.5 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/30 rounded-lg transition-colors"
+            title="Edit Status & Reply"
+          >
+            <Edit className="w-4 h-4" />
           </button>
           <button
             onClick={() => item.id && handleDelete(item.id)}
@@ -173,10 +210,9 @@ export default function ContactsPage() {
         ) : (
           <DataTable
             columns={columns}
-            data={data?.results || []}
+            data={filteredContacts}
             paginated={true}
-            serverPagination={true}
-            totalItems={data?.count || 0}
+            serverPagination={false}
             itemsPerPage={10}
             currentPage={page}
             onPageChange={setPage}
@@ -191,6 +227,7 @@ export default function ContactsPage() {
           setSelectedContact(null);
         }}
         contact={selectedContact}
+        mode={modalMode}
       />
     </div>
   );

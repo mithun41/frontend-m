@@ -50,7 +50,7 @@ export default function RegisterPage() {
       try {
         const loginData = await authService.login({ email: formData.email, password: formData.password });
         setAuth(loginData.user, loginData.access, loginData.refresh);
-        router.push("/dashboard");
+        router.push("/");
       } catch (loginErr) {
         router.push("/login");
       }

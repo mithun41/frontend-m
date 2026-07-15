@@ -9,6 +9,7 @@ export interface ContactData {
   message: string;
   reply?: string | null;
   replied_at?: string | null;
+  status?: 'pending' | 'replied' | 'closed';
   created_at?: string;
 }
 

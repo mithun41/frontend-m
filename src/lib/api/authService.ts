@@ -27,7 +27,34 @@ export const authService = {
   },
 
   updateProfile: async (data: Partial<User> | FormData): Promise<User> => {
-    const response = await axiosClient.patch("/users/profile/", data);
+    const isFormData = data instanceof FormData;
+    const response = await axiosClient.patch("/users/profile/", data, {
+      transformRequest: isFormData
+        ? [
+            (data, headers) => {
+              if (headers) {
+                delete headers["Content-Type"];
+              }
+              return data;
+            },
+          ]
+        : undefined,
+    });
+    return response.data;
+  },
+
+  changePassword: async (data: any): Promise<any> => {
+    const response = await axiosClient.post("/users/change-password/", data);
+    return response.data;
+  },
+
+  forgotPassword: async (data: { email: string }): Promise<any> => {
+    const response = await axiosClient.post("/users/forgot-password/", data);
+    return response.data;
+  },
+
+  resetPassword: async (data: { email: string; otp: string; new_password: string }): Promise<any> => {
+    const response = await axiosClient.post("/users/reset-password/", data);
     return response.data;
   }
 };

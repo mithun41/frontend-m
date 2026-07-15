@@ -5,6 +5,7 @@ import { Moon, Sun, ChevronRight, LogOut, User, MoreVertical, Key } from "lucide
 import { useAuthStore } from "@/store/useAuthStore";
 import { useRouter } from "next/navigation";
 import ProfileModal from "./ProfileModal";
+import ChangePasswordModal from "./ChangePasswordModal";
 import { getImageUrl } from "@/utils/getImageUrl";
 
 // Mocking theme hook since we haven't implemented global theme yet
@@ -169,7 +170,7 @@ const DashboardNavbar = () => {
         </div>
       </div>
       
-      {/* <ChangePasswordModal open={changePasswordOpen} setOpen={setChangePasswordOpen} /> */}
+      <ChangePasswordModal open={changePasswordOpen} setOpen={setChangePasswordOpen} />
       <ProfileModal open={profileOpen} setOpen={setProfileOpen} /> 
     </div>
   );

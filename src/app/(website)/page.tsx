@@ -218,7 +218,7 @@ export default async function HomePage() {
             </div>
           </section>
           {/* VIDEO SECTION */}
-        
+          <VideoSection />
           
           {/* INSTAGRAM SECTION */}
           <InstagramSection />
