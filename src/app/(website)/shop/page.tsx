@@ -24,7 +24,6 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   }
 
   let products = allProducts;
-  console.log(products)
 
   if (categoryFilter) {
     products = products.filter(p => p.category?.name === categoryFilter);

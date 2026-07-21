@@ -98,7 +98,7 @@ function NavbarContent() {
     { name: 'Men', href: '/men', hasMegaMenu: true },
     { name: 'Women', href: '/women', hasMegaMenu: true },
     { name: 'Gym Accessories', href: '/gym-accessories', hasMegaMenu: true },
-    { name: 'Gym Bag', href: '/gym-bag' },
+    { name: 'Gym Bag', href: '/shop?category=Bag' },
     { name: 'Track Order', href: '/track-order' },
   ];
 
