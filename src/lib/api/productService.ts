@@ -1,6 +1,13 @@
 import axiosClient from "./axiosClient";
 import { Category } from "./categoryService";
 
+export interface SizeStock {
+  id?: number;
+  size?: number;
+  size_name: string;
+  stock: number;
+}
+
 export interface Product {
   id: number;
   category: Category;
@@ -19,6 +26,7 @@ export interface Product {
   image_4: string | null;
   image_5: string | null;
   sizes: { id: number; name: string }[];
+  size_stocks?: SizeStock[];
   stock: number;
   sold_quantity: number;
   expire_date: string | null;

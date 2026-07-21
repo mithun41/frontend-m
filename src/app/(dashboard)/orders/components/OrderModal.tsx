@@ -193,10 +193,18 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                       <p className="text-gray-400 mb-1 font-medium">Method</p>
                       <p className="font-bold text-gray-900">{order.payment_method}</p>
                     </div>
-                    <div>
-                      <p className="text-gray-400 mb-1 font-medium">Status</p>
-                      <p className="font-bold text-gray-900">{order.status}</p>
-                    </div>
+                    {order.sender_number && (
+                      <div>
+                        <p className="text-gray-400 mb-1 font-medium">Sender Number</p>
+                        <p className="font-bold text-gray-900">{order.sender_number}</p>
+                      </div>
+                    )}
+                    {order.transaction_id && (
+                      <div>
+                        <p className="text-gray-400 mb-1 font-medium">Transaction ID</p>
+                        <p className="font-bold text-gray-900 break-all">{order.transaction_id}</p>
+                      </div>
+                    )}
                   </div>
                 </div>
 

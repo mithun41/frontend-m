@@ -13,12 +13,23 @@ export function OrderNowButton({ product, quantity = 1, size }: { product: Produ
     e.preventDefault();
     e.stopPropagation();
 
+    // Determine effective size if product has sizes but size was not explicitly passed
+    let effectiveSize = size;
+    if (!effectiveSize && product.sizes && product.sizes.length > 0) {
+      if (product.size_stocks && product.size_stocks.length > 0) {
+        const available = product.size_stocks.find(ss => ss.stock > 0);
+        effectiveSize = available ? available.size_name : product.sizes[0].name;
+      } else {
+        effectiveSize = product.sizes[0].name;
+      }
+    }
+
     addItem({
       product: product.id,
       product_name: product.name,
       product_price: product.price || product.selling_price || "0",
       product_image: product.image_1 || null,
-      product_size: size,
+      product_size: effectiveSize,
       quantity: quantity
     });
     

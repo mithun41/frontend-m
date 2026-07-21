@@ -34,20 +34,27 @@ export async function InstagramSection() {
     return null;
   }
 
+  const instagramUrl = "https://www.instagram.com/dravonofficial.bd?igsh=bG83dm9wOTA4ZDh2";
+
   return (
     <section className="bg-black py-16 w-full">
-      <div className="flex flex-col items-center mb-10 text-white">
-        <InstagramIcon className="w-12 h-12 mb-4" />
+      <Link 
+        href={instagramUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="flex flex-col items-center mb-10 text-white hover:text-primary-500 transition-colors group cursor-pointer"
+      >
+        <InstagramIcon className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform duration-300" />
         <h2 className="text-xl sm:text-2xl font-bold tracking-[0.1em] uppercase">
           On Instagram
         </h2>
-      </div>
+      </Link>
 
       <div className="grid grid-cols-2 md:grid-cols-5 gap-1 w-full max-w-[1920px] mx-auto px-1">
         {images.map((post) => (
           <Link
             key={post.id}
-            href="https://www.instagram.com"
+            href={instagramUrl}
             target="_blank"
             rel="noopener noreferrer"
             className="relative aspect-square w-full overflow-hidden group block"

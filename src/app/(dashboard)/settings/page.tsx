@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { settingService, StoreSetting } from "@/lib/api/settingService";
 import Swal from "sweetalert2";
-import { Truck, Play } from "lucide-react";
+import { Truck, Play, CreditCard } from "lucide-react";
 
 export default function SettingsPage() {
   const queryClient = useQueryClient();
@@ -12,6 +12,8 @@ export default function SettingsPage() {
     delivery_charge_inside_dhaka: "",
     delivery_charge_outside_dhaka: "",
     youtube_video_id: "",
+    bkash_number: "",
+    nagad_number: "",
   });
 
   const { data: settings, isLoading } = useQuery({
@@ -25,6 +27,8 @@ export default function SettingsPage() {
         delivery_charge_inside_dhaka: settings.delivery_charge_inside_dhaka,
         delivery_charge_outside_dhaka: settings.delivery_charge_outside_dhaka,
         youtube_video_id: settings.youtube_video_id || "",
+        bkash_number: settings.bkash_number || "",
+        nagad_number: settings.nagad_number || "",
       });
     }
   }, [settings]);
@@ -111,6 +115,39 @@ export default function SettingsPage() {
                 required
                 className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
               />
+            </div>
+          </div>
+
+          <div className="mt-8 pt-8 border-t border-gray-100">
+            <div className="flex items-center gap-2 mb-6">
+              <CreditCard className="w-5 h-5 text-emerald-600" />
+              <h2 className="text-lg font-bold text-gray-900">Payment Settings</h2>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">bKash Personal Number</label>
+                <input
+                  type="text"
+                  name="bkash_number"
+                  value={formData.bkash_number}
+                  onChange={handleChange}
+                  placeholder="e.g. 01700000000"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-gray-700">Nagad Personal Number</label>
+                <input
+                  type="text"
+                  name="nagad_number"
+                  value={formData.nagad_number}
+                  onChange={handleChange}
+                  placeholder="e.g. 01700000000"
+                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                />
+              </div>
             </div>
           </div>
 

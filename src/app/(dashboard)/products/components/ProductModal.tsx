@@ -82,7 +82,9 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           offer_price: productToEdit.offer_price || "",
           price: productToEdit.price || "",
           stock: productToEdit.stock?.toString() || "0",
-          size_names: productToEdit.sizes ? productToEdit.sizes.map(s => s.name).join(", ") : "",
+          size_names: productToEdit.size_stocks && productToEdit.size_stocks.length > 0
+            ? productToEdit.size_stocks.map(ss => `${ss.size_name}:${ss.stock}`).join(", ")
+            : productToEdit.sizes ? productToEdit.sizes.map(s => s.name).join(", ") : "",
         });
         setPreviewImages({
           image_1: productToEdit.image_1 || "",
@@ -398,15 +400,20 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                     {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock[0]}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sizes (comma separated)</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                      Sizes & Stock (e.g. S:10, M:5, L:0)
+                    </label>
                     <input
                       type="text"
                       name="size_names"
-                      placeholder="e.g. S, M, L, XL"
+                      placeholder="e.g. S:10, M:5, L:0, XL:2"
                       value={formData.size_names}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Specify stock per size using <span className="font-semibold text-gray-700 dark:text-gray-300">Size:Stock</span> (e.g. S:10, M:5, L:0).
+                    </p>
                     {errors.size_names && <p className="text-xs text-red-500 mt-1">{errors.size_names[0]}</p>}
                   </div>
                 </div>

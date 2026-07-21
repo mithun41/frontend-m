@@ -7,6 +7,7 @@ import { ProductReviews } from "@/components/shop/ProductReviews";
 import { AddToCartSection } from "@/components/shop/AddToCartSection";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
+import { getImageUrl } from "@/utils/getImageUrl";
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -16,12 +17,16 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
   try {
     product = await productService.getProductDetails(resolvedParams.id);
     
-    // Fetch related products (e.g. from the same category)
+    // Fetch related products (e.g. from the same category first, fallback to other products to guarantee 4 items)
     const allProductsResponse = await productService.getProducts(1);
     if (allProductsResponse && allProductsResponse.results) {
-        relatedProducts = allProductsResponse.results
-            .filter((p) => p.category?.id === product?.category?.id && p.id !== product?.id)
-            .slice(0, 4);
+      const sameCategory = allProductsResponse.results.filter(
+        (p) => p.id !== product?.id && p.category?.id === product?.category?.id
+      );
+      const otherCategory = allProductsResponse.results.filter(
+        (p) => p.id !== product?.id && p.category?.id !== product?.category?.id
+      );
+      relatedProducts = [...sameCategory, ...otherCategory].slice(0, 4);
     }
   } catch (error) {
     console.error("Error fetching product details:", error);
@@ -157,7 +162,7 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
                   <div className="relative aspect-square w-full rounded-xl overflow-hidden bg-neutral-50 dark:bg-neutral-900">
                     <Link href={`/shop/${prod.id}`} className="absolute inset-0 z-0">
                       <Image
-                        src={prod.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"}
+                        src={getImageUrl(prod.image_1) || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=500&q=80"}
                         alt={prod.name}
                         fill
                         unoptimized

@@ -10,6 +10,7 @@ import { OrderNowButton } from "@/components/shop/OrderNowButton";
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
   const categoryFilter = resolvedParams.category as string | undefined;
+  const searchQuery = resolvedParams.search as string | undefined;
   const minPrice = parseInt(resolvedParams.minPrice as string) || 0;
   const maxPrice = parseInt(resolvedParams.maxPrice as string) || 100000;
   const page = parseInt(resolvedParams.page as string) || 1;
@@ -27,6 +28,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   if (categoryFilter) {
     products = products.filter(p => p.category?.name === categoryFilter);
+  }
+
+  if (searchQuery) {
+    const lowerQuery = searchQuery.toLowerCase();
+    products = products.filter(p => p.name?.toLowerCase().includes(lowerQuery));
   }
 
   // Filter by dynamic price range from the slider

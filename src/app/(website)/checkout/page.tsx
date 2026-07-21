@@ -36,6 +36,9 @@ export default function CheckoutPage() {
     address: "",
     city: "Inside Dhaka",
     payment_method: "Cash on Delivery",
+    bkash_number: "",
+    nagad_number: "",
+    transaction_id: "",
   });
 
   useEffect(() => {
@@ -85,8 +88,15 @@ export default function CheckoutPage() {
       return;
     }
 
+    const senderNumber = formData.payment_method === 'bKash' 
+      ? formData.bkash_number 
+      : formData.payment_method === 'Nagad' 
+        ? formData.nagad_number 
+        : '';
+
     const orderData = {
       ...formData,
+      sender_number: senderNumber,
       items: cart.items.map(item => ({
         product_id: item.product,
         quantity: item.quantity,
@@ -217,7 +227,8 @@ export default function CheckoutPage() {
                 Payment Method
               </h2>
               <div className="space-y-4">
-                <label className="flex items-center gap-3 p-4 border border-primary-200 bg-primary-50/50 dark:bg-primary-900/10 dark:border-primary-800 rounded-xl cursor-pointer transition-colors">
+                {/* Cash on Delivery */}
+                <label className={`flex items-center gap-3 p-4 border rounded-xl cursor-pointer transition-colors ${formData.payment_method === "Cash on Delivery" ? "border-primary-500 bg-primary-50/50 dark:bg-primary-900/10" : "border-neutral-200 dark:border-neutral-800"}`}>
                   <input
                     type="radio"
                     name="payment_method"
@@ -228,11 +239,111 @@ export default function CheckoutPage() {
                   />
                   <span className="font-semibold text-neutral-900 dark:text-white">Cash on Delivery (COD)</span>
                 </label>
-                <div className="p-4 border border-neutral-200 dark:border-neutral-800 rounded-xl opacity-60 bg-neutral-50 dark:bg-neutral-950 cursor-not-allowed">
-                  <label className="flex items-center gap-3 cursor-not-allowed">
-                    <input type="radio" disabled name="payment_method" className="w-4 h-4 text-neutral-400" />
-                    <span className="font-semibold text-neutral-500">Credit Card / Mobile Banking (Coming Soon)</span>
+
+                {/* bKash Payment */}
+                <div className={`border rounded-xl transition-colors ${formData.payment_method === "bKash" ? "border-pink-500 bg-pink-50/50 dark:bg-pink-900/10" : "border-neutral-200 dark:border-neutral-800"}`}>
+                  <label className="flex items-center gap-3 p-4 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="bKash"
+                      checked={formData.payment_method === "bKash"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-pink-600 focus:ring-pink-500"
+                    />
+                    <span className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                      <img src="https://scripts.sandbox.bka.sh/resources/img/bkash_logo.png" alt="bKash" className="h-4 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      bKash (Send Money)
+                    </span>
                   </label>
+                  
+                  {formData.payment_method === "bKash" && (
+                    <div className="px-4 pb-5 pt-1 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-pink-200 dark:border-pink-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-1">
+                        <span>Please Send Money to our bKash Personal Number:</span>
+                        <span className="font-bold text-pink-600 text-lg">{settings?.bkash_number || "01815185843"}</span>
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Sender bKash Number <span className="text-red-500">*</span></label>
+                        <input
+                          type="text"
+                          name="bkash_number"
+                          value={formData.bkash_number}
+                          onChange={handleChange}
+                          placeholder="e.g. 017XXXXXXXX"
+                          required={formData.payment_method === "bKash"}
+                          className="w-full px-4 py-2.5 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-shadow text-neutral-900 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Transaction ID <span className="text-red-500">*</span></label>
+                        <input
+                          type="text"
+                          name="transaction_id"
+                          value={formData.transaction_id}
+                          onChange={handleChange}
+                          placeholder="e.g. 8H6A2BD8"
+                          required={formData.payment_method === "bKash"}
+                          className="w-full px-4 py-2.5 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-pink-500 transition-shadow text-neutral-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Nagad Payment */}
+                <div className={`border rounded-xl transition-colors ${formData.payment_method === "Nagad" ? "border-orange-500 bg-orange-50/50 dark:bg-orange-900/10" : "border-neutral-200 dark:border-neutral-800"}`}>
+                  <label className="flex items-center gap-3 p-4 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="payment_method"
+                      value="Nagad"
+                      checked={formData.payment_method === "Nagad"}
+                      onChange={handleChange}
+                      className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                    />
+                    <span className="font-semibold text-neutral-900 dark:text-white flex items-center gap-2">
+                      <img src="https://download.logo.wine/logo/Nagad/Nagad-Logo.wine.png" alt="Nagad" className="h-6 -ml-1 object-contain" onError={(e) => e.currentTarget.style.display = 'none'} />
+                      Nagad (Send Money)
+                    </span>
+                  </label>
+                  
+                  {formData.payment_method === "Nagad" && (
+                    <div className="px-4 pb-5 pt-1 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-orange-200 dark:border-orange-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-1">
+                        <span>Please Send Money to our Nagad Personal Number:</span>
+                        <span className="font-bold text-orange-600 text-lg">{settings?.nagad_number || "01815185843"}</span>
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Sender Nagad Number <span className="text-red-500">*</span></label>
+                        <input
+                          type="text"
+                          name="nagad_number"
+                          value={formData.nagad_number}
+                          onChange={handleChange}
+                          placeholder="e.g. 017XXXXXXXX"
+                          required={formData.payment_method === "Nagad"}
+                          className="w-full px-4 py-2.5 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow text-neutral-900 dark:text-white"
+                        />
+                      </div>
+                      
+                      <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Transaction ID <span className="text-red-500">*</span></label>
+                        <input
+                          type="text"
+                          name="transaction_id"
+                          value={formData.transaction_id}
+                          onChange={handleChange}
+                          placeholder="e.g. 8H6A2BD8"
+                          required={formData.payment_method === "Nagad"}
+                          className="w-full px-4 py-2.5 bg-white dark:bg-neutral-950 border border-neutral-200 dark:border-neutral-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500 transition-shadow text-neutral-900 dark:text-white"
+                        />
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

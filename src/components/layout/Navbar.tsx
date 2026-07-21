@@ -1,13 +1,14 @@
 "use client";
 
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
-import { ShoppingCart, User, ChevronDown, LogOut } from 'lucide-react';
+import { usePathname, useSearchParams, useRouter } from 'next/navigation';
+import { ShoppingCart, User, ChevronDown, LogOut, Search } from 'lucide-react';
 import { useState, useEffect, Suspense } from 'react';
 import { useAuthStore } from "@/store/useAuthStore";
 import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
 import { categoryService, Category } from "@/lib/api/categoryService";
+import { productService } from "@/lib/api/productService";
 import { getImageUrl } from "@/utils/getImageUrl";
 
 const megaMenuData = {
@@ -47,9 +48,39 @@ export function Navbar() {
 function NavbarContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenusOpen, setMobileMenusOpen] = useState<{ [key: string]: boolean }>({});
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [debouncedQuery, setDebouncedQuery] = useState('');
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  const { data: searchResults } = useQuery({
+    queryKey: ['searchProducts', debouncedQuery],
+    queryFn: async () => {
+      if (!debouncedQuery.trim()) return [];
+      const res = await productService.getProducts(1, { search: debouncedQuery });
+      const products = res.results || [];
+      const lowerQuery = debouncedQuery.toLowerCase();
+      return products.filter(p => p.name.toLowerCase().includes(lowerQuery)).slice(0, 5);
+    },
+    enabled: debouncedQuery.trim().length > 0,
+  });
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/shop?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery('');
+    }
+  };
 
   const user = useAuthStore(state => state.user);
   const logout = useAuthStore(state => state.logout);
@@ -194,21 +225,79 @@ function NavbarContent() {
             })}
           </div>
 
-          {/* Right: Cart, Login & Mobile Toggle */}
-          <div className="flex-1 flex items-center justify-end gap-4">
-            {/* Desktop Cart & Login */}
-            <div className="hidden sm:flex items-center gap-5">
-              <Link href="/cart" className="relative text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group">
-                <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
-                {isMounted && cartItemsCount > 0 && (
-                  <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </Link>
+          {/* Right: Search, Cart, Login & Mobile Toggle */}
+          <div className="flex-1 flex items-center justify-end gap-4 sm:gap-5">
+            {/* Search */}
+            <div className="relative flex items-center z-[60]">
+              {isSearchOpen ? (
+                <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[220px] sm:w-[280px]">
+                  <form onSubmit={handleSearchSubmit} className="flex items-center bg-white border border-gray-200 rounded-full px-3 py-1.5 shadow-md w-full transition-all">
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Search products..."
+                      className="w-full text-sm outline-none bg-transparent"
+                      autoFocus
+                    />
+                    <button type="button" onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }} className="text-gray-400 hover:text-gray-600 ml-2 font-bold text-lg leading-none">
+                      &times;
+                    </button>
+                  </form>
+                  
+                  {/* Suggestions Dropdown */}
+                  {debouncedQuery.trim().length > 0 && searchResults && searchResults.length > 0 && (
+                    <div className="absolute top-full right-0 mt-2 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
+                      <ul className="max-h-[60vh] overflow-y-auto py-2">
+                        {searchResults.map(product => (
+                          <li key={product.id}>
+                            <Link 
+                              href={`/shop/${product.id}`}
+                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                              className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
+                            >
+                              <img 
+                                src={product.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=50&q=80"} 
+                                alt={product.name} 
+                                className="w-10 h-10 object-cover rounded-md"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                                <p className="text-xs text-primary-600 font-bold">৳{parseFloat(product.selling_price || product.price || "0").toFixed(2)}</p>
+                              </div>
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {debouncedQuery.trim().length > 0 && searchResults && searchResults.length === 0 && (
+                    <div className="absolute top-full right-0 mt-2 w-full bg-white rounded-xl shadow-xl border border-gray-100 p-4 text-center">
+                      <p className="text-sm text-gray-500">No products found.</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <button onClick={() => setIsSearchOpen(true)} className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center group p-1">
+                  <Search className="h-5 w-5 transition-transform group-hover:scale-110" />
+                </button>
+              )}
+            </div>
 
-              <div className="h-5 w-px bg-gray-300"></div>
+            {/* Cart (Always visible) */}
+            <Link href="/cart" className="relative text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center group">
+              <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
+              {isMounted && cartItemsCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
+                  {cartItemsCount}
+                </span>
+              )}
+            </Link>
 
+            <div className="hidden sm:block h-5 w-px bg-gray-300"></div>
+
+            {/* Desktop Login (Hidden on mobile) */}
+            <div className="hidden sm:flex items-center">
               {isMounted && user ? (
                 <div className="relative group cursor-pointer">
                   <div className="flex items-center gap-2">
@@ -246,7 +335,7 @@ function NavbarContent() {
             </div>
 
             {/* Mobile Menu Button (Hamburger) */}
-            <div className="lg:hidden flex items-center ml-2">
+            <div className="lg:hidden flex items-center ml-1">
               <button
                 onClick={() => setIsOpen(!isOpen)}
                 className="text-gray-800 hover:text-primary-600 focus:outline-none p-2"
@@ -347,20 +436,8 @@ function NavbarContent() {
             );
           })}
 
-          {/* Mobile Cart & Login */}
+          {/* Mobile Login & Dashboard */}
           <div className="pt-4 mt-4 border-t border-gray-100 sm:hidden flex flex-col gap-2">
-            <Link href="/cart" onClick={() => setIsOpen(false)} className="flex items-center gap-3 px-4 py-3 text-sm font-semibold uppercase tracking-wider text-gray-600 hover:bg-gray-50 hover:text-primary-600 rounded-lg transition-all">
-              <div className="relative">
-                <ShoppingCart className="h-5 w-5" />
-                {isMounted && cartItemsCount > 0 && (
-                  <span className="absolute -top-1.5 -right-1.5 bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
-                    {cartItemsCount}
-                  </span>
-                )}
-              </div>
-              Cart
-            </Link>
-
             {isMounted && user ? (
               <>
                 <Link

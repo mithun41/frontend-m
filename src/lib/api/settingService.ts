@@ -4,6 +4,8 @@ export interface StoreSetting {
   delivery_charge_inside_dhaka: string;
   delivery_charge_outside_dhaka: string;
   youtube_video_id?: string;
+  bkash_number?: string;
+  nagad_number?: string;
   updated_at: string;
 }
 

@@ -5,19 +5,22 @@ import Image from "next/image";
 import { HeroSlider } from "@/components/home/HeroSlider";
 import { VideoSection } from "@/components/home/VideoSection";
 import { InstagramSection } from "@/components/home/InstagramSection";
+import { CategorySlider } from "@/components/home/CategorySlider";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
 import { productService, Product } from "@/lib/api/productService";
-
 import { bannerService, Banner } from "@/lib/api/bannerService";
+import { categoryService, Category } from "@/lib/api/categoryService";
 
 export default async function HomePage() {
-  const categories = [
-    { name: "MEN", image: "https://images.unsplash.com/photo-1516826957135-700ede19c6e4?w=800&q=80" },
-    { name: "WOMEN", image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=800&q=80" },
-    { name: "UNISEX", image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=800&q=80" },
-  ];
+  // Fetch Categories
+  let dbCategories: Category[] = [];
+  try {
+    dbCategories = await categoryService.getAll();
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+  }
 
   // Fetch banners
   let banners: Banner[] = [];
@@ -94,17 +97,7 @@ export default async function HomePage() {
               </div>
             </div>
           </section>
-           <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] my-8 sm:my-12">
-            <Link href="/shop" className="relative block w-full h-full">
-              <Image
-                src="/promo.jpg"
-                alt="Promo Banner"
-                fill
-                sizes="100vw"
-                className="object-cover"
-              />
-            </Link>
-          </section>
+          
 
           {/* NEW ARRIVALS (Product Grid) */}
           <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">
@@ -161,8 +154,21 @@ export default async function HomePage() {
               ))}
             </div>
           </section>
-          
-           <VideoSection />
+           <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] my-8 sm:my-12">
+            <Link href="/shop" className="relative block w-full h-full">
+              <Image
+                src="/promo.jpg"
+                alt="Promo Banner"
+                fill
+                sizes="100vw"
+                className="object-cover"
+              />
+            </Link>
+          </section>
+          {/* OUR CATEGORIES SLIDER */}
+          <CategorySlider categories={dbCategories} />
+
+          <VideoSection />
 
           {/* BEST SELLING */}
           <section className="py-16 px-4 sm:px-8 lg:px-16 max-w-[1600px] mx-auto w-full">

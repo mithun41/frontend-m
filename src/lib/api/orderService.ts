@@ -18,6 +18,8 @@ export interface Order {
   address: string;
   city: 'Inside Dhaka' | 'Outside Dhaka';
   payment_method: string;
+  sender_number?: string;
+  transaction_id?: string;
   status: string;
   total_amount: string;
   delivery_charge: string;
