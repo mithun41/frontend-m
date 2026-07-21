@@ -1,4 +1,5 @@
 import axios from "axios";
+import { useAuthStore } from "@/store/useAuthStore";
 
 // Determine base URL depending on environment
 // For local development, assume Django runs on localhost:8000
@@ -36,6 +37,16 @@ axiosClient.interceptors.response.use(
   (error) => {
     // Here you can handle global token refreshing logic if necessary
     // E.g., if error.response.status === 401 && !originalRequest._retry
+    if (error.response?.status === 401) {
+      if (typeof window !== "undefined") {
+        const currentPath = window.location.pathname;
+        // Avoid redirect loop if already on auth pages
+        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
+           useAuthStore.getState().logout();
+           window.location.href = "/login";
+        }
+      }
+    }
     return Promise.reject(error);
   }
 );

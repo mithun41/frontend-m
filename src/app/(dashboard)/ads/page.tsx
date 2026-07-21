@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { Plus, Edit2, Trash2, X, Image as ImageIcon } from "lucide-react";
+import axiosClient from "@/lib/api/axiosClient";
 
 interface Ad {
   id: string;
@@ -26,18 +27,13 @@ export default function AdsPage() {
     image: "",
   });
 
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api";
+
 
   const fetchAds = async () => {
     try {
       setLoading(true);
-      const res = await fetch(`${API_URL}/ads`);
-      if (res.ok) {
-        const data = await res.json();
-        setAds(data);
-      } else {
-        console.error("Failed to fetch ads");
-      }
+      const res = await axiosClient.get(`/ads`);
+      setAds(res.data);
     } catch (error) {
       console.error("Error fetching ads:", error);
     } finally {
@@ -82,23 +78,15 @@ export default function AdsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const url = editingAd ? `${API_URL}/ads/${editingAd.id}` : `${API_URL}/ads`;
-      const method = editingAd ? "PUT" : "POST";
+      const url = editingAd ? `/ads/${editingAd.id}` : `/ads`;
+      
+      const req = editingAd 
+        ? axiosClient.put(url, formData)
+        : axiosClient.post(url, formData);
 
-      const res = await fetch(url, {
-        method,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
-
-      if (res.ok) {
-        fetchAds();
-        handleCloseModal();
-      } else {
-        console.error("Failed to save ad");
-      }
+      await req;
+      fetchAds();
+      handleCloseModal();
     } catch (error) {
       console.error("Error saving ad:", error);
     }
@@ -107,14 +95,8 @@ export default function AdsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm("Are you sure you want to delete this banner?")) return;
     try {
-      const res = await fetch(`${API_URL}/ads/${id}`, {
-        method: "DELETE",
-      });
-      if (res.ok) {
-        fetchAds();
-      } else {
-        console.error("Failed to delete ad");
-      }
+      await axiosClient.delete(`/ads/${id}`);
+      fetchAds();
     } catch (error) {
       console.error("Error deleting ad:", error);
     }
