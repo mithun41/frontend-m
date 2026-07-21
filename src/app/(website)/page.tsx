@@ -217,7 +217,9 @@ export default async function HomePage() {
               ))}
             </div>
           </section>
-      
+
+         
+
           
           {/* INSTAGRAM SECTION */}
           <InstagramSection />
