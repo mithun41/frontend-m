@@ -35,6 +35,12 @@ export function FilterSidebar() {
     router.push(pathname + "?" + createQueryString("category", category || ""));
   };
 
+  const isValueMatch = (targetVal: string | null, categoryVal: string | null) => {
+    if (!targetVal && !categoryVal) return true;
+    if (!targetVal || !categoryVal) return false;
+    return targetVal.toLowerCase() === categoryVal.toLowerCase();
+  };
+
   type SidebarCategory = {
     label: string;
     value: string | null;
@@ -45,10 +51,10 @@ export function FilterSidebar() {
     { label: "All Categories", value: null },
     ...(rawCategories || []).map(cat => ({
       label: cat.name,
-      value: cat.name,
+      value: cat.slug || cat.name,
       subcategories: cat.subcategories?.map(sub => ({
         label: sub.name,
-        value: sub.name,
+        value: sub.slug || sub.name,
       })) || []
     }))
   ];
@@ -62,8 +68,8 @@ export function FilterSidebar() {
         ) : (
           <div className="flex flex-col gap-2.5 text-sm font-medium">
             {categories.map((cat) => {
-              const isActive = currentCategory === cat.value || (!currentCategory && cat.value === null);
-              const isSubActive = cat.subcategories?.some((sub) => sub.value === currentCategory) ?? false;
+              const isActive = isValueMatch(currentCategory, cat.value);
+              const isSubActive = cat.subcategories?.some((sub) => isValueMatch(currentCategory, sub.value)) ?? false;
               const isExpandedOnMobile = isActive || isSubActive;
 
               return (
@@ -83,10 +89,10 @@ export function FilterSidebar() {
                       <div className="hidden lg:group-hover:flex absolute left-full top-0 ml-6 flex-col gap-2.5 w-56 bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-5 shadow-xl z-50 before:content-[''] before:absolute before:-left-6 before:top-0 before:bottom-0 before:w-6">
                         <h4 className="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">{cat.label}</h4>
                         {cat.subcategories.map((sub) => {
-                          const isSubItemActive = currentCategory === sub.value;
+                          const isSubItemActive = isValueMatch(currentCategory, sub.value);
                           return (
                             <span
-                              key={sub.label}
+                              key={sub.label + sub.value}
                               onClick={() => handleCategoryClick(sub.value)}
                               className={`cursor-pointer text-sm transition-colors hover:text-primary-500 ${
                                 isSubItemActive ? "text-primary-500 font-bold" : "text-neutral-600 dark:text-neutral-400"
@@ -101,10 +107,10 @@ export function FilterSidebar() {
                       {/* Mobile Accordion Fallback */}
                       <div className={`lg:hidden flex-col gap-2 ml-3 border-l-2 border-neutral-100 dark:border-neutral-800 pl-3 mt-1 ${isExpandedOnMobile ? "flex" : "hidden"}`}>
                         {cat.subcategories.map((sub) => {
-                          const isSubItemActive = currentCategory === sub.value;
+                          const isSubItemActive = isValueMatch(currentCategory, sub.value);
                           return (
                             <span
-                              key={sub.label}
+                              key={sub.label + sub.value}
                               onClick={() => handleCategoryClick(sub.value)}
                               className={`cursor-pointer text-xs transition-colors hover:text-primary-500 ${
                                 isSubItemActive ? "text-primary-500 font-semibold" : "text-neutral-500 dark:text-neutral-400"

@@ -11,30 +11,24 @@ import { categoryService, Category } from "@/lib/api/categoryService";
 import { productService } from "@/lib/api/productService";
 import { getImageUrl } from "@/utils/getImageUrl";
 
-const megaMenuData = {
-  categories: [
-    {
-      title: 'Tops',
-      items: ['T-Shirts', 'Jackets', 'Tank Tops', 'Polo Shirts', 'Cycling Tops', 'Muscle Tank Tops', 'Compression T-Shirts', 'Hoodies & Sweatshirts'],
-    },
-    {
-      title: 'Bottoms',
-      items: ['Pants', 'Shorts', 'Joggers', '2 in 1 Shorts', 'Swim Shorts', 'Cycling Shorts', 'Compression Shorts', 'Compression Leggings'],
-    },
-    {
-      title: 'Activity',
-      items: ['Run', 'Train', 'Move', 'Golf'],
-    },
-    {
-      title: 'Trending',
-      items: ['Athleisure', 'Best Sellers', 'New Arrivals', 'Matching Sets', 'Breeze Edition', 'Everyday Essentials'],
-    }
-  ],
-  images: [
-    { src: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop', alt: 'Model 1' },
-    { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=400&auto=format&fit=crop', alt: 'Model 2' },
-    { src: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=400&auto=format&fit=crop', alt: 'Model 3' },
-  ]
+const defaultImages = [
+  { src: 'https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=400&auto=format&fit=crop', alt: 'Model 1' },
+  { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=400&auto=format&fit=crop', alt: 'Model 2' },
+  { src: 'https://images.unsplash.com/photo-1556817411-31ae72fa3ea0?q=80&w=400&auto=format&fit=crop', alt: 'Model 3' },
+];
+
+const getDisplayCategories = (linkCategory?: Category) => {
+  if (!linkCategory || !linkCategory.subcategories || linkCategory.subcategories.length === 0) {
+    return [];
+  }
+
+  return linkCategory.subcategories.map(sub => ({
+    title: sub.name,
+    slug: sub.slug,
+    items: sub.subcategories && sub.subcategories.length > 0
+      ? sub.subcategories.map(ss => ({ name: ss.name, slug: ss.slug }))
+      : []
+  }));
 };
 
 export function Navbar() {
@@ -52,6 +46,7 @@ function NavbarContent() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [mobileMenusOpen, setMobileMenusOpen] = useState<{ [key: string]: boolean }>({});
+  const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
@@ -60,6 +55,13 @@ function NavbarContent() {
     const timer = setTimeout(() => setDebouncedQuery(searchQuery), 300);
     return () => clearTimeout(timer);
   }, [searchQuery]);
+
+  // Close all dropdowns on route or search change
+  useEffect(() => {
+    setIsOpen(false);
+    setActiveDropdown(null);
+    setIsSearchOpen(false);
+  }, [pathname, searchParams]);
 
   const { data: searchResults } = useQuery({
     queryKey: ['searchProducts', debouncedQuery],
@@ -129,7 +131,7 @@ function NavbarContent() {
 
           {/* Left: Logo */}
           <div className="flex-1 flex items-center justify-start cursor-pointer group">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" onClick={() => { setIsOpen(false); setActiveDropdown(null); }} className="flex items-center gap-3">
               <img src="/logo.jpg" alt="Logo" className="h-10 w-auto object-contain rounded-md" />
               <span className="text-2xl lg:text-3xl font-extrabold tracking-wide text-gray-900 group-hover:text-primary-600 transition-colors duration-300">
                 DRAVON
@@ -141,72 +143,72 @@ function NavbarContent() {
           <div className="hidden lg:flex flex-1 justify-center items-center space-x-4 xl:space-x-8">
             {navLinks.map((link, index) => {
               const normalizedLinkName = link.name.toLowerCase().replace(/\s+/g, ' ');
-              const linkCategory = rawCategories?.find(c => c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName);
+              const linkCategory = rawCategories?.find(c => c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName || c.slug.toLowerCase() === normalizedLinkName);
               const isCategoryLink = ['Men', 'Women', 'Gym Accessories', 'Gym Bag'].includes(link.name);
-              const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.name)}` : link.href;
-              const isActive = pathname === dynamicHref || (dynamicHref !== '/' && pathname.startsWith(dynamicHref.split('?')[0]) && searchParams.get('category') === linkCategory?.name);
+              const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.slug || linkCategory.name)}` : link.href;
+              const currentCatParam = searchParams.get('category')?.toLowerCase();
+              
+              const isActive = link.name === 'Shop' ? pathname.startsWith('/shop') : (link.href !== '/' && pathname === link.href);
+
+              const displayCategories = getDisplayCategories(linkCategory);
+              const menuImages = defaultImages;
 
               return (
-                <div key={index} className="group relative">
+                <div
+                  key={index}
+                  className="relative"
+                  onMouseEnter={() => setActiveDropdown(link.name)}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
                   <Link
                     href={dynamicHref}
-                    className={`relative flex items-center gap-1 py-2 text-[13px] whitespace-nowrap font-semibold tracking-wide uppercase transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-600 group-hover:text-primary-600'
+                    onClick={() => setActiveDropdown(null)}
+                    className={`relative flex items-center gap-1 py-2 text-[13px] whitespace-nowrap font-semibold tracking-wide uppercase transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
                       }`}
                   >
                     {link.name}
                     {link.hasMegaMenu && (
-                      <ChevronDown className="w-4 h-4 transition-transform group-hover:rotate-180" />
+                      <ChevronDown className={`w-4 h-4 transition-transform ${activeDropdown === link.name ? 'rotate-180' : ''}`} />
                     )}
                     <span
-                      className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 group-hover:w-full'
+                      className={`absolute bottom-0 left-0 h-[2px] bg-primary-600 transition-all duration-300 ease-out ${isActive ? 'w-full' : 'w-0 hover:w-full'
                         }`}
                     ></span>
                   </Link>
 
                   {/* Mega Menu Dropdown */}
                   {link.hasMegaMenu && (
-                    <div className="absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[800px] xl:w-[900px] opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out z-50">
+                    <div className={`absolute top-full left-1/2 -translate-x-1/2 pt-6 w-[800px] xl:w-[900px] transition-all duration-300 ease-in-out z-50 ${activeDropdown === link.name ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+                      }`}>
                       <div className="bg-white shadow-2xl border border-gray-100 p-8 rounded-xl cursor-default">
                         {/* Top categories */}
-                        <div className="grid grid-cols-4 gap-8">
-                          {(() => {
-                            let displayCategories: { title: string; items: string[] }[] = [];
-
-                            if (linkCategory && linkCategory.subcategories && linkCategory.subcategories.length > 0) {
-                              const hasDeepSubcategories = linkCategory.subcategories.some(sub => sub.subcategories && sub.subcategories.length > 0);
-
-                              if (hasDeepSubcategories) {
-                                displayCategories = linkCategory.subcategories.map(sub => ({
-                                  title: sub.name,
-                                  items: sub.subcategories?.map(ss => ss.name) || []
-                                }));
-                              } else {
-                                displayCategories = [{
-                                  title: 'All Products',
-                                  items: linkCategory.subcategories.map(sub => sub.name)
-                                }];
-                              }
-                            }
-
-                            return displayCategories.map((category, catIdx) => (
-                              <div key={catIdx}>
-                                <h3 className="text-sm font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2">{category.title}</h3>
-                                <ul className="space-y-3">
-                                  {category.items.map((item, itemIdx) => (
-                                    <li key={itemIdx}>
-                                      <Link href={`/shop?category=${encodeURIComponent(item)}`} className="text-sm text-gray-500 hover:text-primary-600 transition-colors block">
-                                        {item}
-                                      </Link>
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            ));
-                          })()}
+                        <div className={`grid gap-8 ${displayCategories.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
+                          {displayCategories.map((category, catIdx) => (
+                            <div key={catIdx}>
+                              <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`}>
+                                <h3 className="text-sm font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2 hover:text-primary-600 transition-colors">
+                                  {category.title}
+                                </h3>
+                              </Link>
+                              <ul className="space-y-3">
+                                {category.items.map((item, itemIdx) => (
+                                  <li key={itemIdx}>
+                                    <Link
+                                      href={`/shop?category=${encodeURIComponent(item.slug || item.name)}`}
+                                      onClick={() => setActiveDropdown(null)}
+                                      className="text-sm text-gray-500 hover:text-primary-600 transition-colors block"
+                                    >
+                                      {item.name}
+                                    </Link>
+                                  </li>
+                                ))}
+                              </ul>
+                            </div>
+                          ))}
                         </div>
                         {/* Bottom images */}
                         <div className="grid grid-cols-3 gap-6 mt-8 pt-8 border-t border-gray-100">
-                          {megaMenuData.images.map((image, imgIdx) => (
+                          {menuImages.map((image, imgIdx) => (
                             <div key={imgIdx} className="group/img relative overflow-hidden bg-gray-100 rounded-lg aspect-[4/3]">
                               <img
                                 src={image.src}
@@ -244,21 +246,21 @@ function NavbarContent() {
                       &times;
                     </button>
                   </form>
-                  
+
                   {/* Suggestions Dropdown */}
                   {debouncedQuery.trim().length > 0 && searchResults && searchResults.length > 0 && (
                     <div className="absolute top-full right-0 mt-2 w-full bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden">
                       <ul className="max-h-[60vh] overflow-y-auto py-2">
                         {searchResults.map(product => (
                           <li key={product.id}>
-                            <Link 
+                            <Link
                               href={`/shop/${product.id}`}
-                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); }}
+                              onClick={() => { setIsSearchOpen(false); setSearchQuery(''); setActiveDropdown(null); }}
                               className="flex items-center gap-3 px-4 py-2 hover:bg-gray-50 transition-colors"
                             >
-                              <img 
-                                src={product.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=50&q=80"} 
-                                alt={product.name} 
+                              <img
+                                src={product.image_1 || "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=50&q=80"}
+                                alt={product.name}
                                 className="w-10 h-10 object-cover rounded-md"
                               />
                               <div className="flex-1 min-w-0">
@@ -285,7 +287,7 @@ function NavbarContent() {
             </div>
 
             {/* Cart (Always visible) */}
-            <Link href="/cart" className="relative text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center group">
+            <Link href="/cart" onClick={() => { setIsOpen(false); setActiveDropdown(null); }} className="relative text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center group">
               <ShoppingCart className="h-5 w-5 transition-transform group-hover:scale-110" />
               {isMounted && cartItemsCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center">
@@ -299,9 +301,14 @@ function NavbarContent() {
             {/* Desktop Login (Hidden on mobile) */}
             <div className="hidden sm:flex items-center">
               {isMounted && user ? (
-                <div className="relative group cursor-pointer">
+                <div
+                  className="relative cursor-pointer"
+                  onMouseEnter={() => setActiveDropdown('user')}
+                  onMouseLeave={() => setActiveDropdown(null)}
+                >
                   <div className="flex items-center gap-2">
-                    <div className="w-9 h-9 rounded-full overflow-hidden bg-gray-50 border-2 border-transparent group-hover:border-primary-500 transition-all duration-300 shadow-sm flex items-center justify-center">
+                    <div className={`w-9 h-9 rounded-full overflow-hidden bg-gray-50 border-2 transition-all duration-300 shadow-sm flex items-center justify-center ${activeDropdown === 'user' ? 'border-primary-500' : 'border-transparent'
+                      }`}>
                       {user.profile_pic ? (
                         <img src={getImageUrl(user.profile_pic) as string} alt={user.name} className="w-full h-full object-cover" />
                       ) : (
@@ -310,17 +317,29 @@ function NavbarContent() {
                     </div>
                   </div>
                   {/* Dropdown Menu */}
-                  <div className="absolute right-0 top-full pt-4 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
-                    <div className="bg-white rounded-xl shadow-xl border border-gray-100 py-2 w-56 overflow-hidden transform origin-top-right scale-95 group-hover:scale-100 transition-transform">
+                  <div className={`absolute right-0 top-full pt-4 transition-all duration-200 z-50 ${activeDropdown === 'user' ? 'opacity-100 visible' : 'opacity-0 invisible pointer-events-none'
+                    }`}>
+                    <div className={`bg-white rounded-xl shadow-xl border border-gray-100 py-2 w-56 overflow-hidden transform origin-top-right transition-transform ${activeDropdown === 'user' ? 'scale-100' : 'scale-95'
+                      }`}>
                       <div className="px-4 py-3 border-b border-gray-50 bg-gray-50/50 mb-1">
                         <p className="text-sm font-bold text-gray-900 truncate">{user.name}</p>
                         <p className="text-xs text-gray-500 truncate mt-0.5">{user.email}</p>
                       </div>
-                      <Link href="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors">
+                      <Link
+                        href="/dashboard"
+                        onClick={() => setActiveDropdown(null)}
+                        className="flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-primary-600 hover:bg-primary-50 transition-colors"
+                      >
                         <User className="w-4 h-4" />
                         Dashboard
                       </Link>
-                      <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors text-left">
+                      <button
+                        onClick={() => {
+                          logout();
+                          setActiveDropdown(null);
+                        }}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-red-600 hover:bg-red-50 transition-colors text-left"
+                      >
                         <LogOut className="w-4 h-4" />
                         Logout
                       </button>
@@ -328,7 +347,7 @@ function NavbarContent() {
                   </div>
                 </div>
               ) : (
-                <Link href="/login" className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Login">
+                <Link href="/login" onClick={() => setActiveDropdown(null)} className="text-gray-600 hover:text-primary-600 transition-colors duration-300 flex items-center gap-2 group" title="Login">
                   <User className="h-5 w-5 transition-transform group-hover:scale-110" />
                 </Link>
               )}
@@ -371,10 +390,10 @@ function NavbarContent() {
                 <div className="flex items-center">
                   <Link
                     href={dynamicHref}
-                    onClick={() => { if (!link.hasMegaMenu) setIsOpen(false); }}
+                    onClick={() => setIsOpen(false)}
                     className={`flex-1 block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${isActive
-                        ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
-                        : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 hover:border-l-4 hover:border-primary-300'
+                      ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
+                      : 'text-gray-600 hover:bg-gray-50 hover:text-primary-600 hover:border-l-4 hover:border-primary-300'
                       }`}
                   >
                     {link.name}
@@ -392,44 +411,26 @@ function NavbarContent() {
                 {/* Mobile Submenu */}
                 {link.hasMegaMenu && isSubMenuOpen && (
                   <div className="pl-8 pr-4 py-2 space-y-4 bg-gray-50 rounded-lg mt-1 border border-gray-100">
-                    {(() => {
-                      let displayCategories: { title: string; items: string[] }[] = [];
-
-                      if (linkCategory && linkCategory.subcategories && linkCategory.subcategories.length > 0) {
-                        const hasDeepSubcategories = linkCategory.subcategories.some(sub => sub.subcategories && sub.subcategories.length > 0);
-
-                        if (hasDeepSubcategories) {
-                          displayCategories = linkCategory.subcategories.map(sub => ({
-                            title: sub.name,
-                            items: sub.subcategories?.map(ss => ss.name) || []
-                          }));
-                        } else {
-                          displayCategories = [{
-                            title: 'All Products',
-                            items: linkCategory.subcategories.map(sub => sub.name)
-                          }];
-                        }
-                      }
-
-                      return displayCategories.map((category, catIdx) => (
-                        <div key={catIdx}>
-                          <h4 className="text-xs font-bold text-gray-900 mb-2 uppercase">{category.title}</h4>
-                          <ul className="space-y-2">
-                            {category.items.map((item, itemIdx) => (
-                              <li key={itemIdx}>
-                                <Link
-                                  href={`/shop?category=${encodeURIComponent(item)}`}
-                                  onClick={() => setIsOpen(false)}
-                                  className="text-sm text-gray-500 hover:text-primary-600 block py-1"
-                                >
-                                  {item}
-                                </Link>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                      ));
-                    })()}
+                    {getDisplayCategories(linkCategory).map((category, catIdx) => (
+                      <div key={catIdx}>
+                        <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`}>
+                          <h4 className="text-xs font-bold text-gray-900 mb-2 uppercase hover:text-primary-600 transition-colors">{category.title}</h4>
+                        </Link>
+                        <ul className="space-y-2">
+                          {category.items.map((item, itemIdx) => (
+                            <li key={itemIdx}>
+                              <Link
+                                href={`/shop?category=${encodeURIComponent(item.slug || item.name)}`}
+                                onClick={() => setIsOpen(false)}
+                                className="text-sm text-gray-500 hover:text-primary-600 block py-1"
+                              >
+                                {item.name}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

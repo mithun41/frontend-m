@@ -7,6 +7,8 @@ import { productService, Product } from "@/lib/api/productService";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
+import { categoryService, Category } from "@/lib/api/categoryService";
+
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
   const categoryFilter = resolvedParams.category as string | undefined;
@@ -16,17 +18,66 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   const page = parseInt(resolvedParams.page as string) || 1;
 
   let allProducts: Product[] = [];
+  let categoriesList: Category[] = [];
+
   try {
-    const response = await productService.getProducts(page);
-    allProducts = response.results || [];
+    const [productsRes, categoriesRes] = await Promise.all([
+      productService.getProducts(page),
+      categoryService.getAll()
+    ]);
+    allProducts = productsRes.results || [];
+    categoriesList = categoriesRes || [];
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("Error fetching products or categories:", error);
   }
 
   let products = allProducts;
 
   if (categoryFilter) {
-    products = products.filter(p => p.category?.name === categoryFilter);
+    const lowerFilter = categoryFilter.toLowerCase();
+
+    // Recursively find matching category by exact slug (or exact name if no slug) and collect all descendant category IDs
+    const findCategoryAndChildIds = (cats: Category[], target: string): number[] => {
+      let matchedIds: number[] = [];
+      for (const cat of cats) {
+        const isMatch = cat.slug
+          ? cat.slug.toLowerCase() === target
+          : cat.name.toLowerCase() === target;
+
+        if (isMatch) {
+          const collectIds = (c: Category) => {
+            matchedIds.push(c.id);
+            c.subcategories?.forEach(collectIds);
+          };
+          collectIds(cat);
+        } else if (cat.subcategories && cat.subcategories.length > 0) {
+          matchedIds = matchedIds.concat(findCategoryAndChildIds(cat.subcategories, target));
+        }
+      }
+      return matchedIds;
+    };
+
+    const matchedCategoryIds = findCategoryAndChildIds(categoriesList, lowerFilter);
+
+    if (matchedCategoryIds.length > 0) {
+      products = products.filter(p => {
+        if (!p.category) return false;
+        const catId = p.category.id;
+        const parentId = p.category.parent;
+        return (
+          matchedCategoryIds.includes(catId) ||
+          (parentId !== null && parentId !== undefined && matchedCategoryIds.includes(parentId))
+        );
+      });
+    } else {
+      products = products.filter(p => {
+        if (!p.category) return false;
+        return (
+          (p.category.slug && p.category.slug.toLowerCase() === lowerFilter) ||
+          (p.category.name && p.category.name.toLowerCase() === lowerFilter)
+        );
+      });
+    }
   }
 
   if (searchQuery) {

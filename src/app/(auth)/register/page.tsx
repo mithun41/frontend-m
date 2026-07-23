@@ -92,11 +92,11 @@ export default function RegisterPage() {
         <div className="flex-1 p-8 md:p-12 flex flex-col justify-center items-center text-center bg-black/20 border-b md:border-b-0 md:border-r border-white/10 relative overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary-500/20 rounded-full blur-[80px] pointer-events-none"></div>
           
-          <div className="w-20 h-20 rounded-full bg-primary-500 flex items-center justify-center mb-6 shadow-xl shadow-primary-500/40 relative z-10">
-            <span className="text-white font-black text-4xl">BN</span>
+          <div className="w-20 h-20 rounded-2xl overflow-hidden bg-white/10 p-2 mb-6 shadow-xl border border-white/20 relative z-10 flex items-center justify-center">
+            <img src="/logo.jpg" alt="DRAVON Logo" className="w-full h-full object-contain rounded-xl" />
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-tight relative z-10">
-            Join the <span className="text-primary-500">Elite</span>
+          <h2 className="text-3xl sm:text-4xl font-extrabold text-white mb-4 tracking-wider uppercase relative z-10">
+            DRAVON
           </h2>
           <p className="text-white/80 text-lg max-w-[250px] leading-relaxed relative z-10">
             Unlock exclusive discounts, track your orders, and join a community of champions.
@@ -107,7 +107,7 @@ export default function RegisterPage() {
         <div className="flex-[1.2] p-8 md:p-12 bg-white/5">
           <div className="w-full max-w-sm mx-auto">
             <h1 className="text-2xl sm:text-3xl font-bold text-white mb-2">Create Account</h1>
-            <p className="text-white/60 text-sm mb-8">Sign up to get started with BrandName.</p>
+            <p className="text-white/60 text-sm mb-8">Sign up to get started with DRAVON.</p>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-5">
               
