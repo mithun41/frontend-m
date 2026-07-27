@@ -16,12 +16,12 @@ export function getImageUrl(imagePath: string | null | undefined): string {
       // ignore
     }
   }
+  if (cleaned.startsWith("blob:") || cleaned.startsWith("data:")) {
+    return cleaned;
+  }
   const httpIdx = cleaned.indexOf("http");
   if (httpIdx !== -1) {
     return cleaned.substring(httpIdx);
-  }
-  if (cleaned.startsWith("blob:") || cleaned.startsWith("data:")) {
-    return cleaned;
   }
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api";
   const baseUrl = apiUrl.replace(/\/api\/?$/, "");
