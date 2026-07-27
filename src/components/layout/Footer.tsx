@@ -12,15 +12,15 @@ const Facebook = ({ className }: { className?: string }) => (
   </svg>
 );
 
-const TwitterX = ({ className }: { className?: string }) => (
-  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-  </svg>
-);
-
 const Youtube = ({ className }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24">
     <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
+  </svg>
+);
+
+const TikTok = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 11-5.2-1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V5.8a6.84 6.84 0 00-1-.05A6.33 6.33 0 003 12a6.34 6.34 0 0010.86 4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-3.04-.86z"/>
   </svg>
 );
 
@@ -37,18 +37,42 @@ export function Footer() {
           <p className="text-sm leading-relaxed max-w-xs mt-2">
             Premium fitness gear built for athletes. We engineer apparel and accessories that survive your toughest workouts.
           </p>
-          <div className="flex items-center gap-5 mt-4 text-neutral-400">
-            <Link href="#" className="hover:text-primary-500 transition-colors">
+          <div className="flex items-center gap-4 mt-4">
+            <Link
+              href="https://www.instagram.com/dravonofficial.bd?igsh=bG83dm9wOTA4ZDh2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center text-white hover:scale-110 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300"
+              aria-label="Instagram"
+            >
               <Instagram className="w-5 h-5" />
             </Link>
-            <Link href="#" className="hover:text-primary-500 transition-colors">
+            <Link
+              href="https://www.facebook.com/share/1EXhBaYEos/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:scale-110 hover:shadow-lg hover:shadow-blue-500/25 transition-all duration-300"
+              aria-label="Facebook"
+            >
               <Facebook className="w-5 h-5" />
             </Link>
-            <Link href="#" className="hover:text-primary-500 transition-colors">
-              <TwitterX className="w-5 h-5" />
-            </Link>
-            <Link href="#" className="hover:text-primary-500 transition-colors">
+            <Link
+              href="https://youtube.com/@dravonfit?si=4jXg-XeFvBCrJjXI"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-[#FF0000] flex items-center justify-center text-white hover:scale-110 hover:shadow-lg hover:shadow-red-500/25 transition-all duration-300"
+              aria-label="YouTube"
+            >
               <Youtube className="w-5 h-5" />
+            </Link>
+            <Link
+              href="https://tiktok.com/@dravon.fit"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-black border border-neutral-800 flex items-center justify-center text-white hover:scale-110 hover:border-cyan-400 hover:shadow-lg hover:shadow-cyan-500/25 transition-all duration-300 group"
+              aria-label="TikTok"
+            >
+              <TikTok className="w-5 h-5 group-hover:text-[#00F2FE] transition-colors" />
             </Link>
           </div>
         </div>

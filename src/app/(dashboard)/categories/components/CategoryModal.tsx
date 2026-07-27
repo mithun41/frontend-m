@@ -8,6 +8,8 @@ import { X, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
 
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
 interface CategoryModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -17,6 +19,7 @@ interface CategoryModalProps {
 
 export default function CategoryModal({ open, setOpen, categoryToEdit, categories }: CategoryModalProps) {
   const queryClient = useQueryClient();
+  const [isUploading, setIsUploading] = useState(false);
   
   const [formData, setFormData] = useState<{ name: string; slug: string; parent: number | null }>({
     name: "",
@@ -117,23 +120,39 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
     
-    const submitData = new FormData();
-    submitData.append("name", formData.name);
-    submitData.append("slug", formData.slug);
-    if (formData.parent) {
-      submitData.append("parent", formData.parent.toString());
-    }
-    if (imageFile) {
-      submitData.append("image", imageFile);
-    }
+    try {
+      let imageUrl = categoryToEdit?.image || "";
+      if (imageFile) {
+        imageUrl = await uploadToCloudinary(imageFile);
+      }
 
-    if (categoryToEdit) {
-      updateMutation.mutate(submitData);
-    } else {
-      createMutation.mutate(submitData);
+      const submitData = new FormData();
+      submitData.append("name", formData.name);
+      submitData.append("slug", formData.slug);
+      if (formData.parent) {
+        submitData.append("parent", formData.parent.toString());
+      }
+      if (imageUrl) {
+        submitData.append("image", imageUrl);
+      }
+
+      if (categoryToEdit) {
+        updateMutation.mutate(submitData);
+      } else {
+        createMutation.mutate(submitData);
+      }
+    } catch (err: any) {
+      Swal.fire({
+        title: "Upload Failed",
+        text: err.message || "Failed to upload image to Cloudinary",
+        icon: "error"
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 

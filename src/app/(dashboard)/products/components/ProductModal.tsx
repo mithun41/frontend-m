@@ -8,6 +8,8 @@ import Swal from "sweetalert2";
 import { X, Upload, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
 interface ProductModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -16,6 +18,7 @@ interface ProductModalProps {
 
 export default function ProductModal({ open, setOpen, productToEdit }: ProductModalProps) {
   const queryClient = useQueryClient();
+  const [isUploading, setIsUploading] = useState(false);
   
   const [formData, setFormData] = useState({
     name: "",
@@ -205,26 +208,55 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsUploading(true);
     
-    const data = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      if (value) {
-        data.append(key, value);
+    try {
+      const uploadedUrls: Record<string, string> = {};
+      const uploadTasks: Promise<void>[] = [];
+
+      for (let i = 1; i <= 5; i++) {
+        const key = `image_${i}` as keyof typeof images;
+        const file = images[key];
+        if (file) {
+          uploadTasks.push(
+            uploadToCloudinary(file).then((url) => {
+              uploadedUrls[key] = url;
+            })
+          );
+        }
       }
-    });
 
-    if (images.image_1) data.append("image_1", images.image_1);
-    if (images.image_2) data.append("image_2", images.image_2);
-    if (images.image_3) data.append("image_3", images.image_3);
-    if (images.image_4) data.append("image_4", images.image_4);
-    if (images.image_5) data.append("image_5", images.image_5);
+      await Promise.all(uploadTasks);
 
-    if (productToEdit) {
-      updateMutation.mutate(data);
-    } else {
-      createMutation.mutate(data);
+      const data = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value) {
+          data.append(key, value);
+        }
+      });
+
+      for (let i = 1; i <= 5; i++) {
+        const key = `image_${i}` as keyof typeof images;
+        if (uploadedUrls[key]) {
+          data.append(key, uploadedUrls[key]);
+        }
+      }
+
+      if (productToEdit) {
+        updateMutation.mutate(data);
+      } else {
+        createMutation.mutate(data);
+      }
+    } catch (err: any) {
+      Swal.fire({
+        title: "Upload Failed",
+        text: err.message || "Failed to upload image to Cloudinary",
+        icon: "error"
+      });
+    } finally {
+      setIsUploading(false);
     }
   };
 

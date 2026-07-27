@@ -8,6 +8,8 @@ import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
 
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
 interface BannerModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -132,19 +134,29 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
 
     setIsSubmitting(true);
 
-    const submitData = new FormData();
-    Object.entries(formData).forEach(([key, value]) => {
-      submitData.append(key, String(value));
-    });
+    try {
+      let imageUrl = bannerToEdit?.image || "";
+      if (selectedFile) {
+        imageUrl = await uploadToCloudinary(selectedFile);
+      }
 
-    if (selectedFile) {
-      submitData.append("image", selectedFile);
-    }
+      const submitData = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        submitData.append(key, String(value));
+      });
 
-    if (bannerToEdit) {
-      updateMutation.mutate({ id: bannerToEdit.id, data: submitData });
-    } else {
-      createMutation.mutate(submitData);
+      if (imageUrl) {
+        submitData.append("image", imageUrl);
+      }
+
+      if (bannerToEdit) {
+        updateMutation.mutate({ id: bannerToEdit.id, data: submitData });
+      } else {
+        createMutation.mutate(submitData);
+      }
+    } catch (err: any) {
+      setIsSubmitting(false);
+      Swal.fire("Error!", err.message || "Failed to upload image to Cloudinary", "error");
     }
   };
 

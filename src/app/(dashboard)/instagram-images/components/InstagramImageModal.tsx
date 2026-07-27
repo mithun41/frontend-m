@@ -8,6 +8,8 @@ import { X, Upload, Loader2, Image as ImageIcon } from "lucide-react";
 import Image from "next/image";
 import { getImageUrl } from "@/lib/utils";
 
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
 interface InstagramImageModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -78,15 +80,22 @@ export default function InstagramImageModal({ open, setOpen, imageToEdit }: Inst
 
     setIsSubmitting(true);
 
-    const submitData = new FormData();
-    if (selectedFile) {
-      submitData.append("image", selectedFile);
-    }
+    try {
+      let imageUrl = imageToEdit?.image || "";
+      if (selectedFile) {
+        imageUrl = await uploadToCloudinary(selectedFile);
+      }
 
-    // Currently we only support creating and deleting. 
-    // Updating an image is essentially uploading a new one, but for simplicity, we'll just use create for now.
-    // If updating was needed, we'd add updateMutation.
-    createMutation.mutate(submitData);
+      const submitData = new FormData();
+      if (imageUrl) {
+        submitData.append("image", imageUrl);
+      }
+
+      createMutation.mutate(submitData);
+    } catch (err: any) {
+      setIsSubmitting(false);
+      Swal.fire("Error!", err.message || "Failed to upload image to Cloudinary", "error");
+    }
   };
 
   if (!open) return null;

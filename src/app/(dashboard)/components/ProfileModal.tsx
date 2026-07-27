@@ -7,6 +7,8 @@ import { useAuthStore } from "@/store/useAuthStore";
 import { X, Camera } from "lucide-react";
 import { getImageUrl } from "@/utils/getImageUrl";
 
+import { uploadToCloudinary } from "@/lib/cloudinary";
+
 interface ProfileModalProps {
   open: boolean;
   setOpen: (open: boolean) => void;
@@ -100,22 +102,26 @@ export default function ProfileModal({ open, setOpen }: ProfileModalProps) {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSuccessMsg("");
     setErrorMsg("");
 
-    if (selectedFile) {
+    try {
+      let profilePicUrl = profile?.profile_pic || "";
+      if (selectedFile) {
+        profilePicUrl = await uploadToCloudinary(selectedFile);
+      }
+
       const formDataToSend = new FormData();
       formDataToSend.append("name", formData.name);
-      // backend might not allow email update, but we append it anyway if needed
       if (formData.phone_number) formDataToSend.append("phone_number", formData.phone_number);
       if (formData.address) formDataToSend.append("address", formData.address);
-      formDataToSend.append("profile_pic", selectedFile);
-      
+      if (profilePicUrl) formDataToSend.append("profile_pic", profilePicUrl);
+
       updateMutation.mutate(formDataToSend);
-    } else {
-      updateMutation.mutate(formData);
+    } catch (err: any) {
+      setErrorMsg(err.message || "Failed to upload profile picture to Cloudinary.");
     }
   };
 
