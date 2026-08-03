@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import { Mail, MapPin, Phone, Clock } from "lucide-react";
 import ContactForm from "@/components/contact/ContactForm";
 
-export const metadata = {
-  title: "Contact Us - BrandName",
-  description: "Get in touch with our team.",
+export const metadata: Metadata = {
+  title: "Contact Us | DRAVON FIT",
+  description:
+    "Get in touch with the DRAVON FIT team for customer support, order inquiries, or product questions.",
+  openGraph: {
+    title: "Contact Us | DRAVON FIT",
+    description: "Get in touch with the DRAVON FIT team for customer support or order inquiries.",
+    url: "https://dravonfit.com/contact",
+    siteName: "DRAVON FIT",
+  },
 };
 
 export default function ContactPage() {

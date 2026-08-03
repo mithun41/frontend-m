@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -8,6 +9,48 @@ import { AddToCartSection } from "@/components/shop/AddToCartSection";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 import { getImageUrl } from "@/utils/getImageUrl";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+  const resolvedParams = await params;
+  try {
+    const product = await productService.getProductDetails(resolvedParams.id);
+    if (!product) {
+      return { title: "Product Not Found | DRAVON FIT" };
+    }
+
+    const desc =
+      product.short_description ||
+      product.description?.replace(/<[^>]*>?/gm, "").substring(0, 160) ||
+      `Buy ${product.name} at DRAVON FIT. Premium quality gym gear.`;
+
+    const mainImage = getImageUrl(product.image_1) || "/logo.jpg";
+
+    return {
+      title: `${product.name} | DRAVON FIT`,
+      description: desc,
+      openGraph: {
+        title: `${product.name} | DRAVON FIT`,
+        description: desc,
+        url: `https://dravonfit.com/shop/${product.id}`,
+        siteName: "DRAVON FIT",
+        images: [{ url: mainImage, alt: product.name }],
+        type: "website",
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: `${product.name} | DRAVON FIT`,
+        description: desc,
+        images: [mainImage],
+      },
+    };
+  } catch {
+    return { title: "Product | DRAVON FIT" };
+  }
+}
 
 export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -36,8 +79,33 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
     notFound();
   }
 
+  const mainImageUrl = getImageUrl(product.image_1);
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    "name": product.name,
+    "image": mainImageUrl ? [mainImageUrl] : [],
+    "description": product.short_description || product.description?.replace(/<[^>]*>?/gm, ""),
+    "sku": `PROD-${product.id}`,
+    "offers": {
+      "@type": "Offer",
+      "url": `https://dravonfit.com/shop/${product.id}`,
+      "priceCurrency": "BDT",
+      "price": product.offer_price || product.selling_price || product.price,
+      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+      "seller": {
+        "@type": "Organization",
+        "name": "DRAVON FIT"
+      }
+    }
+  };
+
   return (
     <div className="bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 min-h-screen">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Breadcrumbs */}
       <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-24 py-8">
         <nav className="text-xs font-medium text-neutral-400 uppercase tracking-widest flex items-center gap-2">

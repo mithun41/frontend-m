@@ -1,5 +1,4 @@
-export const dynamic = "force-dynamic";
-
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { HeroSlider } from "@/components/home/HeroSlider";
@@ -12,6 +11,28 @@ import { OrderNowButton } from "@/components/shop/OrderNowButton";
 import { productService, Product } from "@/lib/api/productService";
 import { bannerService, Banner } from "@/lib/api/bannerService";
 import { categoryService, Category } from "@/lib/api/categoryService";
+
+export const metadata: Metadata = {
+  title: "DRAVON FIT | Premium Gym Gear & Workout Accessories",
+  description:
+    "Shop premium fitness gear, workout accessories, and high-performance athletic apparel at DRAVON FIT. Built for athletes who demand peak performance.",
+  openGraph: {
+    title: "DRAVON FIT | Premium Gym Gear & Workout Accessories",
+    description:
+      "Shop premium fitness gear, workout accessories, and high-performance athletic apparel at DRAVON FIT.",
+    url: "https://dravonfit.com",
+    siteName: "DRAVON FIT",
+    images: [{ url: "/logo.jpg", width: 1200, height: 630, alt: "DRAVON FIT Home" }],
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DRAVON FIT | Premium Gym Gear & Workout Accessories",
+    description:
+      "Shop premium fitness gear, workout accessories, and high-performance athletic apparel at DRAVON FIT.",
+    images: ["/logo.jpg"],
+  },
+};
 
 export default async function HomePage() {
   // Fetch Categories

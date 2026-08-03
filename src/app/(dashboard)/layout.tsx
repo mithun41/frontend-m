@@ -1,6 +1,15 @@
+import type { Metadata } from "next";
 import DashboardNavbar from "@/app/(dashboard)/components/DashboardNavbar";
 import Sidebar from "@/components/layout/Sidebar"; 
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
+
+export const metadata: Metadata = {
+  title: "Admin Dashboard | DRAVON FIT",
+  robots: {
+    index: false,
+    follow: false,
+  },
+};
 
 export default function DashboardLayout({
   children,

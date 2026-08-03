@@ -1,10 +1,19 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { Dumbbell, ShieldCheck, Activity, Users } from "lucide-react";
 
-export const metadata = {
-  title: "About Us | Premium Gym Accessories",
-  description: "Learn more about our mission to provide the highest quality gym gear and accessories to fuel your fitness journey.",
+export const metadata: Metadata = {
+  title: "About Us | DRAVON FIT",
+  description:
+    "Learn more about DRAVON FIT - our mission to engineer high-quality fitness gear, gym accessories, and athletic apparel to fuel your fitness journey.",
+  openGraph: {
+    title: "About Us | DRAVON FIT",
+    description:
+      "Learn more about DRAVON FIT - our mission to engineer high-quality fitness gear and gym accessories.",
+    url: "https://dravonfit.com/about",
+    siteName: "DRAVON FIT",
+  },
 };
 
 export default function AboutPage() {

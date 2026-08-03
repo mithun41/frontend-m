@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { ShoppingCart } from "lucide-react";
@@ -8,6 +9,46 @@ import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 
 import { categoryService, Category } from "@/lib/api/categoryService";
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}): Promise<Metadata> {
+  const resolvedParams = await searchParams;
+  const category = resolvedParams.category as string | undefined;
+  const search = resolvedParams.search as string | undefined;
+
+  let title = "Shop All Products | DRAVON FIT";
+  let description =
+    "Browse our full collection of premium gym accessories, workout gear, and athletic wear at DRAVON FIT.";
+
+  if (category) {
+    const formattedCat = category.replace(/-/g, " ").replace(/\b\w/g, (l) => l.toUpperCase());
+    title = `${formattedCat} - Shop Gym Gear | DRAVON FIT`;
+    description = `Explore high-quality ${formattedCat} at DRAVON FIT. Built for maximum performance and durability.`;
+  } else if (search) {
+    title = `Search results for "${search}" | DRAVON FIT`;
+    description = `Find gym gear and accessories matching "${search}" at DRAVON FIT.`;
+  }
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      url: "https://dravonfit.com/shop",
+      siteName: "DRAVON FIT",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+    },
+  };
+}
 
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
