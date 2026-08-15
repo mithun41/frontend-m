@@ -80,19 +80,19 @@ export function Footer() {
         {/* Quick Links */}
         <div className="flex flex-col gap-4">
           <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Shop</h4>
-          <Link href="/shop?category=Men" className="text-sm hover:text-primary-500 transition-colors">Men's Apparel</Link>
-          <Link href="/shop?category=Women" className="text-sm hover:text-primary-500 transition-colors">Women's Apparel</Link>
-          <Link href="/shop?category=Gym+Accessories" className="text-sm hover:text-primary-500 transition-colors">Gym Accessories</Link>
-          <Link href="/shop?category=Gym+Bag" className="text-sm hover:text-primary-500 transition-colors">Gym Bags</Link>
-          <Link href="/shop" className="text-sm hover:text-primary-500 transition-colors mt-1 font-semibold text-white">All Products</Link>
+          <Link href="/shop?category=Men" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Men's Apparel</Link>
+          <Link href="/shop?category=Women" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Women's Apparel</Link>
+          <Link href="/shop?category=Gym+Accessories" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Accessories</Link>
+          <Link href="/shop?category=Gym+Bag" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Bags</Link>
+          <Link href="/shop" prefetch={false} className="text-sm hover:text-primary-500 transition-colors mt-1 font-semibold text-white">All Products</Link>
         </div>
 
         {/* Company Links */}
         <div className="flex flex-col gap-4">
           <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Company</h4>
-          <Link href="/about" className="text-sm hover:text-primary-500 transition-colors font-medium text-white">About Us</Link>
-          <Link href="/contact" className="text-sm hover:text-primary-500 transition-colors font-medium text-white">Contact</Link>
-          <Link href="/track-order" className="text-sm hover:text-primary-500 transition-colors">Track Order</Link>
+          <Link href="/about" prefetch={false} className="text-sm hover:text-primary-500 transition-colors font-medium text-white">About Us</Link>
+          <Link href="/contact" prefetch={false} className="text-sm hover:text-primary-500 transition-colors font-medium text-white">Contact</Link>
+          <Link href="/track-order" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Track Order</Link>
           <Link href="#" className="text-sm hover:text-primary-500 transition-colors">Privacy Policy</Link>
           <Link href="#" className="text-sm hover:text-primary-500 transition-colors">Terms of Service</Link>
         </div>

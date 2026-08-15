@@ -80,10 +80,17 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
       });
     },
     onError: (error: any) => {
-      console.error(error?.response?.data);
-      const errorMsg = error?.response?.data
-        ? Object.entries(error.response.data).map(([k, v]) => `${k}: ${v}`).join('\n')
-        : "Failed to create banner.";
+      console.error("Banner create error:", error?.response?.data || error);
+      let errorMsg = "Failed to create banner.";
+      if (error?.response?.data) {
+        if (typeof error.response.data === "string") {
+          errorMsg = error.response.data;
+        } else if (typeof error.response.data === "object") {
+          errorMsg = Object.entries(error.response.data)
+            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+            .join("\n");
+        }
+      }
       Swal.fire("Error!", errorMsg, "error");
     },
     onSettled: () => setIsSubmitting(false)
@@ -103,10 +110,17 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
       });
     },
     onError: (error: any) => {
-      console.error(error?.response?.data);
-      const errorMsg = error?.response?.data
-        ? Object.entries(error.response.data).map(([k, v]) => `${k}: ${v}`).join('\n')
-        : "Failed to update banner.";
+      console.error("Banner update error:", error?.response?.data || error);
+      let errorMsg = "Failed to update banner.";
+      if (error?.response?.data) {
+        if (typeof error.response.data === "string") {
+          errorMsg = error.response.data;
+        } else if (typeof error.response.data === "object") {
+          errorMsg = Object.entries(error.response.data)
+            .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+            .join("\n");
+        }
+      }
       Swal.fire("Error!", errorMsg, "error");
     },
     onSettled: () => setIsSubmitting(false)
@@ -135,18 +149,18 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
     setIsSubmitting(true);
 
     try {
-      let imageUrl = bannerToEdit?.image || "";
-      if (selectedFile) {
-        imageUrl = await uploadToCloudinary(selectedFile);
-      }
-
       const submitData = new FormData();
-      Object.entries(formData).forEach(([key, value]) => {
-        submitData.append(key, String(value));
-      });
+      submitData.append("badge_name", formData.badge_name);
+      submitData.append("title", formData.title);
+      submitData.append("subtitle", formData.subtitle);
+      submitData.append("button_1_text", formData.button_1_text);
+      submitData.append("button_1_link", formData.button_1_link);
+      submitData.append("button_2_text", formData.button_2_text);
+      submitData.append("button_2_link", formData.button_2_link);
+      submitData.append("is_active", String(formData.is_active));
 
-      if (imageUrl) {
-        submitData.append("image", imageUrl);
+      if (selectedFile) {
+        submitData.append("image", selectedFile);
       }
 
       if (bannerToEdit) {
@@ -156,7 +170,7 @@ export default function BannerModal({ open, setOpen, bannerToEdit }: BannerModal
       }
     } catch (err: any) {
       setIsSubmitting(false);
-      Swal.fire("Error!", err.message || "Failed to upload image to Cloudinary", "error");
+      Swal.fire("Error!", err.message || "Failed to submit banner", "error");
     }
   };
 

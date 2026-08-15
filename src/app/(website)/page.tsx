@@ -35,40 +35,29 @@ export const metadata: Metadata = {
 };
 
 export default async function HomePage() {
-  // Fetch Categories
-  let dbCategories: Category[] = [];
-  try {
-    dbCategories = await categoryService.getAll();
-  } catch (error) {
-    console.error("Error fetching categories:", error);
-  }
+  // Fetch all home page data concurrently in parallel
+  const [categoriesRes, bannersRes, newArrivalsRes, bestSellingRes] = await Promise.allSettled([
+    categoryService.getAll(),
+    bannerService.getAll(),
+    productService.getProducts(1, { ordering: '-created_at' }),
+    productService.getProducts(1, { ordering: '-sold_quantity' }),
+  ]);
 
-  // Fetch banners
-  let banners: Banner[] = [];
-  try {
-    banners = await bannerService.getAll();
-    banners = banners.filter(b => b.is_active);
-  } catch (error) {
-    console.error("Error fetching banners:", error);
-  }
+  const dbCategories: Category[] = categoriesRes.status === "fulfilled" && Array.isArray(categoriesRes.value)
+    ? categoriesRes.value 
+    : [];
 
-  // Fetch new arrivals (latest 4 products)
-  let newArrivals: Product[] = [];
-  try {
-    const newArrivalsResponse = await productService.getProducts(1, { ordering: '-created_at' });
-    newArrivals = newArrivalsResponse.results.slice(0, 4);
-  } catch (error) {
-    console.error("Error fetching new arrivals:", error);
-  }
+  const banners: Banner[] = bannersRes.status === "fulfilled" && Array.isArray(bannersRes.value)
+    ? bannersRes.value.filter(b => b.is_active) 
+    : [];
 
-  // Fetch best selling (top 4 sold products)
-  let bestSelling: Product[] = [];
-  try {
-    const bestSellingResponse = await productService.getProducts(1, { ordering: '-sold_quantity' });
-    bestSelling = bestSellingResponse.results.slice(0, 4);
-  } catch (error) {
-    console.error("Error fetching best selling:", error);
-  }
+  const newArrivals: Product[] = newArrivalsRes.status === "fulfilled" && newArrivalsRes.value?.results
+    ? newArrivalsRes.value.results.slice(0, 4) 
+    : [];
+
+  const bestSelling: Product[] = bestSellingRes.status === "fulfilled" && bestSellingRes.value?.results
+    ? bestSellingRes.value.results.slice(0, 4) 
+    : [];
 
   return (
     <div className="flex flex-col min-h-screen bg-white text-black">
@@ -108,10 +97,10 @@ export default async function HomePage() {
                   Checkout Our Collection
                 </p>
                 <div className="flex flex-col sm:flex-row gap-6 sm:gap-16 w-full justify-center">
-                  <Link href="shop?category=Men" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
+                  <Link href="/shop?category=Men" prefetch={false} className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
                     Men's Collection
                   </Link>
-                  <Link href="shop?category=Women" className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
+                  <Link href="/shop?category=Women" prefetch={false} className="text-sm font-semibold tracking-wider text-black border-b border-gray-400 pb-1 hover:border-black transition-colors">
                     Women's Collection
                   </Link>
                 </div>
@@ -130,7 +119,7 @@ export default async function HomePage() {
               {newArrivals.map((product) => (
                 <div key={product.id} className="group flex flex-col">
                   <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
-                    <Link href={`/shop/${product.id}`} className="absolute inset-0 z-0">
+                    <Link href={`/shop/${product.id}`} prefetch={false} className="absolute inset-0 z-0">
                       <Image
                         src={product.image_1 || "https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=500&q=80"}
                         alt={product.name}
@@ -149,7 +138,7 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 px-1">
-                    <Link href={`/shop/${product.id}`}>
+                    <Link href={`/shop/${product.id}`} prefetch={false}>
                       <h3 className="text-sm font-medium text-gray-900 line-clamp-1 hover:underline">
                         {product.name}
                       </h3>
@@ -201,7 +190,7 @@ export default async function HomePage() {
               {bestSelling.map((product) => (
                 <div key={product.id} className="group flex flex-col">
                   <div className="relative aspect-square w-full overflow-hidden bg-gray-100 mb-4">
-                    <Link href={`/shop/${product.id}`} className="absolute inset-0 z-0">
+                    <Link href={`/shop/${product.id}`} prefetch={false} className="absolute inset-0 z-0">
                       <Image
                         src={product.image_1 || "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?w=500&q=80"}
                         alt={product.name}
@@ -218,7 +207,7 @@ export default async function HomePage() {
                     </div>
                   </div>
                   <div className="flex flex-col gap-1 px-1">
-                    <Link href={`/shop/${product.id}`}>
+                    <Link href={`/shop/${product.id}`} prefetch={false}>
                       <h3 className="text-sm font-medium text-gray-900 line-clamp-1 hover:underline">
                         {product.name}
                       </h3>

@@ -81,20 +81,15 @@ export default function InstagramImageModal({ open, setOpen, imageToEdit }: Inst
     setIsSubmitting(true);
 
     try {
-      let imageUrl = imageToEdit?.image || "";
-      if (selectedFile) {
-        imageUrl = await uploadToCloudinary(selectedFile);
-      }
-
       const submitData = new FormData();
-      if (imageUrl) {
-        submitData.append("image", imageUrl);
+      if (selectedFile) {
+        submitData.append("image", selectedFile);
       }
 
       createMutation.mutate(submitData);
     } catch (err: any) {
       setIsSubmitting(false);
-      Swal.fire("Error!", err.message || "Failed to upload image to Cloudinary", "error");
+      Swal.fire("Error!", err.message || "Failed to upload image", "error");
     }
   };
 

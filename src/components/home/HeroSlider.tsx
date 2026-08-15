@@ -44,15 +44,19 @@ export function HeroSlider({ initialBanners = [] }: { initialBanners?: Banner[] 
             index === current ? "opacity-100 z-10" : "opacity-0 z-0"
           }`}
         >
-          <div className="absolute inset-0 opacity-40">
-            <Image
-              src={getImageUrl(slide.image)}
-              alt={slide.title}
-              fill
-              priority={index === 0}
-              className="object-cover"
-              unoptimized
-            />
+          <div className="absolute inset-0">
+            {slide.image && (
+              <Image
+                src={getImageUrl(slide.image)}
+                alt={slide.title || "Banner"}
+                fill
+                priority={index === 0}
+                className="object-cover"
+                unoptimized
+              />
+            )}
+            {/* Gradient Overlay for text contrast while keeping image bright and visible */}
+            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/20" />
           </div>
           
           <div className="relative z-20 h-full flex items-center justify-start px-6 sm:px-12 lg:px-24">

@@ -125,19 +125,14 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
     setIsUploading(true);
     
     try {
-      let imageUrl = categoryToEdit?.image || "";
-      if (imageFile) {
-        imageUrl = await uploadToCloudinary(imageFile);
-      }
-
       const submitData = new FormData();
       submitData.append("name", formData.name);
       submitData.append("slug", formData.slug);
       if (formData.parent) {
         submitData.append("parent", formData.parent.toString());
       }
-      if (imageUrl) {
-        submitData.append("image", imageUrl);
+      if (imageFile) {
+        submitData.append("image", imageFile);
       }
 
       if (categoryToEdit) {
@@ -147,8 +142,8 @@ export default function CategoryModal({ open, setOpen, categoryToEdit, categorie
       }
     } catch (err: any) {
       Swal.fire({
-        title: "Upload Failed",
-        text: err.message || "Failed to upload image to Cloudinary",
+        title: "Error",
+        text: err.message || "Failed to submit category",
         icon: "error"
       });
     } finally {

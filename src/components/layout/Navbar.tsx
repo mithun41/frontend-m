@@ -93,6 +93,7 @@ function NavbarContent() {
   const { data: rawCategories } = useQuery({
     queryKey: ["categories"],
     queryFn: categoryService.getAll,
+    staleTime: 5 * 60 * 1000, // Keep cached for 5 minutes
   });
 
   const navLinks = [
@@ -162,6 +163,7 @@ function NavbarContent() {
                 >
                   <Link
                     href={dynamicHref}
+                    prefetch={false}
                     onClick={() => setActiveDropdown(null)}
                     className={`relative flex items-center gap-1 py-2 text-[13px] whitespace-nowrap font-semibold tracking-wide uppercase transition-colors duration-300 ${isActive ? 'text-primary-600' : 'text-gray-600 hover:text-primary-600'
                       }`}
@@ -185,7 +187,7 @@ function NavbarContent() {
                         <div className={`grid gap-8 ${displayCategories.length === 3 ? 'grid-cols-3' : 'grid-cols-4'}`}>
                           {displayCategories.map((category, catIdx) => (
                             <div key={catIdx}>
-                              <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`}>
+                              <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`} prefetch={false}>
                                 <h3 className="text-sm font-bold text-gray-900 mb-4 border-b border-gray-100 pb-2 hover:text-primary-600 transition-colors">
                                   {category.title}
                                 </h3>
@@ -195,6 +197,7 @@ function NavbarContent() {
                                   <li key={itemIdx}>
                                     <Link
                                       href={`/shop?category=${encodeURIComponent(item.slug || item.name)}`}
+                                      prefetch={false}
                                       onClick={() => setActiveDropdown(null)}
                                       className="text-sm text-gray-500 hover:text-primary-600 transition-colors block"
                                     >
@@ -390,6 +393,7 @@ function NavbarContent() {
                 <div className="flex items-center">
                   <Link
                     href={dynamicHref}
+                    prefetch={false}
                     onClick={() => setIsOpen(false)}
                     className={`flex-1 block px-4 py-3 text-sm font-semibold uppercase tracking-wider rounded-lg transition-all duration-200 ${isActive
                       ? 'bg-primary-50 text-primary-700 border-l-4 border-primary-600'
@@ -413,7 +417,7 @@ function NavbarContent() {
                   <div className="pl-8 pr-4 py-2 space-y-4 bg-gray-50 rounded-lg mt-1 border border-gray-100">
                     {getDisplayCategories(linkCategory).map((category, catIdx) => (
                       <div key={catIdx}>
-                        <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`}>
+                        <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`} prefetch={false}>
                           <h4 className="text-xs font-bold text-gray-900 mb-2 uppercase hover:text-primary-600 transition-colors">{category.title}</h4>
                         </Link>
                         <ul className="space-y-2">
@@ -421,6 +425,7 @@ function NavbarContent() {
                             <li key={itemIdx}>
                               <Link
                                 href={`/shop?category=${encodeURIComponent(item.slug || item.name)}`}
+                                prefetch={false}
                                 onClick={() => setIsOpen(false)}
                                 className="text-sm text-gray-500 hover:text-primary-600 block py-1"
                               >
