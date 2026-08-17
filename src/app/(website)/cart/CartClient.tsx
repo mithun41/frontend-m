@@ -10,6 +10,9 @@ import { useEffect, useState } from "react";
 import { settingService } from "@/lib/api/settingService";
 import { getImageUrl } from "@/lib/utils";
 
+import toast from "react-hot-toast";
+import { LocalCartItem } from "@/store/useCartStore";
+
 export default function CartClient() {
   const router = useRouter();
   const [isMounted, setIsMounted] = useState(false);
@@ -26,10 +29,17 @@ export default function CartClient() {
     queryFn: settingService.getSettings,
   });
 
-  const handleUpdateQuantity = (id: string, currentQuantity: number, change: number) => {
-    const newQuantity = currentQuantity + change;
+  const handleUpdateQuantity = (item: LocalCartItem, change: number) => {
+    const newQuantity = item.quantity + change;
     if (newQuantity < 1) return;
-    updateItem(id, newQuantity);
+    if (change > 0 && typeof item.max_stock === "number" && item.max_stock > 0 && newQuantity > item.max_stock) {
+      toast.error(`Maximum available stock is ${item.max_stock}`);
+      return;
+    }
+    const res = updateItem(item.id, newQuantity);
+    if (!res.success && res.message) {
+      toast.error(res.message);
+    }
   };
 
   const handleRemove = (id: string) => {
@@ -106,11 +116,16 @@ export default function CartClient() {
                           <Link href={`/shop/${item.product}`} className="font-semibold text-neutral-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors line-clamp-2">
                             {item.product_name}
                           </Link>
-                          {item.product_size && (
-                            <span className="text-xs text-neutral-500 mt-0.5">
-                              Size: {item.product_size}
-                            </span>
-                          )}
+                          <div className="flex items-center gap-2 mt-0.5 text-xs text-neutral-500">
+                            {item.product_size && <span>Size: {item.product_size}</span>}
+                            {item.product_size && item.product_color && <span>•</span>}
+                            {item.product_color && <span>Color: {item.product_color}</span>}
+                            {typeof item.max_stock === "number" && item.quantity >= item.max_stock && (
+                              <span className="text-[10px] text-amber-600 dark:text-amber-400 font-semibold bg-amber-50 dark:bg-amber-950/40 px-1.5 py-0.5 rounded">
+                                Max Stock ({item.max_stock})
+                              </span>
+                            )}
+                          </div>
                           <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mt-1">
                             {parseFloat(item.product_price).toFixed(2)} ৳
                           </span>
@@ -122,9 +137,9 @@ export default function CartClient() {
                         <div className="md:hidden text-sm font-medium text-neutral-500">Qty:</div>
                         <div className="flex items-center border border-neutral-200 dark:border-neutral-700 rounded-lg h-10 bg-neutral-50 dark:bg-neutral-950 w-24">
                           <button 
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity, -1)}
+                            onClick={() => handleUpdateQuantity(item, -1)}
                             disabled={item.quantity <= 1}
-                            className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-50"
+                            className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                           >
                             -
                           </button>
@@ -132,8 +147,10 @@ export default function CartClient() {
                             {item.quantity}
                           </span>
                           <button 
-                            onClick={() => handleUpdateQuantity(item.id, item.quantity, 1)}
-                            className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-50"
+                            onClick={() => handleUpdateQuantity(item, 1)}
+                            disabled={typeof item.max_stock === "number" && item.quantity >= item.max_stock}
+                            className="flex-1 flex items-center justify-center text-neutral-400 hover:text-neutral-900 dark:hover:text-white transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            title={typeof item.max_stock === "number" && item.quantity >= item.max_stock ? `Max stock (${item.max_stock}) reached` : "Increase"}
                           >
                             +
                           </button>

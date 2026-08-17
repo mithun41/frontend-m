@@ -1,6 +1,18 @@
 import axiosClient from "./axiosClient";
 import { Category } from "./categoryService";
 
+export interface Color {
+  id: number;
+  name: string;
+  code?: string | null;
+}
+
+export interface PhotoWithColor {
+  index: number;
+  image: string;
+  color: Color | null;
+}
+
 export interface SizeStock {
   id?: number;
   size?: number;
@@ -21,12 +33,19 @@ export interface Product {
   offer_price: string | null;
   price: string;
   image_1: string | null;
+  image_1_color?: Color | null;
   image_2: string | null;
+  image_2_color?: Color | null;
   image_3: string | null;
+  image_3_color?: Color | null;
   image_4: string | null;
+  image_4_color?: Color | null;
   image_5: string | null;
+  image_5_color?: Color | null;
+  photos?: PhotoWithColor[];
   sizes: { id: number; name: string }[];
   size_stocks?: SizeStock[];
+  colors?: Color[];
   stock: number;
   sold_quantity: number;
   expire_date: string | null;
@@ -57,7 +76,6 @@ export const productService = {
   },
 
   create: async (data: FormData): Promise<Product> => {
-    // Note: using multipart/form-data for image uploads
     const response = await axiosClient.post("/products/", data, {
       transformRequest: [(data, headers) => {
         delete headers['Content-Type'];

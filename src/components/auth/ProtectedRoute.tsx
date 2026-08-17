@@ -14,7 +14,7 @@ export default function ProtectedRoute({ children }: { children: React.ReactNode
 
   useEffect(() => {
     if (isMounted && !user) {
-      router.push("/"); // Redirect to home page
+      router.push("/login"); // Redirect to login page
     }
   }, [isMounted, user, router]);
 

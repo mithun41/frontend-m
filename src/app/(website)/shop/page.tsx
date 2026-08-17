@@ -7,6 +7,7 @@ import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { productService, Product } from "@/lib/api/productService";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
+import { DiscountBadge } from "@/components/shop/DiscountBadge";
 
 import { categoryService, Category } from "@/lib/api/categoryService";
 
@@ -173,6 +174,15 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                         {/* Hover Overlay */}
                         <div className="absolute inset-0 bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                       </Link>
+                      
+                      {/* Discount Badge Overlay */}
+                      <div className="absolute bottom-2.5 left-2.5 z-10">
+                        <DiscountBadge
+                          sellingPrice={product.selling_price}
+                          offerPrice={product.offer_price}
+                          price={product.price}
+                        />
+                      </div>
                       
                       <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
                         <AddToCartIcon product={product} />

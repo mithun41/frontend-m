@@ -10,6 +10,7 @@ import { useAuthStore } from "@/store/useAuthStore";
 import Image from "next/image";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/lib/utils";
+import { Copy, Check } from "lucide-react";
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -17,8 +18,16 @@ export default function CheckoutClient() {
   const user = useAuthStore((state) => state.user);
   
   const [isMounted, setIsMounted] = useState(false);
+  const [copiedNumber, setCopiedNumber] = useState<string | null>(null);
   const cart = useCartStore((state) => state.cart);
   const clearCart = useCartStore((state) => state.clearCart);
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    setCopiedNumber(text);
+    toast.success("Number copied to clipboard!");
+    setTimeout(() => setCopiedNumber(null), 2000);
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -259,9 +268,30 @@ export default function CheckoutClient() {
                   
                   {formData.payment_method === "bKash" && (
                     <div className="px-4 pb-5 pt-1 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-pink-200 dark:border-pink-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-1">
+                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-pink-200 dark:border-pink-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-2">
                         <span>Please Send Money to our bKash Personal Number:</span>
-                        <span className="font-bold text-pink-600 text-lg">{settings?.bkash_number || "01815185843"}</span>
+                        <div className="flex items-center justify-between bg-pink-50/60 dark:bg-pink-950/30 px-3 py-2 rounded-lg border border-pink-100 dark:border-pink-900/40">
+                          <span className="font-bold text-pink-600 text-lg tracking-wider">
+                            {settings?.bkash_number || "01712635355"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(settings?.bkash_number || "01712635355")}
+                            className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-pink-600 text-white hover:bg-pink-700 rounded-md transition-colors shadow-sm"
+                          >
+                            {copiedNumber === (settings?.bkash_number || "01712635355") ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                       
                       <div className="space-y-1.5">
@@ -312,9 +342,30 @@ export default function CheckoutClient() {
                   
                   {formData.payment_method === "Nagad" && (
                     <div className="px-4 pb-5 pt-1 space-y-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-orange-200 dark:border-orange-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-1">
+                      <div className="bg-white dark:bg-neutral-950 p-4 rounded-lg border border-orange-200 dark:border-orange-900/30 text-sm text-neutral-700 dark:text-neutral-300 flex flex-col gap-2">
                         <span>Please Send Money to our Nagad Personal Number:</span>
-                        <span className="font-bold text-orange-600 text-lg">{settings?.nagad_number || "01815185843"}</span>
+                        <div className="flex items-center justify-between bg-orange-50/60 dark:bg-orange-950/30 px-3 py-2 rounded-lg border border-orange-100 dark:border-orange-900/40">
+                          <span className="font-bold text-orange-600 text-lg tracking-wider">
+                            {settings?.nagad_number || "01712635355"}
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => copyToClipboard(settings?.nagad_number || "01712635355")}
+                            className="flex items-center gap-1 text-xs font-semibold px-2.5 py-1 bg-orange-600 text-white hover:bg-orange-700 rounded-md transition-colors shadow-sm"
+                          >
+                            {copiedNumber === (settings?.nagad_number || "01712635355") ? (
+                              <>
+                                <Check className="w-3.5 h-3.5" />
+                                <span>Copied</span>
+                              </>
+                            ) : (
+                              <>
+                                <Copy className="w-3.5 h-3.5" />
+                                <span>Copy</span>
+                              </>
+                            )}
+                          </button>
+                        </div>
                       </div>
                       
                       <div className="space-y-1.5">
@@ -374,9 +425,11 @@ export default function CheckoutClient() {
                     </div>
                     <div className="flex-1 flex flex-col justify-center">
                       <h4 className="font-bold text-sm text-neutral-900 dark:text-white line-clamp-1">{item.product_name}</h4>
-                      {item.product_size && (
-                        <p className="text-[11px] text-neutral-500 mt-0.5">Size: {item.product_size}</p>
-                      )}
+                      <div className="flex items-center gap-2 mt-0.5 text-[11px] text-neutral-500">
+                        {item.product_size && <span>Size: {item.product_size}</span>}
+                        {item.product_size && item.product_color && <span>•</span>}
+                        {item.product_color && <span>Color: {item.product_color}</span>}
+                      </div>
                       <p className="text-xs text-neutral-500 mt-1">
                         {item.quantity} x ৳{parseFloat(item.product_price.toString()).toFixed(2)}
                       </p>

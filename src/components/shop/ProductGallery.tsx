@@ -1,18 +1,44 @@
 "use client";
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { PhotoWithColor } from '@/lib/api/productService';
+import { DiscountBadge } from '@/components/shop/DiscountBadge';
 
 interface ProductGalleryProps {
   images: string[];
+  photos?: PhotoWithColor[];
+  activeColor?: string | null;
+  sellingPrice?: string | number | null;
+  offerPrice?: string | number | null;
+  price?: string | number | null;
 }
 
-export function ProductGallery({ images }: ProductGalleryProps) {
+export function ProductGallery({
+  images,
+  photos,
+  activeColor,
+  sellingPrice,
+  offerPrice,
+  price,
+}: ProductGalleryProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isZoomed, setIsZoomed] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
   const containerRef = useRef<HTMLDivElement>(null);
+
+  // If active color is selected and a photo matches that color, switch to it
+  useEffect(() => {
+    if (activeColor && photos && photos.length > 0) {
+      const matchIdx = photos.findIndex(
+        (p) => p.color && p.color.name.toLowerCase() === activeColor.toLowerCase()
+      );
+      if (matchIdx >= 0) {
+        setCurrentIndex(matchIdx);
+      }
+    }
+  }, [activeColor, photos]);
 
   if (!images || images.length === 0) {
     return (
@@ -40,6 +66,8 @@ export function ProductGallery({ images }: ProductGalleryProps) {
     setMousePosition({ x, y });
   };
 
+  const currentPhoto = photos && photos[currentIndex] ? photos[currentIndex] : null;
+
   return (
     <div className="flex flex-col gap-4">
       <div 
@@ -50,7 +78,7 @@ export function ProductGallery({ images }: ProductGalleryProps) {
         onMouseMove={handleMouseMove}
       >
         <Image
-          src={images[currentIndex]}
+          src={images[currentIndex] || images[0]}
           alt={`Product view ${currentIndex + 1}`}
           fill
           priority
@@ -62,6 +90,28 @@ export function ProductGallery({ images }: ProductGalleryProps) {
             transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
           }}
         />
+
+        {/* Color Badge overlay if current photo has color */}
+        {currentPhoto?.color && (
+          <div className="absolute top-4 left-4 z-10 bg-white/90 dark:bg-neutral-900/90 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-neutral-200 dark:border-neutral-700 flex items-center gap-1.5">
+            {currentPhoto.color.code && (
+              <span 
+                className="w-3 h-3 rounded-full border border-neutral-300 dark:border-neutral-600 inline-block shrink-0" 
+                style={{ backgroundColor: currentPhoto.color.code }}
+              />
+            )}
+            <span className="text-neutral-800 dark:text-neutral-200">{currentPhoto.color.name}</span>
+          </div>
+        )}
+
+        {/* Discount Badge overlay */}
+        <div className="absolute bottom-4 left-4 z-10">
+          <DiscountBadge
+            sellingPrice={sellingPrice}
+            offerPrice={offerPrice}
+            price={price}
+          />
+        </div>
 
         {/* Slider Controls */}
         {images.length > 1 && (
@@ -84,23 +134,35 @@ export function ProductGallery({ images }: ProductGalleryProps) {
       
       {/* Thumbnails */}
       {images.length > 1 && (
-        <div className="grid grid-cols-4 gap-4">
-          {images.map((img, i) => (
-            <div 
-              key={i} 
-              onClick={() => setCurrentIndex(i)}
-              className={`relative aspect-square rounded-xl overflow-hidden bg-white dark:bg-neutral-900 border-2 cursor-pointer transition-all duration-300 ${currentIndex === i ? 'border-primary-500 shadow-md' : 'border-transparent hover:border-primary-300 opacity-60 hover:opacity-100'}`}
-            >
-              <Image
-                src={img}
-                alt={`Thumbnail ${i + 1}`}
-                fill
-                unoptimized
-                sizes="15vw"
-                className="object-contain p-2"
-              />
-            </div>
-          ))}
+        <div className="grid grid-cols-5 gap-3">
+          {images.map((img, i) => {
+            const photoColor = photos && photos[i]?.color;
+            return (
+              <div 
+                key={i} 
+                onClick={() => setCurrentIndex(i)}
+                className={`relative aspect-square rounded-xl overflow-hidden bg-white dark:bg-neutral-900 border-2 cursor-pointer transition-all duration-300 ${currentIndex === i ? 'border-primary-500 shadow-md ring-2 ring-primary-500/20' : 'border-neutral-200 dark:border-neutral-800 hover:border-primary-300 opacity-70 hover:opacity-100'}`}
+              >
+                <Image
+                  src={img}
+                  alt={`Thumbnail ${i + 1}`}
+                  fill
+                  unoptimized
+                  sizes="15vw"
+                  className="object-contain p-1.5"
+                />
+                {photoColor && (
+                  <div className="absolute bottom-1 right-1 z-10">
+                    <span 
+                      className="w-2.5 h-2.5 rounded-full border border-white dark:border-neutral-800 shadow-sm block" 
+                      style={{ backgroundColor: photoColor.code || '#888' }}
+                      title={photoColor.name}
+                    />
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

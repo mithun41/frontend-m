@@ -2,10 +2,21 @@
 
 import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
-import toast from "react-hot-toast";
 import { Product } from "@/lib/api/productService";
+import { getFirstAvailableSize, getProductAvailableStock } from "@/utils/productStock";
+import toast from "react-hot-toast";
 
-export function OrderNowButton({ product, quantity = 1, size }: { product: Product, quantity?: number, size?: string }) {
+export function OrderNowButton({ 
+  product, 
+  quantity = 1, 
+  size, 
+  color 
+}: { 
+  product: Product; 
+  quantity?: number; 
+  size?: string;
+  color?: string;
+}) {
   const router = useRouter();
   const addItem = useCartStore((state) => state.addItem);
 
@@ -16,32 +27,54 @@ export function OrderNowButton({ product, quantity = 1, size }: { product: Produ
     // Determine effective size if product has sizes but size was not explicitly passed
     let effectiveSize = size;
     if (!effectiveSize && product.sizes && product.sizes.length > 0) {
-      if (product.size_stocks && product.size_stocks.length > 0) {
-        const available = product.size_stocks.find(ss => ss.stock > 0);
-        effectiveSize = available ? available.size_name : product.sizes[0].name;
-      } else {
-        effectiveSize = product.sizes[0].name;
-      }
+      effectiveSize = getFirstAvailableSize(product) || product.sizes[0].name;
     }
 
-    addItem({
+    // Determine effective color if product has colors but color was not explicitly passed
+    let effectiveColor = color;
+    if (!effectiveColor && product.colors && product.colors.length > 0) {
+      effectiveColor = product.colors[0].name;
+    }
+
+    const availableStock = getProductAvailableStock(product, effectiveSize);
+
+    if (availableStock <= 0) {
+      toast.error("This item is currently out of stock!");
+      return;
+    }
+
+    const res = addItem({
       product: product.id,
       product_name: product.name,
       product_price: product.price || product.selling_price || "0",
       product_image: product.image_1 || null,
       product_size: effectiveSize,
-      quantity: quantity
+      product_color: effectiveColor,
+      quantity: quantity,
+      max_stock: availableStock,
     });
     
+    if (!res.success) {
+      toast.error(res.message || "Cannot add more than available in stock!");
+      return;
+    }
+
     router.push("/checkout");
   };
+
+  const isOutOfStock = getProductAvailableStock(product, size) <= 0;
 
   return (
     <button
       onClick={handleOrder}
-      className="w-full mt-2 bg-gradient-to-r from-neutral-900 to-neutral-800 text-white h-9 rounded-md font-semibold uppercase tracking-widest text-[11px] hover:from-neutral-800 hover:to-neutral-700 transition-all shadow-md active:scale-[0.98] flex items-center justify-center"
+      disabled={isOutOfStock}
+      className={`w-full mt-2 h-9 rounded-md font-semibold uppercase tracking-widest text-[11px] transition-all shadow-md active:scale-[0.98] flex items-center justify-center ${
+        isOutOfStock
+          ? "bg-neutral-200 text-neutral-400 dark:bg-neutral-800 dark:text-neutral-600 cursor-not-allowed shadow-none"
+          : "bg-gradient-to-r from-neutral-900 to-neutral-800 text-white hover:from-neutral-800 hover:to-neutral-700"
+      }`}
     >
-      Order Now
+      {isOutOfStock ? "Out of Stock" : "Order Now"}
     </button>
   );
 }

@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { productService, Product } from "@/lib/api/productService";
-import { ProductGallery } from "@/components/shop/ProductGallery";
+import { ProductViewSection } from "@/components/shop/ProductViewSection";
 import { ProductReviews } from "@/components/shop/ProductReviews";
-import { AddToCartSection } from "@/components/shop/AddToCartSection";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
+import { DiscountBadge } from "@/components/shop/DiscountBadge";
 import { getImageUrl } from "@/utils/getImageUrl";
 
 export async function generateMetadata({
@@ -38,145 +38,70 @@ export async function generateMetadata({
         url: `https://dravonfit.com/shop/${product.id}`,
         siteName: "DRAVON FIT",
         images: [{ url: mainImage, alt: product.name }],
-        type: "website",
-      },
-      twitter: {
-        card: "summary_large_image",
-        title: `${product.name} | DRAVON FIT`,
-        description: desc,
-        images: [mainImage],
       },
     };
-  } catch {
+  } catch (error) {
     return { title: "Product | DRAVON FIT" };
   }
 }
 
-export default async function ProductDetailsPage({ params }: { params: Promise<{ id: string }> }) {
+export default async function ProductDetailPage({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
   const resolvedParams = await params;
   let product: Product | null = null;
   let relatedProducts: Product[] = [];
-  
+
   try {
     product = await productService.getProductDetails(resolvedParams.id);
-    
-    // Fetch related products (e.g. from the same category first, fallback to other products to guarantee 4 items)
-    const allProductsResponse = await productService.getProducts(1);
-    if (allProductsResponse && allProductsResponse.results) {
-      const sameCategory = allProductsResponse.results.filter(
-        (p) => p.id !== product?.id && p.category?.id === product?.category?.id
-      );
-      const otherCategory = allProductsResponse.results.filter(
-        (p) => p.id !== product?.id && p.category?.id !== product?.category?.id
-      );
-      relatedProducts = [...sameCategory, ...otherCategory].slice(0, 4);
+    if (product?.category?.id) {
+      const res = await productService.getProducts(1, {
+        category: product.category.id,
+      });
+      relatedProducts = res.results.filter((p) => p.id !== product!.id).slice(0, 4);
     }
   } catch (error) {
-    console.error("Error fetching product details:", error);
+    notFound();
   }
 
   if (!product) {
     notFound();
   }
 
-  const mainImageUrl = getImageUrl(product.image_1);
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Product",
-    "name": product.name,
-    "image": mainImageUrl ? [mainImageUrl] : [],
-    "description": product.short_description || product.description?.replace(/<[^>]*>?/gm, ""),
-    "sku": `PROD-${product.id}`,
-    "offers": {
-      "@type": "Offer",
-      "url": `https://dravonfit.com/shop/${product.id}`,
-      "priceCurrency": "BDT",
-      "price": product.offer_price || product.selling_price || product.price,
-      "availability": product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "DRAVON FIT"
-      }
-    }
-  };
-
   return (
-    <div className="bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-50 min-h-screen">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      {/* Breadcrumbs */}
-      <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-24 py-8">
-        <nav className="text-xs font-medium text-neutral-400 uppercase tracking-widest flex items-center gap-2">
-          <Link href="/" className="hover:text-primary-500 transition-colors">Home</Link>
+    <div className="min-h-screen bg-white dark:bg-neutral-950 pb-20 pt-6 sm:pt-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        {/* Breadcrumb */}
+        <nav className="flex items-center gap-2 text-xs text-neutral-400 mb-8 overflow-x-auto whitespace-nowrap">
+          <Link href="/" className="hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors">
+            Home
+          </Link>
           <span>/</span>
-          <Link href="/shop" className="hover:text-primary-500 transition-colors">Shop</Link>
+          <Link href="/shop" className="hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors">
+            Shop
+          </Link>
+          {product.category && (
+            <>
+              <span>/</span>
+              <Link 
+                href={`/shop?category=${product.category.slug || product.category.id}`} 
+                className="hover:text-neutral-800 dark:hover:text-neutral-200 transition-colors"
+              >
+                {product.category.name}
+              </Link>
+            </>
+          )}
           <span>/</span>
-          <span className="text-neutral-900 dark:text-neutral-100">{product.name}</span>
+          <span className="text-neutral-800 dark:text-neutral-200 font-medium truncate max-w-[200px]">
+            {product.name}
+          </span>
         </nav>
-      </div>
 
-      <div className="max-w-[1600px] mx-auto px-6 sm:px-12 lg:px-24 pb-10">
-        {/* Main Product Area */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16">
-          
-          {/* Left: Image Gallery */}
-          <div className="w-full">
-            <ProductGallery 
-              images={[
-                product.image_1, 
-                product.image_2, 
-                product.image_3,
-                product.image_4,
-                product.image_5
-              ].filter(Boolean) as string[]} 
-            />
-          </div>
-
-          {/* Right: Product Info & Buy */}
-          <div className="flex flex-col py-2 lg:py-0">
-            <div className="mb-4">
-              <span className="text-[10px] uppercase tracking-widest text-primary-600 dark:text-primary-400 font-semibold bg-primary-50 dark:bg-primary-950/20 px-3 py-1 rounded-full border border-primary-100 dark:border-primary-900/30">
-                {product.category?.name || "Uncategorized"}
-              </span>
-            </div>
-            
-            <h1 className="text-2xl sm:text-3xl font-semibold tracking-wide mt-2 mb-4 text-neutral-900 dark:text-white leading-tight">
-              {product.name}
-            </h1>
-
-            {product.short_description && (
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4 whitespace-pre-wrap">
-                {product.short_description}
-              </p>
-            )}
-            
-            <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-100 dark:border-neutral-800/60">
-              <div className="flex items-center gap-3">
-                <span className="text-2xl font-medium text-neutral-900 dark:text-white">
-                  ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
-                </span>
-                {product.offer_price && parseFloat(product.offer_price) > 0 && (
-                  <span className="text-lg text-neutral-500 line-through">
-                    ৳{parseFloat(product.selling_price || "0").toFixed(2)}
-                  </span>
-                )}
-              </div>
-              <div className="h-4 w-px bg-neutral-200 dark:bg-neutral-800"></div>
-              <div className="flex items-center gap-1.5 text-xs">
-                <span className="text-primary-500 text-sm">★</span>
-                <span className="font-medium text-neutral-700 dark:text-neutral-300">{product.average_rating || 0}</span>
-                <span className="text-neutral-400 underline ml-1 cursor-pointer hover:text-neutral-800 dark:hover:text-neutral-200">
-                  ({product.reviews?.length || 0} reviews)
-                </span>
-              </div>
-            </div>
-
-            {/* Action Area (Add to Cart / Order Now) */}
-            <AddToCartSection product={product} />
-          </div>
-        </div>
+        {/* Product Interactive View Section (Gallery + Info + Colors + Buy) */}
+        <ProductViewSection product={product} />
 
         {/* Product Details Section (Full Width, Under Photo/Grid) */}
         <div className="mt-16 pt-12 border-t border-neutral-200 dark:border-neutral-800">
@@ -238,6 +163,16 @@ export default async function ProductDetailsPage({ params }: { params: Promise<{
                         className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                       />
                     </Link>
+                    
+                    {/* Discount Badge Overlay */}
+                    <div className="absolute bottom-2.5 left-2.5 z-10">
+                      <DiscountBadge
+                        sellingPrice={prod.selling_price}
+                        offerPrice={prod.offer_price}
+                        price={prod.price}
+                      />
+                    </div>
+
                     <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 z-10">
                       <AddToCartIcon product={prod} />
                     </div>

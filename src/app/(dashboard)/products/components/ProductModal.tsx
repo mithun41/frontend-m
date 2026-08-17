@@ -1,11 +1,12 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { productService, Product } from "@/lib/api/productService";
 import { categoryService, Category } from "@/lib/api/categoryService";
+import { colorService } from "@/lib/api/colorService";
 import Swal from "sweetalert2";
-import { X, Upload, Image as ImageIcon } from "lucide-react";
+import { X, Upload, Palette } from "lucide-react";
 import Image from "next/image";
 
 import { uploadToCloudinary } from "@/lib/cloudinary";
@@ -32,6 +33,15 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     price: "",
     stock: "0",
     size_names: "",
+    color_names: "",
+  });
+
+  const [imageColors, setImageColors] = useState({
+    image_1_color: "",
+    image_2_color: "",
+    image_3_color: "",
+    image_4_color: "",
+    image_5_color: "",
   });
   
   const [images, setImages] = useState({
@@ -55,6 +65,11 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
   const { data: rawCategories = [] } = useQuery({
     queryKey: ["categories"],
     queryFn: categoryService.getAll,
+  });
+
+  const { data: availableColors = [] } = useQuery({
+    queryKey: ["colors"],
+    queryFn: colorService.getAll,
   });
 
   // Flatten categories for dropdown
@@ -88,6 +103,16 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           size_names: productToEdit.size_stocks && productToEdit.size_stocks.length > 0
             ? productToEdit.size_stocks.map(ss => `${ss.size_name}:${ss.stock}`).join(", ")
             : productToEdit.sizes ? productToEdit.sizes.map(s => s.name).join(", ") : "",
+          color_names: productToEdit.colors && productToEdit.colors.length > 0
+            ? productToEdit.colors.map(c => c.name).join(", ")
+            : "",
+        });
+        setImageColors({
+          image_1_color: productToEdit.image_1_color?.name || "",
+          image_2_color: productToEdit.image_2_color?.name || "",
+          image_3_color: productToEdit.image_3_color?.name || "",
+          image_4_color: productToEdit.image_4_color?.name || "",
+          image_5_color: productToEdit.image_5_color?.name || "",
         });
         setPreviewImages({
           image_1: productToEdit.image_1 || "",
@@ -109,6 +134,14 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           price: "",
           stock: "0",
           size_names: "",
+          color_names: "",
+        });
+        setImageColors({
+          image_1_color: "",
+          image_2_color: "",
+          image_3_color: "",
+          image_4_color: "",
+          image_5_color: "",
         });
         setPreviewImages({ image_1: "", image_2: "", image_3: "", image_4: "", image_5: "" });
       }
@@ -121,6 +154,7 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     mutationFn: productService.create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["colors"] });
       Swal.fire({
         title: "Success!",
         text: "Product created successfully.",
@@ -137,6 +171,7 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     mutationFn: (data: FormData) => productService.update(productToEdit!.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["colors"] });
       Swal.fire({
         title: "Success!",
         text: "Product updated successfully.",
@@ -168,6 +203,29 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     if (name === "name" && !productToEdit) {
       const slugValue = value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
       setFormData(prev => ({ ...prev, name: value, slug: slugValue }));
+    } else if (name === "size_names") {
+      setFormData(prev => {
+        const newData = { ...prev, size_names: value };
+        // If sizes contain stock specs like S:10, M:20, calculate total stock automatically
+        if (value.includes(":")) {
+          let total = 0;
+          let hasExplicitStock = false;
+          value.split(",").forEach(part => {
+            const trimmed = part.trim();
+            if (trimmed.includes(":")) {
+              const count = parseInt(trimmed.split(":")[1]?.trim() || "0", 10);
+              if (!isNaN(count)) {
+                total += count;
+                hasExplicitStock = true;
+              }
+            }
+          });
+          if (hasExplicitStock) {
+            newData.stock = total.toString();
+          }
+        }
+        return newData;
+      });
     } else {
       setFormData(prev => {
         const newData = { ...prev, [name]: value };
@@ -193,6 +251,10 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: [] }));
     }
+  };
+
+  const handleImageColorChange = (field: keyof typeof imageColors, value: string) => {
+    setImageColors(prev => ({ ...prev, [field]: value }));
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, field: "image_1" | "image_2" | "image_3" | "image_4" | "image_5") => {
@@ -232,15 +294,30 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
 
       const data = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
-        if (value) {
-          data.append(key, value);
+        if (value !== undefined && value !== null) {
+          data.append(key, value.toString());
         }
       });
 
+      // Explicitly ensure stock is sent
+      if (!data.has('stock') || formData.stock === "") {
+        data.set('stock', '0');
+      }
+
+      // Append image URLs
       for (let i = 1; i <= 5; i++) {
         const key = `image_${i}` as keyof typeof images;
         if (uploadedUrls[key]) {
           data.append(key, uploadedUrls[key]);
+        }
+      }
+
+      // Append image colors
+      for (let i = 1; i <= 5; i++) {
+        const colorKey = `image_${i}_color` as keyof typeof imageColors;
+        const colorVal = imageColors[colorKey];
+        if (colorVal) {
+          data.append(`image_${i}_color_name`, colorVal);
         }
       }
 
@@ -299,23 +376,10 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.name ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     required
                   />
                   {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Slug</label>
-                  <input
-                    type="text"
-                    name="slug"
-                    value={formData.slug}
-                    onChange={handleChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.slug ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
-                    required
-                  />
-                  {errors.slug && <p className="text-xs text-red-500 mt-1">{errors.slug[0]}</p>}
                 </div>
 
                 <div>
@@ -324,13 +388,13 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                     name="category_id"
                     value={formData.category_id}
                     onChange={handleChange}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.category_id ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="">Select Category</option>
                     {categories.map((c) => (
                       <option key={c.id} value={c.id}>
-                        {c.depth > 0 ? "— ".repeat(c.depth) : ""}{c.name}
+                        {"— ".repeat(c.depth)}{c.name}
                       </option>
                     ))}
                   </select>
@@ -339,30 +403,51 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Description</label>
-                  <textarea
+                  <input
+                    type="text"
                     name="short_description"
                     value={formData.short_description}
                     onChange={handleChange}
-                    rows={2}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.short_description ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
+                    placeholder="Brief highlights of the product..."
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   />
                   {errors.short_description && <p className="text-xs text-red-500 mt-1">{errors.short_description[0]}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Description</label>
                   <textarea
                     name="description"
+                    rows={4}
                     value={formData.description}
                     onChange={handleChange}
-                    rows={4}
-                    className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all ${errors.description ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500 focus:border-transparent'}`}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   />
                   {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description[0]}</p>}
                 </div>
+
+                {/* Colors Field */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1.5">
+                    <Palette className="w-4 h-4 text-primary-500" />
+                    Product Colors (e.g. Black, White, Navy Blue)
+                  </label>
+                  <input
+                    type="text"
+                    name="color_names"
+                    placeholder="e.g. Black, White, Red, Navy Blue"
+                    value={formData.color_names}
+                    onChange={handleChange}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Comma-separated list of colors. Colors assigned to photos will also be automatically linked.
+                  </p>
+                  {errors.color_names && <p className="text-xs text-red-500 mt-1">{errors.color_names[0]}</p>}
+                </div>
               </div>
 
-              {/* Right Column: Pricing & Images */}
+              {/* Right Column: Pricing, Sizes, Stock, Photo with Colors */}
               <div className="space-y-5">
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -432,46 +517,82 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                     {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock[0]}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-                      Sizes & Stock (e.g. S:10, M:5, L:0)
-                    </label>
+                    <div className="flex justify-between items-center mb-1">
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Sizes & Stock <span className="text-xs text-gray-400 font-normal">(Optional)</span>
+                      </label>
+                      {formData.size_names && (
+                        <button
+                          type="button"
+                          onClick={() => setFormData(prev => ({ ...prev, size_names: "" }))}
+                          className="text-[11px] text-red-500 hover:text-red-700 font-medium"
+                        >
+                          Clear Sizes
+                        </button>
+                      )}
+                    </div>
                     <input
                       type="text"
                       name="size_names"
-                      placeholder="e.g. S:10, M:5, L:0, XL:2"
+                      placeholder="Leave blank if product has no sizes (e.g. S:10, M:5)"
                       value={formData.size_names}
                       onChange={handleChange}
                       className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Specify stock per size using <span className="font-semibold text-gray-700 dark:text-gray-300">Size:Stock</span> (e.g. S:10, M:5, L:0).
+                      Leave empty if product has no sizes. Or specify stock per size using <span className="font-semibold text-gray-700 dark:text-gray-300">Size:Stock</span>.
                     </p>
                     {errors.size_names && <p className="text-xs text-red-500 mt-1">{errors.size_names[0]}</p>}
                   </div>
                 </div>
 
-                {/* Images */}
+                {/* Images with Color Tagging */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-3">Product Images</label>
-                  <div className="flex flex-wrap gap-4">
-                    {(["image_1", "image_2", "image_3", "image_4", "image_5"] as const).map((field, idx) => (
-                      <div key={field} className="relative w-24 h-24 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors overflow-hidden group">
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => handleImageChange(e, field)}
-                          className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                        />
-                        {previewImages[field] ? (
-                          <Image src={previewImages[field]} alt={`Preview ${idx + 1}`} fill className="object-cover" unoptimized />
-                        ) : (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 group-hover:text-primary-500">
-                            <Upload className="w-6 h-6 mb-1" />
-                            <span className="text-[10px] font-medium">Img {idx + 1}</span>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                    Product Images & Color Tagging
+                  </label>
+                  <p className="text-xs text-gray-500 mb-3">
+                    Upload photos and optionally assign a color for each photo (e.g. Black for Image 1, White for Image 2).
+                  </p>
+                  
+                  <div className="grid grid-cols-5 gap-3">
+                    {(["image_1", "image_2", "image_3", "image_4", "image_5"] as const).map((field, idx) => {
+                      const colorField = `${field}_color` as keyof typeof imageColors;
+                      return (
+                        <div key={field} className="flex flex-col gap-1.5">
+                          <div className="relative aspect-square w-full rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 transition-colors overflow-hidden group bg-gray-50 dark:bg-gray-800">
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageChange(e, field)}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                            />
+                            {previewImages[field] ? (
+                              <Image src={previewImages[field]} alt={`Preview ${idx + 1}`} fill className="object-cover" unoptimized />
+                            ) : (
+                              <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 group-hover:text-primary-500">
+                                <Upload className="w-5 h-5 mb-1" />
+                                <span className="text-[10px] font-medium">Img {idx + 1}</span>
+                              </div>
+                            )}
                           </div>
-                        )}
-                      </div>
-                    ))}
+                          {/* Color input for this image */}
+                          <input
+                            type="text"
+                            placeholder="Color..."
+                            value={imageColors[colorField]}
+                            onChange={(e) => handleImageColorChange(colorField, e.target.value)}
+                            list={`color-list-${idx}`}
+                            className="w-full text-center px-1.5 py-1 text-[11px] rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-800 dark:text-gray-200 focus:ring-1 focus:ring-primary-500"
+                          />
+                          <datalist id={`color-list-${idx}`}>
+                            {availableColors.map(c => (
+                              <option key={c.id} value={c.name} />
+                            ))}
+                          </datalist>
+                        </div>
+                      );
+                    })}
                   </div>
                   {errors.image_1 && <p className="text-xs text-red-500 mt-1">Image 1: {errors.image_1[0]}</p>}
                   {errors.image_2 && <p className="text-xs text-red-500 mt-1">Image 2: {errors.image_2[0]}</p>}
@@ -488,7 +609,7 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           <button
             type="button"
             onClick={() => setOpen(false)}
-            disabled={isPending}
+            disabled={isPending || isUploading}
             className="px-5 py-2.5 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
             Cancel
@@ -496,13 +617,13 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
           <button
             form="product-form"
             type="submit"
-            disabled={isPending}
+            disabled={isPending || isUploading}
             className="px-5 py-2.5 rounded-xl font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
-            {isPending && (
+            {(isPending || isUploading) && (
               <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             )}
-            {productToEdit ? "Save Changes" : "Create Product"}
+            {isUploading ? "Uploading Images..." : productToEdit ? "Save Changes" : "Create Product"}
           </button>
         </div>
       </div>

@@ -12,12 +12,27 @@ const axiosClient = axios.create({
   },
 });
 
+let isRedirecting = false;
+
 // Request Interceptor to add Authorization token if available
 axiosClient.interceptors.request.use(
   (config) => {
-    // Check if running on the client side (localStorage is not available on the server)
     if (typeof window !== "undefined") {
-      const token = localStorage.getItem("accessToken");
+      let token = useAuthStore.getState().accessToken;
+      if (!token) {
+        token = localStorage.getItem("accessToken");
+      }
+      if (!token) {
+        try {
+          const authStorage = localStorage.getItem("auth-storage");
+          if (authStorage && authStorage.trim().startsWith("{")) {
+            const parsed = JSON.parse(authStorage);
+            token = parsed?.state?.accessToken || null;
+          }
+        } catch {
+          // ignore error
+        }
+      }
       if (token && config.headers) {
         config.headers.Authorization = `Bearer ${token}`;
       }
@@ -35,15 +50,28 @@ axiosClient.interceptors.response.use(
     return response;
   },
   (error) => {
-    // Here you can handle global token refreshing logic if necessary
-    // E.g., if error.response.status === 401 && !originalRequest._retry
-    if (error.response?.status === 401) {
+    const isAuthEndpoint = 
+      error.config?.url?.includes('/login') || 
+      error.config?.url?.includes('/register') || 
+      error.config?.url?.includes('/forgot-password') || 
+      error.config?.url?.includes('/reset-password');
+
+    if (error.response?.status === 401 && !isAuthEndpoint) {
       if (typeof window !== "undefined") {
         const currentPath = window.location.pathname;
-        // Avoid redirect loop if already on auth pages
-        if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
-           useAuthStore.getState().logout();
-           window.location.href = "/login";
+        const isAuthPage = 
+          currentPath.includes('/login') || 
+          currentPath.includes('/register') || 
+          currentPath.includes('/forgot-password') || 
+          currentPath.includes('/reset-password');
+
+        if (!isAuthPage && !isRedirecting) {
+          isRedirecting = true;
+          useAuthStore.getState().logout();
+          window.location.href = "/login";
+          setTimeout(() => {
+            isRedirecting = false;
+          }, 3000);
         }
       }
     }

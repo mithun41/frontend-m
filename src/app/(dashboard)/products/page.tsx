@@ -86,6 +86,19 @@ export default function ProductsPage() {
         <div>
           <p className="font-semibold text-gray-900 dark:text-white">{item.name}</p>
           <p className="text-xs text-gray-500">{item.category?.name}</p>
+          {item.colors && item.colors.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-1.5">
+              {item.colors.map(c => (
+                <span 
+                  key={c.id} 
+                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
+                >
+                  {c.code && <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: c.code }} />}
+                  {c.name}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       ) 
     },

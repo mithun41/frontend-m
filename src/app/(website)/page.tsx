@@ -7,6 +7,7 @@ import { InstagramSection } from "@/components/home/InstagramSection";
 import { CategorySlider } from "@/components/home/CategorySlider";
 import { AddToCartIcon } from "@/components/shop/AddToCartIcon";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
+import { DiscountBadge } from "@/components/shop/DiscountBadge";
 
 import { productService, Product } from "@/lib/api/productService";
 import { bannerService, Banner } from "@/lib/api/bannerService";
@@ -132,6 +133,15 @@ export default async function HomePage() {
                       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </Link>
                     
+                    {/* Discount Badge Overlay */}
+                    <div className="absolute bottom-2.5 left-2.5 z-10">
+                      <DiscountBadge
+                        sellingPrice={product.selling_price}
+                        offerPrice={product.offer_price}
+                        price={product.price}
+                      />
+                    </div>
+                    
                     {/* Add to Cart Icon Overlay */}
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
                       <AddToCartIcon product={product} />
@@ -202,6 +212,15 @@ export default async function HomePage() {
                       <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </Link>
                     
+                    {/* Discount Badge Overlay */}
+                    <div className="absolute bottom-2.5 left-2.5 z-10">
+                      <DiscountBadge
+                        sellingPrice={product.selling_price}
+                        offerPrice={product.offer_price}
+                        price={product.price}
+                      />
+                    </div>
+
                     <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0 z-10">
                       <AddToCartIcon product={product} />
                     </div>
