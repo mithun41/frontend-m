@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Product } from "@/lib/api/productService";
+import { Product, PhotoWithColor } from "@/lib/api/productService";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { AddToCartSection } from "@/components/shop/AddToCartSection";
 import { DiscountBadge } from "@/components/shop/DiscountBadge";
@@ -10,13 +10,26 @@ export function ProductViewSection({ product }: { product: Product }) {
   const initialColor = product.colors && product.colors.length > 0 ? product.colors[0].name : null;
   const [activeColor, setActiveColor] = useState<string | null>(initialColor);
 
-  const images = [
-    product.image_1,
-    product.image_2,
-    product.image_3,
-    product.image_4,
-    product.image_5,
-  ].filter(Boolean) as string[];
+  // Construct photos list with colors (supporting both product.photos and product.image_X_color)
+  const photos: PhotoWithColor[] = (product.photos && product.photos.length > 0)
+    ? product.photos
+    : [
+        { index: 0, image: product.image_1 || "", color: product.image_1_color || null },
+        { index: 1, image: product.image_2 || "", color: product.image_2_color || null },
+        { index: 2, image: product.image_3 || "", color: product.image_3_color || null },
+        { index: 3, image: product.image_4 || "", color: product.image_4_color || null },
+        { index: 4, image: product.image_5 || "", color: product.image_5_color || null },
+      ].filter((p) => Boolean(p.image));
+
+  const images = photos.length > 0
+    ? photos.map((p) => p.image)
+    : [
+        product.image_1,
+        product.image_2,
+        product.image_3,
+        product.image_4,
+        product.image_5,
+      ].filter(Boolean) as string[];
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-14">
@@ -24,8 +37,9 @@ export function ProductViewSection({ product }: { product: Product }) {
       <div className="w-full">
         <ProductGallery 
           images={images}
-          photos={product.photos}
+          photos={photos}
           activeColor={activeColor}
+          onColorChange={(color) => setActiveColor(color)}
           sellingPrice={product.selling_price}
           offerPrice={product.offer_price}
           price={product.price}
@@ -80,6 +94,7 @@ export function ProductViewSection({ product }: { product: Product }) {
         {/* Action Area (Add to Cart / Order Now) */}
         <AddToCartSection 
           product={product} 
+          selectedColor={activeColor}
           onColorChange={(color) => setActiveColor(color)} 
         />
       </div>

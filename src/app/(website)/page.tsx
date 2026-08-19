@@ -174,14 +174,14 @@ export default async function HomePage() {
               ))}
             </div>
           </section>
-           <section className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] lg:h-[600px] xl:h-[700px] my-8 sm:my-12">
+           <section className="relative w-full h-[180px] xs:h-[240px] sm:h-[340px] md:h-[460px] lg:h-[580px] xl:h-[680px] my-6 sm:my-10 overflow-hidden">
             <Link href="/shop" className="relative block w-full h-full">
               <Image
                 src="/promo.jpg"
                 alt="Promo Banner"
                 fill
                 sizes="100vw"
-                className="object-cover"
+                className="object-cover object-center"
               />
             </Link>
           </section>

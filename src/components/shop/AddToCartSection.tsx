@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import toast from "react-hot-toast";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
@@ -9,10 +9,11 @@ import { getSizeStock, getFirstAvailableSize } from "@/utils/productStock";
 
 interface AddToCartSectionProps {
   product: Product;
+  selectedColor?: string | null;
   onColorChange?: (colorName: string) => void;
 }
 
-export function AddToCartSection({ product, onColorChange }: AddToCartSectionProps) {
+export function AddToCartSection({ product, selectedColor: propSelectedColor, onColorChange }: AddToCartSectionProps) {
   const addItem = useCartStore((state) => state.addItem);
   const cartItems = useCartStore((state) => state.cart.items);
 
@@ -29,8 +30,17 @@ export function AddToCartSection({ product, onColorChange }: AddToCartSectionPro
     : null;
 
   const [selectedSize, setSelectedSize] = useState<string | null>(initialAvailableSize);
-  const [selectedColor, setSelectedColor] = useState<string | null>(initialColor);
+  const [selectedColor, setSelectedColor] = useState<string | null>(
+    propSelectedColor !== undefined ? propSelectedColor : initialColor
+  );
   const [quantity, setQuantity] = useState(1);
+
+  // Sync selectedColor if changed from outside (e.g. image clicked in gallery)
+  useEffect(() => {
+    if (propSelectedColor !== undefined) {
+      setSelectedColor(propSelectedColor);
+    }
+  }, [propSelectedColor]);
 
   const currentSizeStock = hasSizes && selectedSize
     ? getSizeStock(product, selectedSize)

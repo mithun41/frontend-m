@@ -10,6 +10,7 @@ interface ProductGalleryProps {
   images: string[];
   photos?: PhotoWithColor[];
   activeColor?: string | null;
+  onColorChange?: (colorName: string) => void;
   sellingPrice?: string | number | null;
   offerPrice?: string | number | null;
   price?: string | number | null;
@@ -19,6 +20,7 @@ export function ProductGallery({
   images,
   photos,
   activeColor,
+  onColorChange,
   sellingPrice,
   offerPrice,
   price,
@@ -31,31 +33,37 @@ export function ProductGallery({
   // If active color is selected and a photo matches that color, switch to it
   useEffect(() => {
     if (activeColor && photos && photos.length > 0) {
+      const currentColorName = photos[currentIndex]?.color?.name?.trim().toLowerCase();
+      if (currentColorName === activeColor.trim().toLowerCase()) {
+        return; // Already displaying an image of this color
+      }
       const matchIdx = photos.findIndex(
-        (p) => p.color && p.color.name.toLowerCase() === activeColor.toLowerCase()
+        (p) => p.color && p.color.name.trim().toLowerCase() === activeColor.trim().toLowerCase()
       );
       if (matchIdx >= 0) {
         setCurrentIndex(matchIdx);
       }
     }
-  }, [activeColor, photos]);
+  }, [activeColor, photos, currentIndex]);
 
-  if (!images || images.length === 0) {
-    return (
-      <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-neutral-100 dark:bg-neutral-900 shadow-sm border border-neutral-200 dark:border-neutral-800 flex items-center justify-center">
-        <span className="text-neutral-400">No Image Available</span>
-      </div>
-    );
-  }
+  const handleSelectImage = (index: number) => {
+    setCurrentIndex(index);
+    const photoColor = photos && photos[index]?.color?.name;
+    if (photoColor && onColorChange) {
+      onColorChange(photoColor);
+    }
+  };
 
   const handlePrevious = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1));
+    const newIdx = currentIndex === 0 ? images.length - 1 : currentIndex - 1;
+    handleSelectImage(newIdx);
   };
 
   const handleNext = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setCurrentIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1));
+    const newIdx = currentIndex === images.length - 1 ? 0 : currentIndex + 1;
+    handleSelectImage(newIdx);
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
@@ -140,7 +148,7 @@ export function ProductGallery({
             return (
               <div 
                 key={i} 
-                onClick={() => setCurrentIndex(i)}
+                onClick={() => handleSelectImage(i)}
                 className={`relative aspect-square rounded-xl overflow-hidden bg-white dark:bg-neutral-900 border-2 cursor-pointer transition-all duration-300 ${currentIndex === i ? 'border-primary-500 shadow-md ring-2 ring-primary-500/20' : 'border-neutral-200 dark:border-neutral-800 hover:border-primary-300 opacity-70 hover:opacity-100'}`}
               >
                 <Image
