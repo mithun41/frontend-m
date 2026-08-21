@@ -67,7 +67,7 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
 
   try {
     const [productsRes, categoriesRes] = await Promise.all([
-      productService.getProducts(page),
+      productService.getProducts(page, { page_size: 1000 }),
       categoryService.getAll()
     ]);
     allProducts = productsRes.results || [];
