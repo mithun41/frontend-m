@@ -246,7 +246,7 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                             </div>
                           </td>
                           <td className="px-4 sm:px-6 py-3.5 text-center font-semibold text-gray-600 dark:text-gray-300">
-                            ৳{parseFloat(item.price).toFixed(2)}
+                            Tk {parseFloat(item.price).toFixed(2)}
                           </td>
                           <td className="px-4 sm:px-6 py-3.5 text-center">
                             <span className="inline-flex items-center justify-center w-7 h-7 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-800 dark:text-gray-200 font-bold text-xs">
@@ -254,7 +254,7 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                             </span>
                           </td>
                           <td className="px-4 sm:px-6 py-3.5 text-right font-black text-gray-900 dark:text-white">
-                            ৳{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                            Tk {(parseFloat(item.price) * item.quantity).toFixed(2)}
                           </td>
                         </tr>
                       ))}
@@ -291,15 +291,15 @@ export default function OrderModal({ open, onClose, orderId }: OrderModalProps) 
                   <div className="w-full md:w-80 bg-white dark:bg-gray-900 p-4 sm:p-5 rounded-2xl border border-gray-200/70 dark:border-gray-800 shadow-xs space-y-2.5">
                     <div className="flex justify-between items-center text-xs sm:text-sm">
                       <span className="text-gray-500 dark:text-gray-400 font-medium">Subtotal</span>
-                      <span className="font-bold text-gray-900 dark:text-white">৳{subtotal.toFixed(2)}</span>
+                      <span className="font-bold text-gray-900 dark:text-white">Tk {subtotal.toFixed(2)}</span>
                     </div>
                     <div className="flex justify-between items-center text-xs sm:text-sm">
                       <span className="text-gray-500 dark:text-gray-400 font-medium">Delivery Charge</span>
-                      <span className="font-bold text-gray-900 dark:text-white">৳{deliveryCharge.toFixed(2)}</span>
+                      <span className="font-bold text-gray-900 dark:text-white">Tk {deliveryCharge.toFixed(2)}</span>
                     </div>
                     <div className="pt-3 border-t border-dashed border-gray-200 dark:border-gray-700 flex justify-between items-center">
                       <span className="text-sm sm:text-base font-black text-gray-900 dark:text-white uppercase tracking-wider">Total</span>
-                      <span className="text-2xl sm:text-3xl font-black text-primary-600 tracking-tight">৳{total.toFixed(2)}</span>
+                      <span className="text-2xl sm:text-3xl font-black text-primary-600 tracking-tight">Tk {total.toFixed(2)}</span>
                     </div>
                   </div>
 

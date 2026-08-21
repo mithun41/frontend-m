@@ -131,7 +131,7 @@ export default function SalesReportPage() {
             <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 flex items-center justify-between">
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mb-1">Total Revenue</p>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">৳{report.summary.total_revenue.toLocaleString()}</h3>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Tk {report.summary.total_revenue.toLocaleString()}</h3>
               </div>
               <div className="p-3 sm:p-4 bg-emerald-50 dark:bg-emerald-500/10 rounded-2xl">
                 <DollarSign className="w-6 h-6 sm:w-8 sm:h-8 text-emerald-500" />
@@ -140,7 +140,7 @@ export default function SalesReportPage() {
             <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 flex items-center justify-between sm:col-span-2 md:col-span-1">
               <div>
                 <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mb-1">Net Profit</p>
-                <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">৳{report.summary.total_profit.toLocaleString()}</h3>
+                <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white">Tk {report.summary.total_profit.toLocaleString()}</h3>
               </div>
               <div className="p-3 sm:p-4 bg-primary-50 dark:bg-primary-500/10 rounded-2xl">
                 <TrendingUp className="w-6 h-6 sm:w-8 sm:h-8 text-primary-500" />
@@ -209,12 +209,12 @@ export default function SalesReportPage() {
                                 <div>
                                   <span className="font-semibold text-gray-900 dark:text-white">{item.product_name}</span>
                                   <div className="text-gray-500 text-[11px] mt-0.5">
-                                    Qty: {item.quantity} × Sell: ৳{item.unit_price} (Buy: ৳{item.unit_purchase_price})
+                                    Qty: {item.quantity} × Sell: Tk {item.unit_price} (Buy: Tk {item.unit_purchase_price})
                                   </div>
                                 </div>
                                 <div className="text-right shrink-0 ml-2">
-                                  <div className="font-bold text-gray-900 dark:text-white">৳{item.total_price}</div>
-                                  <div className="text-[11px] text-emerald-600 font-semibold">+৳{item.profit} profit</div>
+                                  <div className="font-bold text-gray-900 dark:text-white">Tk {item.total_price}</div>
+                                  <div className="text-[11px] text-emerald-600 font-semibold">+Tk {item.profit} profit</div>
                                 </div>
                               </div>
                             ))}
@@ -226,11 +226,11 @@ export default function SalesReportPage() {
                           <div className="space-y-1.5">
                             <div className="flex justify-between text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                               <span>Total:</span>
-                              <span className="font-bold text-gray-900 dark:text-white">৳{order.total_amount}</span>
+                              <span className="font-bold text-gray-900 dark:text-white">Tk {order.total_amount}</span>
                             </div>
                             <div className="flex justify-between text-gray-600 dark:text-gray-400 text-xs sm:text-sm">
                               <span>Profit:</span>
-                              <span className="font-bold text-emerald-600">৳{orderProfit}</span>
+                              <span className="font-bold text-emerald-600">Tk {orderProfit}</span>
                             </div>
                           </div>
                         </td>

@@ -194,10 +194,10 @@ export default function TrackOrderClient() {
                         <Link href={`/shop/${item.product}`} className="text-sm font-semibold text-neutral-900 dark:text-white hover:text-primary-600 line-clamp-1">
                           {item.product_name}
                         </Link>
-                        <p className="text-xs text-neutral-500">৳{parseFloat(item.price).toFixed(2)}</p>
+                        <p className="text-xs text-neutral-500">Tk {parseFloat(item.price).toFixed(2)}</p>
                       </div>
                       <div className="font-bold text-sm text-neutral-900 dark:text-white">
-                        ৳{(parseFloat(item.price) * item.quantity).toFixed(2)}
+                        Tk {(parseFloat(item.price) * item.quantity).toFixed(2)}
                       </div>
                     </div>
                   ))}
@@ -206,15 +206,15 @@ export default function TrackOrderClient() {
                 <div className="mt-6 pt-4 border-t border-neutral-100 dark:border-neutral-800 space-y-2 text-sm">
                   <div className="flex justify-between text-neutral-500">
                     <span>Subtotal</span>
-                    <span>৳{(parseFloat(order.total_amount) - parseFloat(order.delivery_charge)).toFixed(2)}</span>
+                    <span>Tk {(parseFloat(order.total_amount) - parseFloat(order.delivery_charge)).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between text-neutral-500">
                     <span>Delivery</span>
-                    <span>৳{parseFloat(order.delivery_charge).toFixed(2)}</span>
+                    <span>Tk {parseFloat(order.delivery_charge).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between font-bold text-neutral-900 dark:text-white text-base pt-2">
                     <span>Total</span>
-                    <span className="text-primary-600">৳{parseFloat(order.total_amount).toFixed(2)}</span>
+                    <span className="text-primary-600">Tk {parseFloat(order.total_amount).toFixed(2)}</span>
                   </div>
                 </div>
               </div>

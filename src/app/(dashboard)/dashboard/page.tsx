@@ -79,7 +79,7 @@ export default function DashboardHomePage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard 
           title="Total Revenue" 
-          value={`৳${stats.total_revenue.toLocaleString()}`} 
+          value={`Tk ${stats.total_revenue.toLocaleString()}`} 
           icon={<DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />}
           trend="+12.5%"
           trendUp={true}
@@ -87,7 +87,7 @@ export default function DashboardHomePage() {
         />
         <StatCard 
           title="Total Profit" 
-          value={`৳${stats.total_profit.toLocaleString()}`} 
+          value={`Tk ${stats.total_profit.toLocaleString()}`} 
           icon={<TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />}
           trend="+8.2%"
           trendUp={true}
@@ -200,7 +200,7 @@ export default function DashboardHomePage() {
                   <td className="p-3 sm:p-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(order.date), "MMM dd, yyyy h:mm a")}
                   </td>
-                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">৳{order.total_amount.toLocaleString()}</td>
+                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">Tk {order.total_amount.toLocaleString()}</td>
                   <td className="p-3 sm:p-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}

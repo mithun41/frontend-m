@@ -102,7 +102,7 @@ export default function CustomerDashboard() {
                   <td className="p-3 sm:p-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(order.created_at), "MMM dd, yyyy h:mm a")}
                   </td>
-                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">৳{order.total_amount.toLocaleString()}</td>
+                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">Tk {order.total_amount.toLocaleString()}</td>
                   <td className="p-3 sm:p-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}

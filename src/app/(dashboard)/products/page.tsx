@@ -107,9 +107,9 @@ export default function ProductsPage() {
       header: "Price",
       render: (item) => (
         <div className="whitespace-nowrap">
-          <span className="font-bold text-gray-900 dark:text-white">৳{item.price}</span>
+          <span className="font-bold text-gray-900 dark:text-white">Tk {item.price}</span>
           {item.offer_price && (
-            <span className="ml-1.5 text-xs text-gray-400 line-through">৳{item.selling_price}</span>
+            <span className="ml-1.5 text-xs text-gray-400 line-through">Tk {item.selling_price}</span>
           )}
         </div>
       )

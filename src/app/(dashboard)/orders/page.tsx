@@ -146,7 +146,7 @@ export default function OrdersPage() {
                 { 
                   key: "total", 
                   header: "Total", 
-                  render: (order) => <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">৳{parseFloat(order.total_amount).toFixed(2)}</span> 
+                  render: (order) => <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">Tk {parseFloat(order.total_amount).toFixed(2)}</span> 
                 },
                 { 
                   key: "status", 

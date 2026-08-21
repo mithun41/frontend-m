@@ -92,7 +92,7 @@ export default function SettingsPage() {
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <div className="space-y-1.5">
-              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Inside Dhaka Charge (৳)</label>
+              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Inside Dhaka Charge (Tk)</label>
               <input
                 type="number"
                 step="0.01"
@@ -105,7 +105,7 @@ export default function SettingsPage() {
             </div>
             
             <div className="space-y-1.5">
-              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Outside Dhaka Charge (৳)</label>
+              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Outside Dhaka Charge (Tk)</label>
               <input
                 type="number"
                 step="0.01"
