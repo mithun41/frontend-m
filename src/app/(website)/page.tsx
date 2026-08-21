@@ -156,18 +156,18 @@ export default async function HomePage() {
                         {product.name}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-1.5 text-sm font-semibold">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-black">
+                    <div className="flex items-center gap-1.5 text-sm font-semibold flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-black whitespace-nowrap">
                           Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                         </span>
                         {product.offer_price && parseFloat(product.offer_price) > 0 && (
-                          <span className="text-xs text-gray-500 line-through">
+                          <span className="text-xs text-gray-500 line-through whitespace-nowrap">
                             Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
+                      <span className="text-[10px] text-gray-500 font-normal ml-1 whitespace-nowrap">+ VAT</span>
                     </div>
                     <div className="mt-1">
                       <OrderNowButton product={product} />
@@ -234,18 +234,18 @@ export default async function HomePage() {
                         {product.name}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-1.5 text-sm font-semibold">
-                      <div className="flex items-center gap-1.5">
-                        <span className="text-black">
+                    <div className="flex items-center gap-1.5 text-sm font-semibold flex-wrap">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className="text-black whitespace-nowrap">
                           Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                         </span>
                         {product.offer_price && parseFloat(product.offer_price) > 0 && (
-                          <span className="text-xs text-gray-500 line-through">
+                          <span className="text-xs text-gray-500 line-through whitespace-nowrap">
                             Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                           </span>
                         )}
                       </div>
-                      <span className="text-[10px] text-gray-500 font-normal ml-1">+ VAT</span>
+                      <span className="text-[10px] text-gray-500 font-normal ml-1 whitespace-nowrap">+ VAT</span>
                     </div>
                     <div className="mt-1">
                       <OrderNowButton product={product} />

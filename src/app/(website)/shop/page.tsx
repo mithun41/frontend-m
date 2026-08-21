@@ -200,18 +200,18 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                           {product.name}
                         </h3>
                       </Link>
-                        <div className="flex justify-between items-center mt-1">
-                        <div className="flex items-center gap-2">
-                          <span className="font-extrabold text-lg text-black dark:text-white">
+                        <div className="flex justify-between items-center mt-1 gap-1">
+                        <div className="flex items-baseline gap-1.5 flex-wrap">
+                          <span className="font-extrabold text-base sm:text-lg text-black dark:text-white whitespace-nowrap">
                             Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                           </span>
                           {product.offer_price && parseFloat(product.offer_price) > 0 && (
-                            <span className="text-sm text-neutral-500 line-through">
+                            <span className="text-xs text-neutral-500 line-through whitespace-nowrap">
                               Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                             </span>
                           )}
                         </div>
-                        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium bg-neutral-100 dark:bg-neutral-800 px-2 py-1 rounded-md">
+                        <span className="text-xs text-neutral-500 dark:text-neutral-400 font-medium bg-neutral-100 dark:bg-neutral-800 px-2 py-0.5 rounded-md shrink-0 whitespace-nowrap">
                           ★ {product.average_rating || 0}
                         </span>
                       </div>

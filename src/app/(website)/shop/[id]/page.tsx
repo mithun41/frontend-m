@@ -186,12 +186,12 @@ export default async function ProductDetailPage({
                         {prod.name}
                       </h3>
                     </Link>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-[13px] text-neutral-900 dark:text-white">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-semibold text-[13px] text-neutral-900 dark:text-white whitespace-nowrap">
                         Tk {parseFloat(prod.price || prod.selling_price || "0").toFixed(2)}
                       </span>
                       {prod.offer_price && parseFloat(prod.offer_price) > 0 && (
-                        <span className="text-[11px] text-neutral-500 line-through">
+                        <span className="text-[11px] text-neutral-500 line-through whitespace-nowrap">
                           Tk {parseFloat(prod.selling_price || "0").toFixed(2)}
                         </span>
                       )}
