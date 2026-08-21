@@ -65,16 +65,28 @@ export default function ReviewsPage() {
   };
 
   const columns: Column<Review>[] = [
-    { key: "id", header: "ID" },
-    { key: "user", header: "User" },
-    { key: "product_name", header: "Product" },
+    { 
+      key: "id", 
+      header: "ID",
+      render: (item) => <span className="font-semibold text-xs text-gray-500">#{item.id}</span>
+    },
+    { 
+      key: "user", 
+      header: "User",
+      render: (item) => <span className="font-medium text-gray-900 dark:text-white text-xs sm:text-sm">{item.user}</span>
+    },
+    { 
+      key: "product_name", 
+      header: "Product",
+      render: (item) => <span className="text-gray-700 dark:text-gray-300 text-xs sm:text-sm line-clamp-1 max-w-[150px]">{item.product_name}</span>
+    },
     { 
       key: "rating", 
       header: "Rating",
       render: (item) => (
-        <div className="flex items-center text-yellow-500">
+        <div className="flex items-center text-yellow-400 text-xs">
           {Array.from({ length: 5 }).map((_, i) => (
-            <span key={i} className={i < item.rating ? "text-yellow-500" : "text-gray-300 dark:text-gray-600"}>★</span>
+            <span key={i} className={i < item.rating ? "text-yellow-400" : "text-gray-300 dark:text-gray-600"}>★</span>
           ))}
         </div>
       )
@@ -83,20 +95,20 @@ export default function ReviewsPage() {
       key: "comment", 
       header: "Comment",
       render: (item) => (
-        <span className="truncate block max-w-[200px]" title={item.comment}>{item.comment}</span>
+        <span className="truncate block max-w-[180px] sm:max-w-[240px] text-xs text-gray-600 dark:text-gray-300" title={item.comment}>{item.comment}</span>
       )
     },
     {
       key: "status",
       header: "Status",
       render: (item) => {
-        let bgClass = "bg-gray-100 text-gray-800";
+        let bgClass = "bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-gray-300";
         if (item.status === 'approved') bgClass = "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400";
         if (item.status === 'rejected') bgClass = "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400";
         if (item.status === 'pending') bgClass = "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400";
         
         return (
-          <span className={`px-2.5 py-1 rounded-full text-xs font-semibold uppercase tracking-wider ${bgClass}`}>
+          <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${bgClass}`}>
             {item.status || "pending"}
           </span>
         );
@@ -105,13 +117,13 @@ export default function ReviewsPage() {
     { 
       key: "created_at", 
       header: "Date",
-      render: (item) => new Date(item.created_at).toLocaleDateString()
+      render: (item) => <span className="text-xs text-gray-500 whitespace-nowrap">{new Date(item.created_at).toLocaleDateString()}</span>
     },
     {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleEdit(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
@@ -143,24 +155,24 @@ export default function ReviewsPage() {
   });
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Reviews</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage product reviews and feedback.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Reviews</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage product reviews and feedback.</p>
         </div>
-        <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+        <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 w-full md:w-auto">
           <input 
             type="text" 
             placeholder="Search reviews..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="px-3.5 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           />
           <select 
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+            className="px-3.5 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             <option value="all">All Status</option>
             <option value="pending">Pending</option>
@@ -169,7 +181,7 @@ export default function ReviewsPage() {
           </select>
           <button
             onClick={handleAdd}
-            className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm"
+            className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-xs sm:text-sm"
           >
             <Plus className="w-4 h-4" />
             Add Review
@@ -179,10 +191,10 @@ export default function ReviewsPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : isError ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center text-sm">
           Failed to load reviews.
         </div>
       ) : (

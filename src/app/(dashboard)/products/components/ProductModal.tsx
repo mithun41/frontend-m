@@ -8,7 +8,6 @@ import { colorService } from "@/lib/api/colorService";
 import Swal from "sweetalert2";
 import { X, Upload, Palette } from "lucide-react";
 import Image from "next/image";
-
 import { uploadToCloudinary } from "@/lib/cloudinary";
 
 interface ProductModalProps {
@@ -206,7 +205,6 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
     } else if (name === "size_names") {
       setFormData(prev => {
         const newData = { ...prev, size_names: value };
-        // If sizes contain stock specs like S:10, M:20, calculate total stock automatically
         if (value.includes(":")) {
           let total = 0;
           let hasExplicitStock = false;
@@ -230,7 +228,6 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
       setFormData(prev => {
         const newData = { ...prev, [name]: value };
         
-        // Auto-calculate final price
         if (name === "selling_price" || name === "offer_price") {
           const offer = parseFloat(newData.offer_price);
           const selling = parseFloat(newData.selling_price);
@@ -299,12 +296,10 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
         }
       });
 
-      // Explicitly ensure stock is sent
       if (!data.has('stock') || formData.stock === "") {
         data.set('stock', '0');
       }
 
-      // Append image URLs
       for (let i = 1; i <= 5; i++) {
         const key = `image_${i}` as keyof typeof images;
         if (uploadedUrls[key]) {
@@ -312,7 +307,6 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
         }
       }
 
-      // Append image colors
       for (let i = 1; i <= 5; i++) {
         const colorKey = `image_${i}_color` as keyof typeof imageColors;
         const colorVal = imageColors[colorKey];
@@ -342,53 +336,53 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !isPending && setOpen(false)}></div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => !isPending && setOpen(false)}></div>
       
-      <div className="relative w-full max-w-4xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+      <div className="relative w-full max-w-4xl max-h-[92vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
             {productToEdit ? "Edit Product" : "Add New Product"}
           </h2>
           <button 
             onClick={() => !isPending && setOpen(false)}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="p-6 overflow-y-auto custom-scrollbar">
-          <form id="product-form" onSubmit={handleSubmit} className="space-y-6">
+        <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+          <form id="product-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {errors.general && (
-              <div className="p-3 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl text-sm">
+              <div className="p-3 bg-red-50 text-red-700 dark:bg-red-900/30 dark:text-red-400 border border-red-200 dark:border-red-800 rounded-xl text-xs sm:text-sm">
                 {errors.general[0]}
               </div>
             )}
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
               {/* Left Column: Basic Info */}
-              <div className="space-y-5">
+              <div className="space-y-4 sm:space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Name</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Product Name</label>
                   <input
                     type="text"
                     name="name"
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     required
                   />
                   {errors.name && <p className="text-xs text-red-500 mt-1">{errors.name[0]}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category</label>
                   <select
                     name="category_id"
                     value={formData.category_id}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     required
                   >
                     <option value="">Select Category</option>
@@ -402,33 +396,33 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Description</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Short Description</label>
                   <input
                     type="text"
                     name="short_description"
                     value={formData.short_description}
                     onChange={handleChange}
                     placeholder="Brief highlights of the product..."
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   />
                   {errors.short_description && <p className="text-xs text-red-500 mt-1">{errors.short_description[0]}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Description</label>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Description</label>
                   <textarea
                     name="description"
-                    rows={4}
+                    rows={3}
                     value={formData.description}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   />
                   {errors.description && <p className="text-xs text-red-500 mt-1">{errors.description[0]}</p>}
                 </div>
 
                 {/* Colors Field */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1.5">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 flex items-center gap-1.5">
                     <Palette className="w-4 h-4 text-primary-500" />
                     Product Colors (e.g. Black, White, Navy Blue)
                   </label>
@@ -438,124 +432,121 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                     placeholder="e.g. Black, White, Red, Navy Blue"
                     value={formData.color_names}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                   />
-                  <p className="text-xs text-gray-500 mt-1">
-                    Comma-separated list of colors. Colors assigned to photos will also be automatically linked.
+                  <p className="text-[10px] sm:text-xs text-gray-500 mt-1">
+                    Comma-separated list of colors.
                   </p>
                   {errors.color_names && <p className="text-xs text-red-500 mt-1">{errors.color_names[0]}</p>}
                 </div>
               </div>
 
               {/* Right Column: Pricing, Sizes, Stock, Photo with Colors */}
-              <div className="space-y-5">
-                <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4 sm:space-y-5">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Purchase Price</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Purchase Price</label>
                     <input
                       type="number"
                       step="0.01"
                       name="purchase_price"
                       value={formData.purchase_price}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     />
                     {errors.purchase_price && <p className="text-xs text-red-500 mt-1">{errors.purchase_price[0]}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Selling Price</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Selling Price</label>
                     <input
                       type="number"
                       step="0.01"
                       name="selling_price"
                       value={formData.selling_price}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       required
                     />
                     {errors.selling_price && <p className="text-xs text-red-500 mt-1">{errors.selling_price[0]}</p>}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Offer Price</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Offer Price</label>
                     <input
                       type="number"
                       step="0.01"
                       name="offer_price"
                       value={formData.offer_price}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     />
                     {errors.offer_price && <p className="text-xs text-red-500 mt-1">{errors.offer_price[0]}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price (Final)</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Price (Final)</label>
                     <input
                       type="number"
                       step="0.01"
                       name="price"
                       value={formData.price}
                       readOnly
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 focus:ring-0 cursor-not-allowed"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 focus:ring-0 cursor-not-allowed"
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Stock Quantity</label>
                     <input
                       type="number"
                       name="stock"
                       value={formData.stock}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                       required
                     />
                     {errors.stock && <p className="text-xs text-red-500 mt-1">{errors.stock[0]}</p>}
                   </div>
                   <div>
                     <div className="flex justify-between items-center mb-1">
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-                        Sizes & Stock <span className="text-xs text-gray-400 font-normal">(Optional)</span>
+                      <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300">
+                        Sizes & Stock <span className="text-[10px] text-gray-400 font-normal">(Optional)</span>
                       </label>
                       {formData.size_names && (
                         <button
                           type="button"
                           onClick={() => setFormData(prev => ({ ...prev, size_names: "" }))}
-                          className="text-[11px] text-red-500 hover:text-red-700 font-medium"
+                          className="text-[10px] text-red-500 hover:text-red-700 font-medium"
                         >
-                          Clear Sizes
+                          Clear
                         </button>
                       )}
                     </div>
                     <input
                       type="text"
                       name="size_names"
-                      placeholder="Leave blank if product has no sizes (e.g. S:10, M:5)"
+                      placeholder="e.g. S:10, M:20 or S, M, L"
                       value={formData.size_names}
                       onChange={handleChange}
-                      className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
+                      className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-primary-500"
                     />
-                    <p className="text-xs text-gray-500 mt-1">
-                      Leave empty if product has no sizes. Or specify stock per size using <span className="font-semibold text-gray-700 dark:text-gray-300">Size:Stock</span>.
-                    </p>
                     {errors.size_names && <p className="text-xs text-red-500 mt-1">{errors.size_names[0]}</p>}
                   </div>
                 </div>
 
-                {/* Images with Color Tagging */}
+                {/* Images with Color Tagging - Responsive Grid */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Product Images & Color Tagging
                   </label>
-                  <p className="text-xs text-gray-500 mb-3">
-                    Upload photos and optionally assign a color for each photo (e.g. Black for Image 1, White for Image 2).
+                  <p className="text-[10px] sm:text-xs text-gray-500 mb-2.5">
+                    Upload photos and optionally assign color names to each photo.
                   </p>
                   
-                  <div className="grid grid-cols-5 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5 sm:gap-3">
                     {(["image_1", "image_2", "image_3", "image_4", "image_5"] as const).map((field, idx) => {
                       const colorField = `${field}_color` as keyof typeof imageColors;
                       return (
@@ -571,12 +562,11 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                               <Image src={previewImages[field]} alt={`Preview ${idx + 1}`} fill className="object-cover" unoptimized />
                             ) : (
                               <div className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 group-hover:text-primary-500">
-                                <Upload className="w-5 h-5 mb-1" />
+                                <Upload className="w-4 h-4 mb-0.5" />
                                 <span className="text-[10px] font-medium">Img {idx + 1}</span>
                               </div>
                             )}
                           </div>
-                          {/* Color input for this image */}
                           <input
                             type="text"
                             placeholder="Color..."
@@ -594,23 +584,18 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
                       );
                     })}
                   </div>
-                  {errors.image_1 && <p className="text-xs text-red-500 mt-1">Image 1: {errors.image_1[0]}</p>}
-                  {errors.image_2 && <p className="text-xs text-red-500 mt-1">Image 2: {errors.image_2[0]}</p>}
-                  {errors.image_3 && <p className="text-xs text-red-500 mt-1">Image 3: {errors.image_3[0]}</p>}
-                  {errors.image_4 && <p className="text-xs text-red-500 mt-1">Image 4: {errors.image_4[0]}</p>}
-                  {errors.image_5 && <p className="text-xs text-red-500 mt-1">Image 5: {errors.image_5[0]}</p>}
                 </div>
               </div>
             </div>
           </form>
         </div>
 
-        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3 shrink-0 bg-gray-50/50 dark:bg-gray-900">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2.5 sm:gap-3 shrink-0 bg-gray-50/50 dark:bg-gray-900">
           <button
             type="button"
             onClick={() => setOpen(false)}
             disabled={isPending || isUploading}
-            className="px-5 py-2.5 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
@@ -618,10 +603,10 @@ export default function ProductModal({ open, setOpen, productToEdit }: ProductMo
             form="product-form"
             type="submit"
             disabled={isPending || isUploading}
-            className="px-5 py-2.5 rounded-xl font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {(isPending || isUploading) && (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             )}
             {isUploading ? "Uploading Images..." : productToEdit ? "Save Changes" : "Create Product"}
           </button>

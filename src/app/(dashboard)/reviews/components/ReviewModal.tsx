@@ -87,8 +87,6 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
     }
 
     if (reviewToEdit) {
-      // For update, we use PATCH and only send editable fields 
-      // (avoiding user and product_name since they might be read-only on backend)
       const updateData = {
         rating: formData.rating,
         comment: formData.comment,
@@ -104,33 +102,33 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
   const isPending = createMutation.isPending || updateMutation.isPending;
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={() => !isPending && setOpen(false)}></div>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4">
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-xs" onClick={() => !isPending && setOpen(false)}></div>
       
-      <div className="relative w-full max-w-2xl max-h-[90vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
+      <div className="relative w-full max-w-2xl max-h-[92vh] flex flex-col bg-white dark:bg-gray-900 rounded-2xl shadow-2xl overflow-hidden border border-gray-100 dark:border-gray-800">
         
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
-          <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 dark:border-gray-800 flex items-center justify-between shrink-0">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 dark:text-white">
             {reviewToEdit ? "Edit Review" : "Add New Review"}
           </h2>
           <button 
             onClick={() => !isPending && setOpen(false)}
-            className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+            className="p-1.5 sm:p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Body (Scrollable) */}
-        <div className="p-6 overflow-y-auto custom-scrollbar">
-          <form id="review-form" onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Body */}
+        <div className="p-4 sm:p-6 overflow-y-auto custom-scrollbar">
+          <form id="review-form" onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
               
               {/* Left Column */}
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     User
                   </label>
                   <input
@@ -139,12 +137,12 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
                     value={formData.user}
                     onChange={handleChange}
                     disabled={!!reviewToEdit}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Product
                   </label>
                   <input
@@ -153,22 +151,22 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
                     value={formData.product_name}
                     onChange={handleChange}
                     disabled={!!reviewToEdit}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50"
                   />
                 </div>
               </div>
 
               {/* Right Column */}
-              <div className="space-y-5">
+              <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Status
                   </label>
                   <select
                     name="status"
                     value={formData.status}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                   >
                     <option value="pending">Pending</option>
                     <option value="approved">Approved</option>
@@ -177,7 +175,7 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                     Rating (1-5)
                   </label>
                   <input
@@ -187,7 +185,7 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
                     name="rating"
                     value={formData.rating}
                     onChange={handleChange}
-                    className="w-full px-4 py-2.5 rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
+                    className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                     required
                   />
                 </div>
@@ -195,15 +193,15 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
             </div>
 
             <div className="w-full">
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                 Comment
               </label>
               <textarea
                 name="comment"
                 value={formData.comment}
                 onChange={handleChange}
-                rows={4}
-                className={`w-full px-4 py-2.5 rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all resize-none ${errors.comment ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500'}`}
+                rows={3}
+                className={`w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl border bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 transition-all resize-none ${errors.comment ? 'border-red-500 focus:ring-red-500' : 'border-gray-200 dark:border-gray-700 focus:ring-primary-500'}`}
                 required
               ></textarea>
               {errors.comment && <p className="text-red-500 text-xs mt-1">{errors.comment}</p>}
@@ -212,13 +210,13 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
           </form>
         </div>
 
-        {/* Footer (Action Buttons) */}
-        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-3 shrink-0 bg-gray-50/50 dark:bg-gray-900">
+        {/* Footer */}
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-t border-gray-100 dark:border-gray-800 flex justify-end gap-2.5 sm:gap-3 shrink-0 bg-gray-50/50 dark:bg-gray-900">
           <button
             type="button"
             onClick={() => setOpen(false)}
             disabled={isPending}
-            className="px-5 py-2.5 rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
+            className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors disabled:opacity-50"
           >
             Cancel
           </button>
@@ -226,10 +224,10 @@ export default function ReviewModal({ open, setOpen, reviewToEdit }: ReviewModal
             form="review-form"
             type="submit"
             disabled={isPending}
-            className="px-5 py-2.5 rounded-xl font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="px-4 sm:px-5 py-2 sm:py-2.5 text-xs sm:text-sm rounded-xl font-medium text-white bg-primary-600 hover:bg-primary-700 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {isPending && (
-              <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+              <span className="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
             )}
             {reviewToEdit ? "Save Changes" : "Create Review"}
           </button>

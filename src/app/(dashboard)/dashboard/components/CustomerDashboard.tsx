@@ -21,89 +21,89 @@ export default function CustomerDashboard() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (isError || !stats) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] text-red-500">
+      <div className="flex items-center justify-center min-h-[50vh] text-red-500 text-sm sm:text-base">
         <p>Failed to load dashboard data.</p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">
             Welcome back, {stats.user.name.split(" ")[0]}!
           </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">
             Here is an overview of your recent orders and account activity.
           </p>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard 
           title="Total Orders" 
           value={stats.order_summary.total_orders.toString()} 
-          icon={<ShoppingBag className="w-6 h-6 text-primary-500" />}
+          icon={<ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />}
           bg="bg-primary-50 dark:bg-primary-500/10"
         />
         <StatCard 
           title="Pending Orders" 
           value={stats.order_summary.pending.toString()} 
-          icon={<Clock className="w-6 h-6 text-amber-500" />}
+          icon={<Clock className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />}
           bg="bg-amber-50 dark:bg-amber-500/10"
         />
         <StatCard 
           title="Delivered" 
           value={stats.order_summary.delivered.toString()} 
-          icon={<CheckCircle className="w-6 h-6 text-emerald-500" />}
+          icon={<CheckCircle className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />}
           bg="bg-emerald-50 dark:bg-emerald-500/10"
         />
         <StatCard 
           title="Cancelled" 
           value={stats.order_summary.cancelled.toString()} 
-          icon={<XCircle className="w-6 h-6 text-rose-500" />}
+          icon={<XCircle className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />}
           bg="bg-rose-50 dark:bg-rose-500/10"
         />
       </div>
 
       {/* Recent Orders Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Orders</h2>
-          <Link href="/orders" className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Recent Orders</h2>
+          <Link href="/orders" className="text-xs sm:text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
             View All Orders
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-[550px]">
             <thead>
-              <tr className="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                <th className="p-4 font-semibold">Order No</th>
-                <th className="p-4 font-semibold">Date</th>
-                <th className="p-4 font-semibold">Amount</th>
-                <th className="p-4 font-semibold">Status</th>
+              <tr className="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-wider">
+                <th className="p-3 sm:p-4 font-semibold">Order No</th>
+                <th className="p-3 sm:p-4 font-semibold">Date</th>
+                <th className="p-3 sm:p-4 font-semibold">Amount</th>
+                <th className="p-3 sm:p-4 font-semibold">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-xs sm:text-sm">
               {stats.recent_orders.map((order) => (
                 <tr key={order.order_number} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <td className="p-4 font-medium text-gray-900 dark:text-white">#{order.order_number}</td>
-                  <td className="p-4 text-gray-500 dark:text-gray-400">
+                  <td className="p-3 sm:p-4 font-medium text-gray-900 dark:text-white">#{order.order_number}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(order.created_at), "MMM dd, yyyy h:mm a")}
                   </td>
-                  <td className="p-4 font-bold text-gray-900 dark:text-white">৳{order.total_amount.toLocaleString()}</td>
-                  <td className="p-4">
+                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">৳{order.total_amount.toLocaleString()}</td>
+                  <td className="p-3 sm:p-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}
                       {order.status}
@@ -113,7 +113,7 @@ export default function CustomerDashboard() {
               ))}
               {stats.recent_orders.length === 0 && (
                 <tr>
-                  <td colSpan={4} className="p-8 text-center text-gray-500">
+                  <td colSpan={4} className="p-8 text-center text-gray-500 text-sm">
                     No recent orders found. Start shopping!
                   </td>
                 </tr>
@@ -129,13 +129,13 @@ export default function CustomerDashboard() {
 // Helpers
 function StatCard({ title, value, icon, bg }: { title: string, value: string, icon: any, bg: string }) {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between group hover:shadow-md transition-shadow">
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 flex flex-col justify-between group hover:shadow-md transition-all">
       <div className="flex justify-between items-start mb-2">
         <div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">{title}</p>
-          <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{value}</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mb-1">{title}</p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{value}</h3>
         </div>
-        <div className={`p-3 rounded-xl ${bg}`}>
+        <div className={`p-2.5 sm:p-3 rounded-xl ${bg} shrink-0`}>
           {icon}
         </div>
       </div>
@@ -161,14 +161,14 @@ function getStatusColor(status: string) {
 function getStatusIcon(status: string) {
   switch (status.toLowerCase()) {
     case 'delivered':
-      return <CheckCircle className="w-3.5 h-3.5" />;
+      return <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     case 'pending':
-      return <Clock className="w-3.5 h-3.5" />;
+      return <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     case 'shipped':
-      return <Truck className="w-3.5 h-3.5" />;
+      return <Truck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     case 'cancelled':
-      return <XCircle className="w-3.5 h-3.5" />;
+      return <XCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     default:
-      return <Package className="w-3.5 h-3.5" />;
+      return <Package className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
   }
 }

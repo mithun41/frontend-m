@@ -68,12 +68,12 @@ export default function ProductsPage() {
       key: "image_1", 
       header: "Image", 
       render: (item) => (
-        <div className="w-12 h-12 rounded-lg bg-gray-100 overflow-hidden relative">
+        <div className="w-12 h-12 rounded-xl bg-gray-100 dark:bg-gray-800 overflow-hidden relative border border-gray-200 dark:border-gray-700 shrink-0">
           {item.image_1 ? (
             <Image src={item.image_1} alt={item.name} fill className="object-cover" unoptimized />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-gray-400">
-              <span className="text-xs">No img</span>
+              <span className="text-[10px]">No img</span>
             </div>
           )}
         </div>
@@ -83,17 +83,17 @@ export default function ProductsPage() {
       key: "name", 
       header: "Product Details", 
       render: (item) => (
-        <div>
-          <p className="font-semibold text-gray-900 dark:text-white">{item.name}</p>
+        <div className="min-w-[140px] max-w-[260px]">
+          <p className="font-semibold text-gray-900 dark:text-white line-clamp-1">{item.name}</p>
           <p className="text-xs text-gray-500">{item.category?.name}</p>
           {item.colors && item.colors.length > 0 && (
-            <div className="flex flex-wrap gap-1 mt-1.5">
+            <div className="flex flex-wrap gap-1 mt-1">
               {item.colors.map(c => (
                 <span 
                   key={c.id} 
                   className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10px] bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700"
                 >
-                  {c.code && <span className="w-1.5 h-1.5 rounded-full inline-block" style={{ backgroundColor: c.code }} />}
+                  {c.code && <span className="w-1.5 h-1.5 rounded-full inline-block shrink-0" style={{ backgroundColor: c.code }} />}
                   {c.name}
                 </span>
               ))}
@@ -106,10 +106,10 @@ export default function ProductsPage() {
       key: "price", 
       header: "Price",
       render: (item) => (
-        <div>
-          <span className="font-medium text-gray-900 dark:text-white">৳{item.price}</span>
+        <div className="whitespace-nowrap">
+          <span className="font-bold text-gray-900 dark:text-white">৳{item.price}</span>
           {item.offer_price && (
-            <span className="ml-2 text-xs text-gray-500 line-through">৳{item.selling_price}</span>
+            <span className="ml-1.5 text-xs text-gray-400 line-through">৳{item.selling_price}</span>
           )}
         </div>
       )
@@ -118,7 +118,7 @@ export default function ProductsPage() {
       key: "stock", 
       header: "Stock",
       render: (item) => (
-        <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${item.stock > 10 ? 'bg-green-100 text-green-800' : item.stock > 0 ? 'bg-orange-100 text-orange-800' : 'bg-red-100 text-red-800'}`}>
+        <span className={`px-2.5 py-0.5 rounded-full text-xs font-semibold whitespace-nowrap ${item.stock > 10 ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400' : item.stock > 0 ? 'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-400' : 'bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-400'}`}>
           {item.stock} in stock
         </span>
       )
@@ -127,7 +127,7 @@ export default function ProductsPage() {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleEdit(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
@@ -148,15 +148,15 @@ export default function ProductsPage() {
   ];
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your inventory and pricing here.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Products</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your inventory and pricing here.</p>
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-sm w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Add Product
@@ -165,10 +165,10 @@ export default function ProductsPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : isError ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center text-sm">
           Failed to load products.
         </div>
       ) : (
@@ -176,7 +176,7 @@ export default function ProductsPage() {
           columns={columns}
           data={data?.results || []}
           paginated={true}
-          itemsPerPage={10} // Assuming backend returns 10 per page
+          itemsPerPage={10}
           serverPagination={true}
           totalItems={data?.count || 0}
           currentPage={currentPage}

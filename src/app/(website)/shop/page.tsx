@@ -51,6 +51,9 @@ export async function generateMetadata({
   };
 }
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function ProductsPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
   const resolvedParams = await searchParams;
   const categoryFilter = resolvedParams.category as string | undefined;

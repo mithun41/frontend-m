@@ -35,6 +35,9 @@ export const metadata: Metadata = {
   },
 };
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 export default async function HomePage() {
   // Fetch all home page data concurrently in parallel
   const [categoriesRes, bannersRes, newArrivalsRes, bestSellingRes] = await Promise.allSettled([

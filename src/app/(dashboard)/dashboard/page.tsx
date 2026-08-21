@@ -30,7 +30,7 @@ export default function DashboardHomePage() {
   const { data: stats, isLoading, isError } = useQuery({
     queryKey: ["dashboard-stats"],
     queryFn: dashboardService.getStats,
-    enabled: user?.role === "admin" || user?.role === "superuser" || user?.role === "staff", // Only fetch admin stats if not customer
+    enabled: user?.role === "admin" || user?.role === "superuser" || user?.role === "staff",
   });
 
   if (user?.role === 'customer' || !user?.role) {
@@ -39,15 +39,15 @@ export default function DashboardHomePage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary-500 border-t-transparent"></div>
+      <div className="flex items-center justify-center min-h-[50vh]">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-primary-500 border-t-transparent"></div>
       </div>
     );
   }
 
   if (isError || !stats) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh] text-red-500">
+      <div className="flex items-center justify-center min-h-[50vh] text-red-500 text-sm sm:text-base">
         <p>Failed to load dashboard data.</p>
       </div>
     );
@@ -60,35 +60,35 @@ export default function DashboardHomePage() {
   }));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard Overview</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Here is what's happening with your store today.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white tracking-tight">Dashboard Overview</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Here is what's happening with your store today.</p>
         </div>
         <div className="flex items-center gap-3">
-          <span className="text-sm text-gray-500 bg-white dark:bg-gray-800 px-4 py-2 rounded-lg border border-gray-100 dark:border-gray-700 shadow-sm flex items-center gap-2">
-            <Activity className="w-4 h-4 text-primary-500" />
+          <span className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 bg-white dark:bg-gray-800 px-3.5 py-1.5 sm:py-2 rounded-xl border border-gray-200/80 dark:border-gray-700 shadow-xs flex items-center gap-2">
+            <Activity className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary-500" />
             Live Updates
           </span>
         </div>
       </div>
 
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <StatCard 
           title="Total Revenue" 
-          value={`$${stats.total_revenue.toLocaleString()}`} 
-          icon={<DollarSign className="w-6 h-6 text-emerald-500" />}
+          value={`৳${stats.total_revenue.toLocaleString()}`} 
+          icon={<DollarSign className="w-5 h-5 sm:w-6 sm:h-6 text-emerald-500" />}
           trend="+12.5%"
           trendUp={true}
           bg="bg-emerald-50 dark:bg-emerald-500/10"
         />
         <StatCard 
           title="Total Profit" 
-          value={`$${stats.total_profit.toLocaleString()}`} 
-          icon={<TrendingUp className="w-6 h-6 text-primary-500" />}
+          value={`৳${stats.total_profit.toLocaleString()}`} 
+          icon={<TrendingUp className="w-5 h-5 sm:w-6 sm:h-6 text-primary-500" />}
           trend="+8.2%"
           trendUp={true}
           bg="bg-primary-50 dark:bg-primary-500/10"
@@ -96,7 +96,7 @@ export default function DashboardHomePage() {
         <StatCard 
           title="Total Orders" 
           value={stats.total_orders.toLocaleString()} 
-          icon={<ShoppingBag className="w-6 h-6 text-amber-500" />}
+          icon={<ShoppingBag className="w-5 h-5 sm:w-6 sm:h-6 text-amber-500" />}
           trend="+2.1%"
           trendUp={true}
           bg="bg-amber-50 dark:bg-amber-500/10"
@@ -104,7 +104,7 @@ export default function DashboardHomePage() {
         <StatCard 
           title="Total Customers" 
           value={stats.total_customers.toLocaleString()} 
-          icon={<Users className="w-6 h-6 text-rose-500" />}
+          icon={<Users className="w-5 h-5 sm:w-6 sm:h-6 text-rose-500" />}
           trend="+5.4%"
           trendUp={true}
           bg="bg-rose-50 dark:bg-rose-500/10"
@@ -112,30 +112,30 @@ export default function DashboardHomePage() {
       </div>
 
       {/* Charts Row */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Top Products Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 lg:col-span-2">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Top Selling Products</h2>
-          <div className="h-[300px] w-full">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 p-4 sm:p-6 lg:col-span-2">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Top Selling Products</h2>
+          <div className="h-[240px] sm:h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
               <BarChart data={stats.top_products} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e5e7eb" />
-                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} dy={10} />
-                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 12}} />
+                <XAxis dataKey="name" axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 11}} dy={8} />
+                <YAxis axisLine={false} tickLine={false} tick={{fill: '#6b7280', fontSize: 11}} />
                 <Tooltip 
                   cursor={{fill: '#f3f4f6'}}
                   contentStyle={{borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'}}
                 />
-                <Bar dataKey="sold_quantity" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={40} />
+                <Bar dataKey="sold_quantity" fill="#0ea5e9" radius={[4, 4, 0, 0]} barSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </div>
         </div>
 
         {/* Order Status Chart */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 p-6">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-6">Order Summary</h2>
-          <div className="h-[300px] w-full flex flex-col items-center justify-center">
+        <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white mb-4 sm:mb-6">Order Summary</h2>
+          <div className="h-[240px] sm:h-[300px] w-full flex flex-col items-center justify-center">
             {orderStatusData.length > 0 ? (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -143,8 +143,8 @@ export default function DashboardHomePage() {
                     data={orderStatusData}
                     cx="50%"
                     cy="50%"
-                    innerRadius={60}
-                    outerRadius={80}
+                    innerRadius={50}
+                    outerRadius={75}
                     paddingAngle={5}
                     dataKey="value"
                   >
@@ -158,14 +158,14 @@ export default function DashboardHomePage() {
                 </PieChart>
               </ResponsiveContainer>
             ) : (
-              <p className="text-gray-400">No data available</p>
+              <p className="text-gray-400 text-sm">No data available</p>
             )}
             
-            <div className="flex flex-wrap justify-center gap-4 mt-4">
+            <div className="flex flex-wrap justify-center gap-2.5 sm:gap-4 mt-3">
               {orderStatusData.map((entry, index) => (
-                <div key={index} className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
-                  {entry.name} ({entry.value})
+                <div key={index} className="flex items-center gap-1.5 text-xs text-gray-600 dark:text-gray-400">
+                  <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: COLORS[index % COLORS.length] }}></div>
+                  <span className="capitalize">{entry.name}</span> ({entry.value})
                 </div>
               ))}
             </div>
@@ -174,34 +174,34 @@ export default function DashboardHomePage() {
       </div>
 
       {/* Recent Orders Table */}
-      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 overflow-hidden">
-        <div className="p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Orders</h2>
-          <Link href="/orders" className="text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
+      <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Recent Orders</h2>
+          <Link href="/orders" className="text-xs sm:text-sm font-semibold text-primary-600 hover:text-primary-700 transition-colors">
             View All
           </Link>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left border-collapse min-w-[600px]">
             <thead>
-              <tr className="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider">
-                <th className="p-4 font-semibold">Order ID</th>
-                <th className="p-4 font-semibold">Customer</th>
-                <th className="p-4 font-semibold">Date</th>
-                <th className="p-4 font-semibold">Amount</th>
-                <th className="p-4 font-semibold">Status</th>
+              <tr className="bg-gray-50/50 dark:bg-gray-900/50 text-gray-500 dark:text-gray-400 text-[11px] uppercase tracking-wider">
+                <th className="p-3 sm:p-4 font-semibold">Order ID</th>
+                <th className="p-3 sm:p-4 font-semibold">Customer</th>
+                <th className="p-3 sm:p-4 font-semibold">Date</th>
+                <th className="p-3 sm:p-4 font-semibold">Amount</th>
+                <th className="p-3 sm:p-4 font-semibold">Status</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-sm">
+            <tbody className="divide-y divide-gray-100 dark:divide-gray-700 text-xs sm:text-sm">
               {stats.recent_orders.map((order) => (
                 <tr key={order.id} className="hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors">
-                  <td className="p-4 font-medium text-gray-900 dark:text-white">#{order.id.toString().padStart(4, '0')}</td>
-                  <td className="p-4 text-gray-600 dark:text-gray-300">{order.customer}</td>
-                  <td className="p-4 text-gray-500 dark:text-gray-400">
+                  <td className="p-3 sm:p-4 font-medium text-gray-900 dark:text-white">#{order.id.toString().padStart(4, '0')}</td>
+                  <td className="p-3 sm:p-4 text-gray-600 dark:text-gray-300 font-medium">{order.customer}</td>
+                  <td className="p-3 sm:p-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
                     {format(new Date(order.date), "MMM dd, yyyy h:mm a")}
                   </td>
-                  <td className="p-4 font-bold text-gray-900 dark:text-white">${order.total_amount.toLocaleString()}</td>
-                  <td className="p-4">
+                  <td className="p-3 sm:p-4 font-bold text-gray-900 dark:text-white">৳{order.total_amount.toLocaleString()}</td>
+                  <td className="p-3 sm:p-4">
                     <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium border ${getStatusColor(order.status)}`}>
                       {getStatusIcon(order.status)}
                       {order.status}
@@ -211,7 +211,7 @@ export default function DashboardHomePage() {
               ))}
               {stats.recent_orders.length === 0 && (
                 <tr>
-                  <td colSpan={5} className="p-8 text-center text-gray-500">
+                  <td colSpan={5} className="p-8 text-center text-gray-500 text-sm">
                     No recent orders found.
                   </td>
                 </tr>
@@ -227,21 +227,21 @@ export default function DashboardHomePage() {
 // Helpers
 function StatCard({ title, value, icon, trend, trendUp, bg }: any) {
   return (
-    <div className="bg-white dark:bg-gray-800 p-6 rounded-2xl shadow-sm border border-gray-100 dark:border-gray-700 flex flex-col justify-between group hover:shadow-md transition-shadow">
-      <div className="flex justify-between items-start mb-4">
+    <div className="bg-white dark:bg-gray-800 p-4 sm:p-6 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-700 flex flex-col justify-between group hover:shadow-md transition-all">
+      <div className="flex justify-between items-start mb-3 sm:mb-4">
         <div>
-          <p className="text-gray-500 dark:text-gray-400 text-sm font-medium mb-1">{title}</p>
-          <h3 className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{value}</h3>
+          <p className="text-gray-500 dark:text-gray-400 text-xs sm:text-sm font-medium mb-1">{title}</p>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{value}</h3>
         </div>
-        <div className={`p-3 rounded-xl ${bg}`}>
+        <div className={`p-2.5 sm:p-3 rounded-xl ${bg} shrink-0`}>
           {icon}
         </div>
       </div>
-      <div className="flex items-center text-sm">
+      <div className="flex items-center text-xs sm:text-sm">
         <span className={`font-semibold ${trendUp ? 'text-emerald-500' : 'text-red-500'}`}>
           {trend}
         </span>
-        <span className="text-gray-400 ml-2">vs last month</span>
+        <span className="text-gray-400 ml-1.5">vs last month</span>
       </div>
     </div>
   );
@@ -265,12 +265,12 @@ function getStatusColor(status: string) {
 function getStatusIcon(status: string) {
   switch (status.toLowerCase()) {
     case 'delivered':
-      return <CheckCircle className="w-3.5 h-3.5" />;
+      return <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     case 'pending':
-      return <Clock className="w-3.5 h-3.5" />;
+      return <Clock className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     case 'shipped':
-      return <Truck className="w-3.5 h-3.5" />;
+      return <Truck className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
     default:
-      return <Package className="w-3.5 h-3.5" />;
+      return <Package className="w-3 h-3 sm:w-3.5 sm:h-3.5" />;
   }
 }

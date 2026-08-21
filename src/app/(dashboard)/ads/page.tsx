@@ -27,8 +27,6 @@ export default function AdsPage() {
     image: "",
   });
 
-
-
   const fetchAds = async () => {
     try {
       setLoading(true);
@@ -103,12 +101,15 @@ export default function AdsPage() {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6">
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Banners</h1>
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+        <div>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Banners & Advertisements</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage promotional ads and banners.</p>
+        </div>
         <button
           onClick={() => handleOpenModal()}
-          className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors"
+          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-xs sm:text-sm w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Add Banner
@@ -116,39 +117,39 @@ export default function AdsPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="flex justify-center items-center py-16">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
         </div>
       ) : ads.length === 0 ? (
-        <div className="text-center py-12 text-gray-500 dark:text-gray-400">
+        <div className="text-center py-16 text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 p-6 text-sm">
           No banners found. Click "Add Banner" to create one.
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {ads.map((ad) => (
-            <div key={ad.id} className="border dark:border-gray-700 rounded-lg overflow-hidden bg-gray-50 dark:bg-gray-750">
-              <div className="aspect-[21/9] w-full bg-gray-200 dark:bg-gray-700 relative flex justify-center items-center overflow-hidden">
+            <div key={ad.id} className="border border-gray-200 dark:border-gray-700 rounded-2xl overflow-hidden bg-white dark:bg-gray-800 shadow-xs flex flex-col">
+              <div className="aspect-[21/9] w-full bg-gray-100 dark:bg-gray-700 relative flex justify-center items-center overflow-hidden">
                 {ad.image ? (
                   <img src={ad.image} alt={ad.title} className="w-full h-full object-cover" />
                 ) : (
                   <ImageIcon className="w-8 h-8 text-gray-400" />
                 )}
               </div>
-              <div className="p-4">
-                <h3 className="font-semibold text-lg text-gray-900 dark:text-white mb-1 line-clamp-1">{ad.title}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">{ad.subtitle}</p>
-                <p className="text-sm text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{ad.descriptions}</p>
+              <div className="p-4 flex flex-col flex-1">
+                <h3 className="font-bold text-base text-gray-900 dark:text-white mb-1 line-clamp-1">{ad.title}</h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400 mb-2 line-clamp-1">{ad.subtitle}</p>
+                <p className="text-xs text-gray-600 dark:text-gray-300 mb-4 line-clamp-2">{ad.descriptions}</p>
                 
-                <div className="flex justify-end gap-2 mt-auto">
+                <div className="flex justify-end gap-2 mt-auto pt-3 border-t border-gray-100 dark:border-gray-700">
                   <button
                     onClick={() => handleOpenModal(ad)}
-                    className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-gray-800 rounded-md transition-colors"
+                    className="p-1.5 text-gray-600 hover:text-blue-600 hover:bg-blue-50 dark:text-gray-400 dark:hover:text-blue-400 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
                   <button
                     onClick={() => handleDelete(ad.id)}
-                    className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-gray-800 rounded-md transition-colors"
+                    className="p-1.5 text-gray-600 hover:text-red-600 hover:bg-red-50 dark:text-gray-400 dark:hover:text-red-400 dark:hover:bg-gray-700 rounded-lg transition-colors"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
@@ -161,23 +162,23 @@ export default function AdsPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
-          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-md overflow-hidden">
-            <div className="flex justify-between items-center p-4 border-b dark:border-gray-700">
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/50 backdrop-blur-xs">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-xl w-full max-w-md overflow-hidden max-h-[92vh] flex flex-col">
+            <div className="flex justify-between items-center p-4 sm:p-5 border-b border-gray-100 dark:border-gray-700 shrink-0">
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">
                 {editingAd ? "Edit Banner" : "Create Banner"}
               </h2>
               <button
                 onClick={handleCloseModal}
-                className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200"
+                className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <form onSubmit={handleSubmit} className="p-4 space-y-4">
+            <form onSubmit={handleSubmit} className="p-4 sm:p-5 space-y-3.5 sm:space-y-4 overflow-y-auto">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Title
                 </label>
                 <input
@@ -186,13 +187,13 @@ export default function AdsPage() {
                   required
                   value={formData.title}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Banner Title"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Subtitle
                 </label>
                 <input
@@ -200,13 +201,13 @@ export default function AdsPage() {
                   name="subtitle"
                   value={formData.subtitle}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="Banner Subtitle"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Description
                 </label>
                 <textarea
@@ -214,13 +215,13 @@ export default function AdsPage() {
                   value={formData.descriptions}
                   onChange={handleChange}
                   rows={3}
-                  className="w-full px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white resize-none"
                   placeholder="Banner Description"
                 />
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
                   Image URL
                 </label>
                 <input
@@ -229,22 +230,22 @@ export default function AdsPage() {
                   required
                   value={formData.image}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                  className="w-full px-3.5 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:ring-2 focus:ring-primary-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   placeholder="https://example.com/image.jpg"
                 />
               </div>
 
-              <div className="pt-4 flex justify-end gap-3">
+              <div className="pt-3 flex justify-end gap-2.5">
                 <button
                   type="button"
                   onClick={handleCloseModal}
-                  className="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs sm:text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-xl transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors"
+                  className="px-4 py-2 text-xs sm:text-sm bg-primary-600 hover:bg-primary-700 text-white rounded-xl transition-colors font-medium"
                 >
                   {editingAd ? "Update" : "Create"}
                 </button>

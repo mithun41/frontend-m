@@ -57,12 +57,16 @@ export default function InstagramImagesPage() {
   };
 
   const columns: Column<InstagramImage>[] = [
-    { key: "id", header: "ID" },
+    { 
+      key: "id", 
+      header: "ID",
+      render: (item) => <span className="font-semibold text-xs text-gray-500">#{item.id}</span>
+    },
     {
       key: "image",
-      header: "Image",
+      header: "Image Preview",
       render: (item) => (
-        <div className="w-16 h-16 rounded-lg bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden relative shrink-0">
+        <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 flex items-center justify-center overflow-hidden relative shrink-0 shadow-xs">
           {item.image ? (
             <Image
               src={getImageUrl(item.image)}
@@ -81,13 +85,13 @@ export default function InstagramImagesPage() {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleDelete(item.id)}
             className="p-1.5 text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/30 rounded-lg transition-colors"
             title="Delete"
           >
-            <Trash2 className="w-5 h-5" />
+            <Trash2 className="w-4 h-4" />
           </button>
         </div>
       )
@@ -95,15 +99,15 @@ export default function InstagramImagesPage() {
   ];
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Instagram Images</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your homepage Instagram section images here.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Instagram Images</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your homepage Instagram section images here.</p>
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-sm w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Upload Image
@@ -112,10 +116,10 @@ export default function InstagramImagesPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : isError ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center text-sm">
           Failed to load Instagram images.
         </div>
       ) : (

@@ -86,15 +86,15 @@ export function DataTable<T>({
   };
 
   return (
-    <div className="w-full bg-white dark:bg-gray-900 rounded-xl shadow-md border border-gray-200 dark:border-gray-800 overflow-hidden flex flex-col">
-      <div className="overflow-x-auto">
-        <table className="w-full text-left border-collapse">
+    <div className="w-full bg-white dark:bg-gray-900 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-800 overflow-hidden flex flex-col">
+      <div className="overflow-x-auto w-full">
+        <table className="w-full text-left border-collapse min-w-full">
           <thead>
             <tr className="bg-gray-900 dark:bg-black border-b border-gray-800">
               {columns.map((col, idx) => (
                 <th
                   key={idx}
-                  className="px-6 py-4 text-sm font-semibold text-white tracking-wide whitespace-nowrap"
+                  className="px-4 sm:px-6 py-3.5 sm:py-4 text-xs sm:text-sm font-semibold text-white tracking-wide whitespace-nowrap"
                 >
                   {col.header}
                 </th>
@@ -111,7 +111,7 @@ export function DataTable<T>({
                   {columns.map((col, colIdx) => (
                     <td
                       key={colIdx}
-                      className="px-6 py-4 text-sm text-gray-700 dark:text-gray-300"
+                      className="px-4 sm:px-6 py-3.5 sm:py-4 text-xs sm:text-sm text-gray-700 dark:text-gray-300"
                     >
                       {col.render ? col.render(item) : (item as any)[col.key]}
                     </td>
@@ -122,7 +122,7 @@ export function DataTable<T>({
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-sm"
+                  className="px-4 sm:px-6 py-8 text-center text-gray-500 dark:text-gray-400 text-xs sm:text-sm"
                 >
                   No data available.
                 </td>
@@ -134,25 +134,27 @@ export function DataTable<T>({
 
       {/* Pagination Footer */}
       {paginated && totalPages > 1 && (
-        <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-800 flex items-center justify-between bg-gray-50/50 dark:bg-gray-800/20">
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            Showing {getShowingStart()} to {getShowingEnd()} of {getTotalCount()} entries
+        <div className="px-4 sm:px-6 py-3 sm:py-4 border-t border-gray-100 dark:border-gray-800 flex flex-col sm:flex-row items-center justify-between gap-3 bg-gray-50/50 dark:bg-gray-800/20">
+          <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 text-center sm:text-left">
+            Showing <span className="font-semibold text-gray-700 dark:text-gray-200">{getShowingStart()}</span> to <span className="font-semibold text-gray-700 dark:text-gray-200">{getShowingEnd()}</span> of <span className="font-semibold text-gray-700 dark:text-gray-200">{getTotalCount()}</span> entries
           </span>
           <div className="flex items-center gap-2">
             <button
               onClick={handlePrev}
               disabled={currentPage === 1}
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              aria-label="Previous page"
             >
               <ChevronLeft className="w-4 h-4" />
             </button>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300 px-2">
+            <span className="text-xs sm:text-sm font-medium text-gray-700 dark:text-gray-300 px-2 whitespace-nowrap">
               Page {currentPage} of {totalPages}
             </span>
             <button
               onClick={handleNext}
               disabled={currentPage === totalPages}
-              className="p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 sm:p-2 rounded-lg border border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              aria-label="Next page"
             >
               <ChevronRight className="w-4 h-4" />
             </button>

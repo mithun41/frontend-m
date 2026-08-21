@@ -78,7 +78,11 @@ export default function CategoriesPage() {
   };
 
   const columns: Column<Category & { depth: number }>[] = [
-    { key: "id", header: "ID" },
+    { 
+      key: "id", 
+      header: "ID",
+      render: (item) => <span className="font-semibold text-xs text-gray-500">#{item.id}</span>
+    },
     {
       key: "image",
       header: "Image",
@@ -102,20 +106,24 @@ export default function CategoriesPage() {
       key: "name", 
       header: "Name", 
       render: (item) => (
-        <div style={{ paddingLeft: `${item.depth * 20}px` }} className="flex items-center gap-2">
-          {item.depth > 0 && <span className="text-gray-400">↳</span>}
+        <div style={{ paddingLeft: `${Math.min(item.depth * 14, 40)}px` }} className="flex items-center gap-1.5">
+          {item.depth > 0 && <span className="text-gray-400 text-xs">↳</span>}
           <span className={`font-semibold ${item.depth === 0 ? 'text-gray-900 dark:text-white' : 'text-gray-700 dark:text-gray-300'}`}>
             {item.name}
           </span>
         </div>
       ) 
     },
-    { key: "slug", header: "Slug" },
+    { 
+      key: "slug", 
+      header: "Slug",
+      render: (item) => <span className="text-xs text-gray-500">{item.slug}</span>
+    },
     {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleEdit(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
@@ -136,15 +144,15 @@ export default function CategoriesPage() {
   ];
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your product categories here.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Categories</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your product categories here.</p>
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-sm w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Add Category
@@ -153,10 +161,10 @@ export default function CategoriesPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : isError ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center text-sm">
           Failed to load categories.
         </div>
       ) : (

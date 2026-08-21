@@ -21,13 +21,12 @@ export default function DashboardLayout({
       <div className="relative flex w-full h-screen overflow-hidden bg-background">
         <Sidebar />
 
-        <main className="flex flex-col flex-grow h-screen overflow-y-auto bg-gray-50 dark:bg-gray-900">
+        <main className="flex flex-col flex-grow h-screen overflow-y-auto overflow-x-hidden bg-gray-50 dark:bg-gray-900 w-full min-w-0">
           <div className="shrink-0">
             <DashboardNavbar />
           </div>
 
-          <div className="flex-grow p-4 md:p-6">
-            {/* Add your PageLoader here if needed in the future */}
+          <div className="flex-grow p-3 sm:p-4 md:p-6 w-full min-w-0 max-w-full">
             {children}
           </div>
         </main>

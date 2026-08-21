@@ -90,13 +90,13 @@ export default function ContactsPage() {
     {
       key: "id",
       header: "ID",
-      render: (item) => <span className="text-gray-500 font-medium">#{item.id}</span>
+      render: (item) => <span className="text-gray-500 font-semibold text-xs">#{item.id}</span>
     },
     {
       key: "name",
       header: "Name",
       render: (item) => (
-        <span className="font-medium text-gray-900 dark:text-gray-100">
+        <span className="font-semibold text-gray-900 dark:text-gray-100 text-xs sm:text-sm whitespace-nowrap">
           {item.first_name} {item.last_name}
         </span>
       )
@@ -104,18 +104,18 @@ export default function ContactsPage() {
     {
       key: "email",
       header: "Email",
-      render: (item) => <span className="text-gray-600 dark:text-gray-400">{item.email}</span>
+      render: (item) => <span className="text-gray-600 dark:text-gray-400 text-xs sm:text-sm">{item.email}</span>
     },
     {
       key: "subject",
       header: "Subject",
-      render: (item) => <span className="text-gray-700 dark:text-gray-300 max-w-[200px] truncate block" title={item.subject}>{item.subject}</span>
+      render: (item) => <span className="text-gray-700 dark:text-gray-300 max-w-[160px] sm:max-w-[200px] truncate block text-xs" title={item.subject}>{item.subject}</span>
     },
     {
       key: "created_at",
       header: "Date",
       render: (item) => (
-        <span className="text-gray-500 text-sm whitespace-nowrap">
+        <span className="text-gray-500 text-xs whitespace-nowrap">
           {new Date(item.created_at || "").toLocaleDateString()}
         </span>
       )
@@ -127,19 +127,19 @@ export default function ContactsPage() {
         const status = item.status || 'pending';
         if (status === 'replied') {
           return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400 whitespace-nowrap">
               Replied
             </span>
           );
         } else if (status === 'closed') {
           return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-100 text-gray-800 dark:bg-gray-800/30 dark:text-gray-400 whitespace-nowrap">
               Closed
             </span>
           );
         } else {
           return (
-            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400">
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-400 whitespace-nowrap">
               Pending
             </span>
           );
@@ -150,7 +150,7 @@ export default function ContactsPage() {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5">
           <button
             onClick={() => handleView(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
@@ -178,46 +178,48 @@ export default function ContactsPage() {
   ];
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Contacts Management</h1>
-          <p className="text-gray-500 dark:text-gray-400 text-sm mt-1">View and respond to user messages.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Contacts Management</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">View and respond to user messages.</p>
         </div>
       </div>
 
-      <div className="bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-100 dark:border-gray-800 p-4">
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
-          <div className="relative w-full sm:w-96">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-800 p-3.5 sm:p-4">
+        <div className="flex flex-col sm:flex-row gap-3 justify-between items-center mb-4 sm:mb-6">
+          <div className="relative w-full sm:w-80 md:w-96">
             <input
               type="text"
-              placeholder="Search by name, email, or subject..."
+              placeholder="Search name, email, or subject..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-950 border border-gray-200 dark:border-gray-800 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm text-gray-900 dark:text-white placeholder:text-gray-400"
+              className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-gray-900 dark:text-white placeholder:text-gray-400"
             />
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           </div>
         </div>
 
-        {isLoading ? (
-          <div className="flex justify-center items-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
-          </div>
-        ) : (
-          <DataTable
-            columns={columns}
-            data={filteredContacts}
-            paginated={true}
-            serverPagination={false}
-            itemsPerPage={10}
-            currentPage={page}
-            onPageChange={setPage}
-          />
-        )}
+        <div className="overflow-x-auto w-full">
+          {isLoading ? (
+            <div className="flex justify-center items-center py-16">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600"></div>
+            </div>
+          ) : (
+            <DataTable
+              columns={columns}
+              data={filteredContacts}
+              paginated={true}
+              serverPagination={false}
+              itemsPerPage={10}
+              currentPage={page}
+              onPageChange={setPage}
+            />
+          )}
+        </div>
       </div>
 
       <ContactModal

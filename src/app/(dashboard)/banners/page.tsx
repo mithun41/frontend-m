@@ -64,7 +64,11 @@ export default function BannersPage() {
   };
 
   const columns: Column<Banner>[] = [
-    { key: "id", header: "ID" },
+    { 
+      key: "id", 
+      header: "ID",
+      render: (item) => <span className="font-semibold text-xs text-gray-500">#{item.id}</span>
+    },
     {
       key: "image",
       header: "Image",
@@ -86,9 +90,9 @@ export default function BannersPage() {
     },
     { 
       key: "badge_name", 
-      header: "Badge Name", 
+      header: "Badge", 
       render: (item) => (
-        <span className="px-2 py-1 bg-primary-100 text-primary-700 rounded-md text-xs font-semibold">
+        <span className="px-2 py-0.5 bg-primary-100 dark:bg-primary-900/30 text-primary-700 dark:text-primary-400 rounded-md text-xs font-semibold">
           {item.badge_name || "N/A"}
         </span>
       ) 
@@ -97,7 +101,7 @@ export default function BannersPage() {
       key: "title", 
       header: "Title",
       render: (item) => (
-        <span className="font-semibold text-gray-900 dark:text-white">
+        <span className="font-semibold text-gray-900 dark:text-white line-clamp-1 max-w-[200px]">
           {item.title}
         </span>
       )
@@ -106,7 +110,7 @@ export default function BannersPage() {
       key: "is_active",
       header: "Status",
       render: (item) => (
-        <span className={`px-2 py-1 rounded-md text-xs font-semibold ${item.is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+        <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${item.is_active ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}>
           {item.is_active ? "Active" : "Inactive"}
         </span>
       )
@@ -115,7 +119,7 @@ export default function BannersPage() {
       key: "actions",
       header: "Actions",
       render: (item) => (
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => handleEdit(item)}
             className="p-1.5 text-blue-600 hover:bg-blue-50 dark:text-blue-400 dark:hover:bg-blue-900/30 rounded-lg transition-colors"
@@ -136,15 +140,15 @@ export default function BannersPage() {
   ];
 
   return (
-    <div className="p-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Banners</h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your homepage banners here.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Banners</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage your homepage banners here.</p>
         </div>
         <button
           onClick={handleAdd}
-          className="flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-sm"
+          className="flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white px-4 py-2.5 rounded-xl font-medium transition-colors shadow-xs text-sm w-full sm:w-auto"
         >
           <Plus className="w-4 h-4" />
           Add Banner
@@ -153,10 +157,10 @@ export default function BannersPage() {
 
       {isLoading ? (
         <div className="flex justify-center items-center py-20">
-          <div className="w-10 h-10 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin"></div>
         </div>
       ) : isError ? (
-        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center">
+        <div className="bg-red-50 text-red-600 p-4 rounded-xl border border-red-100 text-center text-sm">
           Failed to load banners.
         </div>
       ) : (

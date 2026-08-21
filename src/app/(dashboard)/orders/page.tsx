@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Search, Eye, Trash2, ArrowLeft, ArrowRight, Package } from "lucide-react";
+import { Search, Eye, Trash2 } from "lucide-react";
 import { orderService } from "@/lib/api/orderService";
 import Swal from "sweetalert2";
 import OrderModal from "./components/OrderModal";
-import { DataTable, Column } from "@/components/ui/DataTable";
+import { DataTable } from "@/components/ui/DataTable";
 import { useAuthStore } from "@/store/useAuthStore";
 
 export default function OrdersPage() {
@@ -71,26 +71,26 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Orders Management</h1>
-          <p className="text-gray-500 text-sm mt-1">View and manage customer orders.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Orders Management</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">View and manage customer orders.</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-4">
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center mb-6">
-          <div className="relative w-full sm:w-96">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-800 p-3.5 sm:p-4">
+        <div className="flex flex-col sm:flex-row gap-3 justify-between items-stretch sm:items-center mb-4 sm:mb-6">
+          <div className="relative w-full sm:w-80 md:w-96">
             <input
               type="text"
-              placeholder="Search by name, email, phone, or ID..."
+              placeholder="Search order, customer, phone..."
               value={search}
               onChange={(e) => {
                 setSearch(e.target.value);
                 setPage(1);
               }}
-              className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+              className="w-full pl-9 pr-4 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
             />
             <Search className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" />
           </div>
@@ -101,7 +101,7 @@ export default function OrdersPage() {
               setStatusFilter(e.target.value);
               setPage(1);
             }}
-            className="w-full sm:w-48 px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-sm"
+            className="w-full sm:w-44 px-3.5 py-2 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           >
             <option value="">All Statuses</option>
             <option value="Pending">Pending</option>
@@ -114,50 +114,50 @@ export default function OrdersPage() {
 
         <div className="overflow-x-auto w-full">
           {isLoading ? (
-            <div className="py-20 text-center text-gray-500">Loading orders...</div>
+            <div className="py-20 text-center text-gray-500 text-sm">Loading orders...</div>
           ) : (
             <DataTable 
               columns={[
                 { 
                   key: "order_number", 
                   header: "Order Number", 
-                  render: (order) => <span className="font-semibold text-gray-900">{order.order_number}</span> 
+                  render: (order) => <span className="font-bold text-gray-900 dark:text-white text-xs sm:text-sm">{order.order_number}</span> 
                 },
                 { 
                   key: "customer", 
                   header: "Customer", 
-                  render: (order) => <span className="text-sm font-medium text-gray-900 block">{order.name}</span> 
+                  render: (order) => <span className="text-xs sm:text-sm font-medium text-gray-900 dark:text-white block truncate max-w-[150px]">{order.name}</span> 
                 },
                 { 
                   key: "contact", 
                   header: "Contact", 
                   render: (order) => (
-                    <>
-                      <span className="text-xs text-gray-500 block">{order.email}</span>
-                      <span className="text-xs text-gray-500 block">{order.phone}</span>
-                    </>
+                    <div className="min-w-[120px]">
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400 block truncate max-w-[180px]">{order.email}</span>
+                      <span className="text-[11px] text-gray-500 dark:text-gray-400 block">{order.phone}</span>
+                    </div>
                   ) 
                 },
                 { 
                   key: "date", 
                   header: "Date", 
-                  render: (order) => <span className="text-sm text-gray-600">{new Date(order.created_at).toLocaleDateString()}</span> 
+                  render: (order) => <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">{new Date(order.created_at).toLocaleDateString()}</span> 
                 },
                 { 
                   key: "total", 
                   header: "Total", 
-                  render: (order) => <span className="text-sm font-bold text-gray-900">৳{parseFloat(order.total_amount).toFixed(2)}</span> 
+                  render: (order) => <span className="text-xs sm:text-sm font-bold text-gray-900 dark:text-white whitespace-nowrap">৳{parseFloat(order.total_amount).toFixed(2)}</span> 
                 },
                 { 
                   key: "status", 
                   header: "Status", 
                   render: (order) => (
-                    <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md
-                      ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                      order.status === 'Processing' ? 'bg-blue-100 text-blue-700' :
-                      order.status === 'Shipped' ? 'bg-purple-100 text-purple-700' :
-                      order.status === 'Delivered' ? 'bg-green-100 text-green-700' :
-                      'bg-red-100 text-red-700'}`}
+                    <span className={`px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full whitespace-nowrap
+                      ${order.status === 'Pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                      order.status === 'Processing' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' :
+                      order.status === 'Shipped' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400' :
+                      order.status === 'Delivered' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' :
+                      'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'}`}
                     >
                       {order.status}
                     </span>
@@ -167,10 +167,10 @@ export default function OrdersPage() {
                   key: "actions", 
                   header: "Actions", 
                   render: (order) => (
-                    <div className="flex justify-start gap-2">
+                    <div className="flex items-center gap-1.5">
                       <button
                         onClick={() => openOrderDetails(order.id)}
-                        className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors"
+                        className="p-1.5 text-gray-400 hover:text-primary-600 hover:bg-primary-50 dark:hover:bg-primary-900/30 rounded-lg transition-colors"
                         title="View Details"
                       >
                         <Eye className="w-4 h-4" />
@@ -178,7 +178,7 @@ export default function OrdersPage() {
                       {user?.role === "admin" && (
                         <button
                           onClick={() => handleDelete(order.id)}
-                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                          className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition-colors"
                           title="Delete Order"
                         >
                           <Trash2 className="w-4 h-4" />

@@ -71,28 +71,28 @@ export default function SettingsPage() {
   };
 
   if (isLoading) {
-    return <div className="p-8 text-center text-gray-500">Loading settings...</div>;
+    return <div className="p-8 text-center text-gray-500 text-sm">Loading settings...</div>;
   }
 
   return (
-    <div className="space-y-6 max-w-4xl">
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div className="space-y-4 sm:space-y-6 max-w-4xl">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Store Settings</h1>
-          <p className="text-gray-500 text-sm mt-1">Manage global store configurations and delivery charges.</p>
+          <h1 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">Store Settings</h1>
+          <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-0.5">Manage global store configurations and delivery charges.</p>
         </div>
       </div>
 
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="px-6 py-4 border-b border-gray-100 bg-gray-50/50 flex items-center gap-2">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl shadow-xs border border-gray-200/80 dark:border-gray-800 overflow-hidden">
+        <div className="px-4 sm:px-6 py-3.5 sm:py-4 border-b border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/40 flex items-center gap-2">
           <Truck className="w-5 h-5 text-primary-500" />
-          <h2 className="text-lg font-bold text-gray-900">Delivery Charges</h2>
+          <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Delivery Charges</h2>
         </div>
         
-        <form onSubmit={handleSubmit} className="p-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Inside Dhaka Charge (৳)</label>
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+            <div className="space-y-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Inside Dhaka Charge (৳)</label>
               <input
                 type="number"
                 step="0.01"
@@ -100,12 +100,12 @@ export default function SettingsPage() {
                 value={formData.delivery_charge_inside_dhaka}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
             
-            <div className="space-y-2">
-              <label className="text-sm font-semibold text-gray-700">Outside Dhaka Charge (৳)</label>
+            <div className="space-y-1.5">
+              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Outside Dhaka Charge (৳)</label>
               <input
                 type="number"
                 step="0.01"
@@ -113,69 +113,69 @@ export default function SettingsPage() {
                 value={formData.delivery_charge_outside_dhaka}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
             </div>
           </div>
 
-          <div className="mt-8 pt-8 border-t border-gray-100">
-            <div className="flex items-center gap-2 mb-6">
-              <CreditCard className="w-5 h-5 text-emerald-600" />
-              <h2 className="text-lg font-bold text-gray-900">Payment Settings</h2>
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-2 mb-4">
+              <CreditCard className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Payment Settings</h2>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">bKash Personal Number</label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">bKash Personal Number</label>
                 <input
                   type="text"
                   name="bkash_number"
                   value={formData.bkash_number}
                   onChange={handleChange}
                   placeholder="e.g. 01700000000"
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
 
-              <div className="space-y-2">
-                <label className="text-sm font-semibold text-gray-700">Nagad Personal Number</label>
+              <div className="space-y-1.5">
+                <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">Nagad Personal Number</label>
                 <input
                   type="text"
                   name="nagad_number"
                   value={formData.nagad_number}
                   onChange={handleChange}
                   placeholder="e.g. 01700000000"
-                  className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                  className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
                 />
               </div>
             </div>
           </div>
 
-          <div className="mt-8 pt-8 border-t border-gray-100">
-            <div className="flex items-center gap-2 mb-6">
+          <div className="pt-6 border-t border-gray-100 dark:border-gray-800">
+            <div className="flex items-center gap-2 mb-4">
               <Play className="w-5 h-5 text-red-500" />
-              <h2 className="text-lg font-bold text-gray-900">Home Video Settings</h2>
+              <h2 className="text-base sm:text-lg font-bold text-gray-900 dark:text-white">Home Video Settings</h2>
             </div>
             
-            <div className="space-y-2 max-w-md">
-              <label className="text-sm font-semibold text-gray-700">YouTube Video ID</label>
+            <div className="space-y-1.5 max-w-md">
+              <label className="text-xs sm:text-sm font-semibold text-gray-700 dark:text-gray-300">YouTube Video ID</label>
               <input
                 type="text"
                 name="youtube_video_id"
                 value={formData.youtube_video_id}
                 onChange={handleChange}
                 placeholder="e.g. 7wtfhZwyrcc"
-                className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 text-sm"
+                className="w-full px-3.5 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm border border-gray-200 dark:border-gray-700 rounded-xl bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary-500"
               />
-              <p className="text-xs text-gray-500">The 11-character code at the end of a YouTube URL (e.g. youtube.com/watch?v=<span className="font-semibold text-gray-700">7wtfhZwyrcc</span>).</p>
+              <p className="text-[11px] text-gray-500">The 11-character code at the end of a YouTube URL (e.g. youtube.com/watch?v=<span className="font-semibold text-gray-700 dark:text-gray-300">7wtfhZwyrcc</span>).</p>
             </div>
           </div>
 
-          <div className="mt-8 flex justify-end">
+          <div className="pt-4 flex justify-end">
             <button
               type="submit"
               disabled={updateMutation.isPending}
-              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-semibold text-sm transition-colors shadow-sm disabled:opacity-50"
+              className="px-6 py-2.5 bg-primary-600 hover:bg-primary-700 text-white rounded-xl font-semibold text-xs sm:text-sm transition-colors shadow-xs disabled:opacity-50 w-full sm:w-auto"
             >
               {updateMutation.isPending ? "Saving..." : "Save Changes"}
             </button>
