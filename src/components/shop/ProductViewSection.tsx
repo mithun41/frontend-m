@@ -67,11 +67,11 @@ export function ProductViewSection({ product }: { product: Product }) {
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-neutral-100 dark:border-neutral-800/60">
           <div className="flex items-center gap-3">
             <span className="text-2xl font-medium text-neutral-900 dark:text-white">
-              ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+              Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
             </span>
             {product.offer_price && parseFloat(product.offer_price) > 0 && (
               <span className="text-lg text-neutral-500 line-through">
-                ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                Tk {parseFloat(product.selling_price || "0").toFixed(2)}
               </span>
             )}
             <DiscountBadge

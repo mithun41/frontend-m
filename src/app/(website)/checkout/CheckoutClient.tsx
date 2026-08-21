@@ -148,7 +148,7 @@ export default function CheckoutClient() {
   
   const totalAmount = (subtotal + shipping).toFixed(2);
   const displaySubtotal = subtotal.toFixed(2);
-  const displayShipping = shipping > 0 ? `৳${shipping.toFixed(2)}` : "Free";
+  const displayShipping = shipping > 0 ? `Tk ${shipping.toFixed(2)}` : "Free";
 
   return (
     <div className="bg-neutral-50 dark:bg-neutral-950 min-h-screen py-12 px-4 sm:px-6 lg:px-8">
@@ -431,12 +431,12 @@ export default function CheckoutClient() {
                         {item.product_color && <span>Color: {item.product_color}</span>}
                       </div>
                       <p className="text-xs text-neutral-500 mt-1">
-                        {item.quantity} x ৳{parseFloat(item.product_price.toString()).toFixed(2)}
+                        {item.quantity} x Tk {parseFloat(item.product_price.toString()).toFixed(2)}
                       </p>
                     </div>
                     <div className="flex flex-col justify-center text-right">
                       <span className="font-bold text-sm text-neutral-900 dark:text-white">
-                        ৳{parseFloat(item.total_price.toString()).toFixed(2)}
+                        Tk {parseFloat(item.total_price.toString()).toFixed(2)}
                       </span>
                     </div>
                   </div>
@@ -446,7 +446,7 @@ export default function CheckoutClient() {
               <div className="border-t border-neutral-100 dark:border-neutral-800 pt-4 space-y-3 mb-6">
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-neutral-500">Subtotal</span>
-                  <span className="font-medium text-neutral-900 dark:text-white">৳{displaySubtotal}</span>
+                  <span className="font-medium text-neutral-900 dark:text-white">Tk {displaySubtotal}</span>
                 </div>
                 <div className="flex justify-between items-center text-sm">
                   <span className="text-neutral-500">Shipping</span>
@@ -456,7 +456,7 @@ export default function CheckoutClient() {
                 </div>
                 <div className="flex justify-between items-center pt-3 border-t border-neutral-100 dark:border-neutral-800">
                   <span className="text-base font-bold text-neutral-900 dark:text-white">Total</span>
-                  <span className="text-xl font-extrabold text-primary-600">৳{totalAmount}</span>
+                  <span className="text-xl font-extrabold text-primary-600">Tk {totalAmount}</span>
                 </div>
               </div>
 

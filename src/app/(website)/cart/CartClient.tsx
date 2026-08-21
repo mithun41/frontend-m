@@ -127,7 +127,7 @@ export default function CartClient() {
                             )}
                           </div>
                           <span className="text-sm font-medium text-neutral-500 dark:text-neutral-400 mt-1">
-                            {parseFloat(item.product_price).toFixed(2)} ৳
+                            Tk {parseFloat(item.product_price).toFixed(2)}
                           </span>
                         </div>
                       </div>
@@ -160,7 +160,7 @@ export default function CartClient() {
                       {/* Total & Remove */}
                       <div className="col-span-4 w-full flex justify-between md:justify-end items-center mt-2 md:mt-0">
                         <div className="font-bold text-neutral-900 dark:text-white md:mr-6">
-                          {parseFloat(item.total_price.toString()).toFixed(2)} ৳
+                          Tk {parseFloat(item.total_price.toString()).toFixed(2)}
                         </div>
                         <button
                           onClick={() => handleRemove(item.id)}
@@ -185,12 +185,12 @@ export default function CartClient() {
                 <div className="space-y-4 text-sm mb-6">
                   <div className="flex justify-between items-start gap-4 text-neutral-600 dark:text-neutral-400">
                     <span className="shrink-0">Subtotal ({cart.items.reduce((acc, item) => acc + item.quantity, 0)} items)</span>
-                    <span className="font-medium text-neutral-900 dark:text-white text-right">{parseFloat(cart.total_amount.toString()).toFixed(2)} ৳</span>
+                    <span className="font-medium text-neutral-900 dark:text-white text-right">Tk {parseFloat(cart.total_amount.toString()).toFixed(2)}</span>
                   </div>
                   <div className="flex justify-between items-start gap-4 text-neutral-600 dark:text-neutral-400">
                     <span className="shrink-0">Shipping Estimate</span>
                     <span className="font-medium text-neutral-900 dark:text-white text-right text-xs">
-                      {settings ? `Inside Dhaka: ৳${settings.delivery_charge_inside_dhaka} | Outside: ৳${settings.delivery_charge_outside_dhaka}` : 'Calculated at checkout'}
+                      {settings ? `Inside Dhaka: Tk ${settings.delivery_charge_inside_dhaka} | Outside: Tk ${settings.delivery_charge_outside_dhaka}` : 'Calculated at checkout'}
                     </span>
                   </div>
                   <div className="flex justify-between items-start gap-4 text-neutral-600 dark:text-neutral-400">
@@ -202,7 +202,7 @@ export default function CartClient() {
                 <div className="pt-4 border-t border-neutral-100 dark:border-neutral-800 mb-8">
                   <div className="flex justify-between items-center">
                     <span className="font-bold text-neutral-900 dark:text-white">Estimated Total</span>
-                    <span className="text-xl font-bold text-primary-600 dark:text-primary-400">{parseFloat(cart.total_amount.toString()).toFixed(2)} ৳</span>
+                    <span className="text-xl font-bold text-primary-600 dark:text-primary-400">Tk {parseFloat(cart.total_amount.toString()).toFixed(2)}</span>
                   </div>
                 </div>
 

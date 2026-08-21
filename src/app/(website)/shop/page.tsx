@@ -203,11 +203,11 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
                         <div className="flex justify-between items-center mt-1">
                         <div className="flex items-center gap-2">
                           <span className="font-extrabold text-lg text-black dark:text-white">
-                            ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                            Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                           </span>
                           {product.offer_price && parseFloat(product.offer_price) > 0 && (
                             <span className="text-sm text-neutral-500 line-through">
-                              ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                              Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                             </span>
                           )}
                         </div>

@@ -159,11 +159,11 @@ export default async function HomePage() {
                     <div className="flex items-center gap-1.5 text-sm font-semibold">
                       <div className="flex items-center gap-1.5">
                         <span className="text-black">
-                          ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                          Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                         </span>
                         {product.offer_price && parseFloat(product.offer_price) > 0 && (
                           <span className="text-xs text-gray-500 line-through">
-                            ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                            Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                           </span>
                         )}
                       </div>
@@ -237,11 +237,11 @@ export default async function HomePage() {
                     <div className="flex items-center gap-1.5 text-sm font-semibold">
                       <div className="flex items-center gap-1.5">
                         <span className="text-black">
-                          ৳{parseFloat(product.price || product.selling_price || "0").toFixed(2)}
+                          Tk {parseFloat(product.price || product.selling_price || "0").toFixed(2)}
                         </span>
                         {product.offer_price && parseFloat(product.offer_price) > 0 && (
                           <span className="text-xs text-gray-500 line-through">
-                            ৳{parseFloat(product.selling_price || "0").toFixed(2)}
+                            Tk {parseFloat(product.selling_price || "0").toFixed(2)}
                           </span>
                         )}
                       </div>

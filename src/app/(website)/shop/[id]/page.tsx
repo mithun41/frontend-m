@@ -188,11 +188,11 @@ export default async function ProductDetailPage({
                     </Link>
                     <div className="flex items-center gap-2">
                       <span className="font-semibold text-[13px] text-neutral-900 dark:text-white">
-                        ৳{parseFloat(prod.price || prod.selling_price || "0").toFixed(2)}
+                        Tk {parseFloat(prod.price || prod.selling_price || "0").toFixed(2)}
                       </span>
                       {prod.offer_price && parseFloat(prod.offer_price) > 0 && (
                         <span className="text-[11px] text-neutral-500 line-through">
-                          ৳{parseFloat(prod.selling_price || "0").toFixed(2)}
+                          Tk {parseFloat(prod.selling_price || "0").toFixed(2)}
                         </span>
                       )}
                     </div>

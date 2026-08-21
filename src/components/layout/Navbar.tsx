@@ -268,7 +268,7 @@ function NavbarContent() {
                               />
                               <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                                <p className="text-xs text-primary-600 font-bold">৳{parseFloat(product.selling_price || product.price || "0").toFixed(2)}</p>
+                                <p className="text-xs text-primary-600 font-bold">Tk {parseFloat(product.selling_price || product.price || "0").toFixed(2)}</p>
                               </div>
                             </Link>
                           </li>
