@@ -81,7 +81,7 @@ export const useCartStore = create<CartState>()(
             return state;
           }
 
-          let newItems = [...state.cart.items];
+          const newItems = [...state.cart.items];
 
           if (existingItemIndex >= 0) {
             const existingItem = { ...newItems[existingItemIndex] };

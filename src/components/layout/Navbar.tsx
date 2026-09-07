@@ -98,10 +98,10 @@ function NavbarContent() {
 
   const navLinks = [
     { name: 'Shop', href: '/shop' },
-    { name: 'Men', href: '/men', hasMegaMenu: true },
-    { name: 'Women', href: '/women', hasMegaMenu: true },
-    { name: 'Gym Accessories', href: '/gym-accessories', hasMegaMenu: true },
-    { name: 'Gym Bag', href: '/shop?category=Bag' },
+    { name: 'Men', href: '/shop?category=men', hasMegaMenu: true },
+    { name: 'Women', href: '/shop?category=women', hasMegaMenu: true },
+    { name: 'Gym Accessories', href: '/shop?category=gym-accessories', hasMegaMenu: true },
+    { name: 'Gym Bag', href: '/shop?category=gym-bag' },
     { name: 'Track Order', href: '/track-order' },
   ];
 
@@ -144,12 +144,27 @@ function NavbarContent() {
           <div className="hidden lg:flex flex-1 justify-center items-center space-x-4 xl:space-x-8">
             {navLinks.map((link, index) => {
               const normalizedLinkName = link.name.toLowerCase().replace(/\s+/g, ' ');
-              const linkCategory = rawCategories?.find(c => c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName || c.slug.toLowerCase() === normalizedLinkName);
+              const linkCategory = rawCategories?.find(c =>
+                c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName ||
+                c.slug.toLowerCase() === normalizedLinkName ||
+                c.slug.toLowerCase().replace(/-/g, ' ') === normalizedLinkName
+              );
               const isCategoryLink = ['Men', 'Women', 'Gym Accessories', 'Gym Bag'].includes(link.name);
               const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.slug || linkCategory.name)}` : link.href;
-              const currentCatParam = searchParams.get('category')?.toLowerCase();
-              
-              const isActive = link.name === 'Shop' ? pathname.startsWith('/shop') : (link.href !== '/' && pathname === link.href);
+              const currentCatParam = searchParams.get('category')?.toLowerCase().trim();
+
+              const isCatActive = linkCategory && currentCatParam ? (
+                currentCatParam === linkCategory.slug?.toLowerCase() ||
+                currentCatParam === linkCategory.name?.toLowerCase() ||
+                currentCatParam.replace(/\s+/g, '-') === linkCategory.slug?.toLowerCase() ||
+                currentCatParam.replace(/-/g, ' ') === linkCategory.name?.toLowerCase()
+              ) : false;
+
+              const isActive = link.name === 'Shop'
+                ? (pathname === '/shop' && !currentCatParam)
+                : (pathname === '/shop' && linkCategory)
+                  ? isCatActive
+                  : (link.href !== '/' && pathname === link.href);
 
               const displayCategories = getDisplayCategories(linkCategory);
               const menuImages = defaultImages;
@@ -382,10 +397,27 @@ function NavbarContent() {
         <div className="px-4 pt-4 pb-8 space-y-2">
           {navLinks.map((link, index) => {
             const normalizedLinkName = link.name.toLowerCase().replace(/\s+/g, ' ');
-            const linkCategory = rawCategories?.find(c => c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName);
+            const linkCategory = rawCategories?.find(c =>
+              c.name.toLowerCase().replace(/\s+/g, ' ') === normalizedLinkName ||
+              c.slug.toLowerCase() === normalizedLinkName ||
+              c.slug.toLowerCase().replace(/-/g, ' ') === normalizedLinkName
+            );
             const isCategoryLink = ['Men', 'Women', 'Gym Accessories', 'Gym Bag'].includes(link.name);
-            const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.name)}` : link.href;
-            const isActive = pathname === dynamicHref || (dynamicHref !== '/' && pathname.startsWith(dynamicHref.split('?')[0]) && searchParams.get('category') === linkCategory?.name);
+            const dynamicHref = (isCategoryLink && linkCategory) ? `/shop?category=${encodeURIComponent(linkCategory.slug || linkCategory.name)}` : link.href;
+            const currentCatParam = searchParams.get('category')?.toLowerCase().trim();
+
+            const isCatActive = linkCategory && currentCatParam ? (
+              currentCatParam === linkCategory.slug?.toLowerCase() ||
+              currentCatParam === linkCategory.name?.toLowerCase() ||
+              currentCatParam.replace(/\s+/g, '-') === linkCategory.slug?.toLowerCase() ||
+              currentCatParam.replace(/-/g, ' ') === linkCategory.name?.toLowerCase()
+            ) : false;
+
+            const isActive = link.name === 'Shop'
+              ? (pathname === '/shop' && !currentCatParam)
+              : (pathname === '/shop' && linkCategory)
+                ? isCatActive
+                : (link.href !== '/' && pathname === link.href);
             const isSubMenuOpen = mobileMenusOpen[link.name];
 
             return (
@@ -406,6 +438,7 @@ function NavbarContent() {
                     <button
                       onClick={(e) => toggleMobileMenu(link.name, e)}
                       className="p-3 text-gray-500 hover:text-primary-600 transition-colors"
+                      aria-label={`Toggle ${link.name} submenu`}
                     >
                       <ChevronDown className={`w-5 h-5 transition-transform ${isSubMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -417,7 +450,11 @@ function NavbarContent() {
                   <div className="pl-8 pr-4 py-2 space-y-4 bg-gray-50 rounded-lg mt-1 border border-gray-100">
                     {getDisplayCategories(linkCategory).map((category, catIdx) => (
                       <div key={catIdx}>
-                        <Link href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`} prefetch={false}>
+                        <Link
+                          href={`/shop?category=${encodeURIComponent(category.slug || category.title)}`}
+                          prefetch={false}
+                          onClick={() => setIsOpen(false)}
+                        >
                           <h4 className="text-xs font-bold text-gray-900 mb-2 uppercase hover:text-primary-600 transition-colors">{category.title}</h4>
                         </Link>
                         <ul className="space-y-2">

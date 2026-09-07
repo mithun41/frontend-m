@@ -95,10 +95,10 @@ export function Footer() {
         {/* Quick Links */}
         <div className="flex flex-col gap-4">
           <h4 className="text-white font-bold uppercase tracking-wider text-sm mb-2">Shop</h4>
-          <Link href="/shop?category=Men" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Men's Apparel</Link>
-          <Link href="/shop?category=Women" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Women's Apparel</Link>
-          <Link href="/shop?category=Gym+Accessories" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Accessories</Link>
-          <Link href="/shop?category=Gym+Bag" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Bags</Link>
+          <Link href="/shop?category=men" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Men's Apparel</Link>
+          <Link href="/shop?category=women" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Women's Apparel</Link>
+          <Link href="/shop?category=gym-accessories" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Accessories</Link>
+          <Link href="/shop?category=gym-bag" prefetch={false} className="text-sm hover:text-primary-500 transition-colors">Gym Bags</Link>
           <Link href="/shop" prefetch={false} className="text-sm hover:text-primary-500 transition-colors mt-1 font-semibold text-white">All Products</Link>
         </div>
 

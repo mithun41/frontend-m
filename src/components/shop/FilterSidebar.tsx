@@ -38,7 +38,14 @@ export function FilterSidebar() {
   const isValueMatch = (targetVal: string | null, categoryVal: string | null) => {
     if (!targetVal && !categoryVal) return true;
     if (!targetVal || !categoryVal) return false;
-    return targetVal.toLowerCase() === categoryVal.toLowerCase();
+    const t = targetVal.toLowerCase().trim().replace(/\+/g, " ");
+    const c = categoryVal.toLowerCase().trim().replace(/\+/g, " ");
+    return (
+      t === c ||
+      t.replace(/\s+/g, "-") === c ||
+      t === c.replace(/\s+/g, "-") ||
+      t.replace(/-/g, " ") === c.replace(/-/g, " ")
+    );
   };
 
   type SidebarCategory = {

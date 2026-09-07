@@ -114,8 +114,8 @@ export function PriceRangeSlider({ minLimit, maxLimit }: PriceRangeSliderProps) 
 
       {/* Range Limits Text */}
       <div className="flex items-center justify-between text-xs text-neutral-500 mt-2">
-        <span>{minLimit.toFixed(2)} BDT + VAT</span>
-        <span>{maxLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} BDT + VAT</span>
+        <span>{minLimit.toFixed(2)} BDT</span>
+        <span>{maxLimit.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} BDT</span>
       </div>
 
       {/* Dual Range Slider */}

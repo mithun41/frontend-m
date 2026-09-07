@@ -90,7 +90,7 @@ export function CategorySlider({ categories }: CategorySliderProps) {
           return (
             <Link
               key={category.id}
-              href={`/shop?category=${encodeURIComponent(category.name)}`}
+              href={`/shop?category=${encodeURIComponent(category.slug || category.name)}`}
               prefetch={false}
               className="group relative min-w-[220px] sm:min-w-[280px] lg:min-w-[320px] h-[320px] sm:h-[380px] rounded-2xl overflow-hidden bg-gray-100 shrink-0 border border-gray-100 shadow-sm hover:shadow-xl transition-all duration-500 block"
             >

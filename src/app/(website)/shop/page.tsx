@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
-import { ShoppingCart } from "lucide-react";
 import { Suspense } from "react";
 import { FilterSidebar } from "@/components/shop/FilterSidebar";
 import { productService, Product } from "@/lib/api/productService";
@@ -79,27 +78,43 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
   let products = allProducts;
 
   if (categoryFilter) {
-    const lowerFilter = categoryFilter.toLowerCase();
+    const rawFilter = categoryFilter.replace(/\+/g, " ");
+    const lowerFilter = rawFilter.toLowerCase().trim();
 
-    // Recursively find matching category by exact slug (or exact name if no slug) and collect all descendant category IDs
+    // Recursively find matching category by exact slug, name, or normalized slug/name and collect all descendant category IDs
     const findCategoryAndChildIds = (cats: Category[], target: string): number[] => {
       let matchedIds: number[] = [];
+      const cleanTarget = target.toLowerCase().trim();
+      const targetAsSlug = cleanTarget.replace(/\s+/g, "-");
+      const targetAsName = cleanTarget.replace(/-/g, " ");
+
       for (const cat of cats) {
-        const isMatch = cat.slug
-          ? cat.slug.toLowerCase() === target
-          : cat.name.toLowerCase() === target;
+        const catSlug = cat.slug?.toLowerCase();
+        const catName = cat.name?.toLowerCase();
+        const catNameAsSlug = catName?.replace(/\s+/g, "-");
+
+        const isMatch =
+          catSlug === cleanTarget ||
+          catSlug === targetAsSlug ||
+          catName === cleanTarget ||
+          catName === targetAsName ||
+          catNameAsSlug === targetAsSlug;
 
         if (isMatch) {
           const collectIds = (c: Category) => {
-            matchedIds.push(c.id);
-            c.subcategories?.forEach(collectIds);
+            if (!matchedIds.includes(c.id)) {
+              matchedIds.push(c.id);
+            }
+            if (Array.isArray(c.subcategories)) {
+              c.subcategories.forEach(collectIds);
+            }
           };
           collectIds(cat);
-        } else if (cat.subcategories && cat.subcategories.length > 0) {
+        } else if (Array.isArray(cat.subcategories) && cat.subcategories.length > 0) {
           matchedIds = matchedIds.concat(findCategoryAndChildIds(cat.subcategories, target));
         }
       }
-      return matchedIds;
+      return Array.from(new Set(matchedIds));
     };
 
     const matchedCategoryIds = findCategoryAndChildIds(categoriesList, lowerFilter);
@@ -115,11 +130,19 @@ export default async function ProductsPage({ searchParams }: { searchParams: Pro
         );
       });
     } else {
+      const cleanTarget = lowerFilter.trim();
+      const targetAsSlug = cleanTarget.replace(/\s+/g, "-");
+      const targetAsName = cleanTarget.replace(/-/g, " ");
+
       products = products.filter(p => {
         if (!p.category) return false;
+        const pSlug = p.category.slug?.toLowerCase();
+        const pName = p.category.name?.toLowerCase();
         return (
-          (p.category.slug && p.category.slug.toLowerCase() === lowerFilter) ||
-          (p.category.name && p.category.name.toLowerCase() === lowerFilter)
+          pSlug === cleanTarget ||
+          pSlug === targetAsSlug ||
+          pName === cleanTarget ||
+          pName === targetAsName
         );
       });
     }
