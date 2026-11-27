@@ -50,7 +50,7 @@ export function Footer() {
               <WhatsApp className="w-5 h-5" />
             </Link>
             <Link
-              href="https://www.instagram.com/dravonofficial.bd?igsh=bG83dm9wOTA4ZDh2"
+              href="https://www.instagram.com/dravonfit?cnvx=bG83dm9wOTA4ZDh2"
               target="_blank"
               rel="noopener noreferrer"
               className="w-10 h-10 rounded-full bg-gradient-to-tr from-[#f09433] via-[#dc2743] to-[#bc1888] flex items-center justify-center text-white hover:scale-110 hover:shadow-lg hover:shadow-pink-500/25 transition-all duration-300"

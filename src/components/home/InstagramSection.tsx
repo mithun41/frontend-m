@@ -34,7 +34,7 @@ export async function InstagramSection() {
     return null;
   }
 
-  const instagramUrl = "https://www.instagram.com/dravonofficial.bd?igsh=bG83dm9wOTA4ZDh2";
+  const instagramUrl = "https://www.instagram.com/dravonfit?cnvx=bG83dm9wOTA4ZDh2";
 
   return (
     <section className="bg-black py-16 w-full">
