@@ -11,6 +11,7 @@ import Image from "next/image";
 import toast from "react-hot-toast";
 import { getImageUrl } from "@/lib/utils";
 import { Copy, Check } from "lucide-react";
+import { getTrackingContext, trackInitiateCheckout, trackPurchase } from "@/lib/tracking";
 
 export default function CheckoutClient() {
   const router = useRouter();
@@ -32,6 +33,19 @@ export default function CheckoutClient() {
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // Report the checkout once per visit to this page, with the cart as it was on arrival
+  const [checkoutTracked, setCheckoutTracked] = useState(false);
+  useEffect(() => {
+    if (!isMounted || checkoutTracked || !cart || cart.items.length === 0) return;
+    setCheckoutTracked(true);
+    trackInitiateCheckout(cart.items.map(item => ({
+      id: item.product,
+      name: item.product_name,
+      price: parseFloat(String(item.product_price)),
+      quantity: item.quantity,
+    })));
+  }, [isMounted, checkoutTracked, cart]);
 
   const { data: settings, isLoading: isLoadingSettings } = useQuery({
     queryKey: ["settings"],
@@ -68,6 +82,12 @@ export default function CheckoutClient() {
   const createOrderMutation = useMutation({
     mutationFn: orderService.createOrder,
     onSuccess: (data) => {
+      trackPurchase(data.order_number || String(data.id), parseFloat(String(data.total_amount)), data.items.map(item => ({
+        id: item.product,
+        name: item.product_name,
+        price: parseFloat(String(item.price)),
+        quantity: item.quantity,
+      })));
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       clearCart();
       toast.success("Order placed successfully!");
@@ -110,7 +130,8 @@ export default function CheckoutClient() {
         product_id: item.product,
         quantity: item.quantity,
         size: item.product_size
-      }))
+      })),
+      tracking: getTrackingContext(),
     };
 
     createOrderMutation.mutate(orderData);

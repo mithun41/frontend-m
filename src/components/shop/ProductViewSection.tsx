@@ -1,14 +1,19 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Product, PhotoWithColor } from "@/lib/api/productService";
 import { ProductGallery } from "@/components/shop/ProductGallery";
 import { AddToCartSection } from "@/components/shop/AddToCartSection";
 import { DiscountBadge } from "@/components/shop/DiscountBadge";
+import { trackViewContent } from "@/lib/tracking";
 
 export function ProductViewSection({ product }: { product: Product }) {
   const initialColor = product.colors && product.colors.length > 0 ? product.colors[0].name : null;
   const [activeColor, setActiveColor] = useState<string | null>(initialColor);
+
+  useEffect(() => {
+    trackViewContent({ id: product.id, name: product.name, price: parseFloat(String(product.price || product.selling_price || "0")), quantity: 1 });
+  }, [product.id, product.name, product.price, product.selling_price]);
 
   // Construct photos list with colors (supporting both product.photos and product.image_X_color)
   const photos: PhotoWithColor[] = (product.photos && product.photos.length > 0)

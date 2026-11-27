@@ -2,6 +2,7 @@
 
 import { ShoppingCart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { trackAddToCart } from "@/lib/tracking";
 import toast from "react-hot-toast";
 import { Product } from "@/lib/api/productService";
 import { getFirstAvailableSize, getProductAvailableStock } from "@/utils/productStock";
@@ -36,6 +37,7 @@ export function AddToCartIcon({ product }: { product: Product }) {
     if (!res.success) {
       toast.error(res.message || "Cannot add more items than available in stock!");
     } else {
+      trackAddToCart({ id: product.id, name: product.name, price: parseFloat(String(product.price || product.selling_price || "0")), quantity: 1 });
       if (res.message) {
         toast(res.message, { icon: "⚠️" });
       } else {

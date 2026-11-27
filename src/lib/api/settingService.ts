@@ -6,7 +6,15 @@ export interface StoreSetting {
   youtube_video_id?: string;
   bkash_number?: string;
   nagad_number?: string;
+  facebook_pixel_id?: string | null;
+  facebook_capi_configured?: boolean;
+  facebook_test_event_code?: string | null;
   updated_at: string;
+}
+
+/** Fields only the dashboard sends; the API never returns them. */
+export interface StoreSettingUpdate extends Partial<StoreSetting> {
+  facebook_capi_token?: string;
 }
 
 export const settingService = {
@@ -15,7 +23,7 @@ export const settingService = {
     return response.data;
   },
 
-  updateSettings: async (data: Partial<StoreSetting>): Promise<StoreSetting> => {
+  updateSettings: async (data: StoreSettingUpdate): Promise<StoreSetting> => {
     const response = await axiosClient.patch('/settings/', data);
     return response.data;
   }

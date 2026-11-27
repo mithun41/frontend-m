@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useCartStore } from "@/store/useCartStore";
 import toast from "react-hot-toast";
+import { trackAddToCart } from "@/lib/tracking";
 import { OrderNowButton } from "@/components/shop/OrderNowButton";
 import { Product } from "@/lib/api/productService";
 import { getSizeStock, getFirstAvailableSize } from "@/utils/productStock";
@@ -106,6 +107,7 @@ export function AddToCartSection({ product, selectedColor: propSelectedColor, on
     if (!res.success) {
       toast.error(res.message || "Cannot add more than available stock!");
     } else {
+      trackAddToCart({ id: product.id, name: product.name, price: parseFloat(String(product.price || product.selling_price || "0")), quantity });
       if (res.message) {
         toast(res.message, { icon: "⚠️" });
       } else {

@@ -4,6 +4,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
 import { Product } from "@/lib/api/productService";
 import { getFirstAvailableSize, getProductAvailableStock } from "@/utils/productStock";
+import { trackAddToCart } from "@/lib/tracking";
 import toast from "react-hot-toast";
 
 export function OrderNowButton({ 
@@ -59,6 +60,7 @@ export function OrderNowButton({
       return;
     }
 
+    trackAddToCart({ id: product.id, name: product.name, price: parseFloat(String(product.price || product.selling_price || "0")), quantity });
     router.push("/checkout");
   };
 
